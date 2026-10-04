@@ -43,4 +43,4 @@ drafted-by: Claude
 
 | 분류 | slug | intent | spec | plan |
 |------|------|--------|------|------|
-| course | `hadoop-eco-ops` | draft | - | - |
+| course | `hadoop-eco-ops` | draft | draft | - |

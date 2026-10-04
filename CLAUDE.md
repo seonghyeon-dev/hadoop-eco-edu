@@ -8,10 +8,10 @@
 
 | 구분 | 내용 |
 |------|------|
-| **대상 시스템** | as-is Hadoop eco: Airflow 2.7.1, Spark 3.x(마이너 미확인) on **YARN**, HDFS, Hive 테이블(대부분) + Iceberg 테이블(일부, 일부는 Hive와 동시 적재) |
+| **대상 시스템** | as-is Hadoop eco: Airflow 2.7.1, Spark 3.x(마이너 미확인) on **YARN**, Hive SQL on **Tez**(Hive 적재 엔진), HDFS, Hive 테이블(대부분) + Iceberg 테이블(일부, 일부는 Hive와 동시 적재) |
 | **메인 기술** | Airflow, Spark, Iceberg. **Hive도 다룬다** — Hive·Iceberg 개념 비교, Hive → Iceberg 전환의 장단점 |
 | **교육 내용** | ① 기술·시스템 개념과 구조 ② 모니터링 방법 ③ 장애 대응 |
-| **모니터링 도구** | Airflow UI, YARN UI, Spark UI |
+| **모니터링 도구** | Airflow UI, YARN UI, Spark UI, Flower(잠정 — 제거 가능) |
 | **제외** | to-be(Kubernetes) 시스템 전부 — Spark on K8s, SparkKubernetesOperator, MinIO/S3, S3FileIO 등. **Oracle, Trino** — 운영에서 쓰지만 교육 대상이 아니다. Oracle DB 전환(job_history·HMS 스키마)은 개발자가 교육 전에 수행하며, 교육에서는 배경 설명만 한다 |
 
 - **to-be 혼입 금지.** 형제 저장소 `../spark-tuning`은 to-be(k8s) 기준 설계·튜닝 문서다. Iceberg snapshot, 파티션, Compaction 같은 **엔진 공통 개념**을 설명할 때만 참고하고, 그쪽의 설정값·수치·버전·인프라 구성(k8s, MinIO, Airflow 3.x)은 인용하지 않는다. 참조만 하고 수정하지 않는다
@@ -21,8 +21,8 @@
 
 - **독자는 비개발자다.** 코드를 읽거나 고치지 않는다. 목표는 장애 대응 같은 단순 운영 작업을 스스로 하는 것이다
 - **Linux는 초보 수준이고, Linux 사용법은 가르치지 않는다** (SSH 권한은 있다). 터미널 작업은 **복사해 붙여 넣을 명령어 + 성공 시 화면(기대 출력)**으로만 제시한다. 명령어를 조합하거나 고치게 하지 않는다
-- **비개발자가 하는 조치는 다음뿐이다**: Airflow 프로세스 재시작(systemctl 또는 ansible playbook), Airflow DAG 재실행, Airflow log 확인
-- **Spark 로그 분석은 범위 밖이다.** Spark/YARN/Spark UI는 "상태를 보고 판단·전달하는" 수준까지만 가르치고, 원인 분석은 Airflow log 수준에서 멈춘다
+- **비개발자가 하는 조치는 다음뿐이다**: Airflow 프로세스(worker · scheduler · webserver · flower) 재시작(systemctl 또는 ansible playbook), Airflow DAG 재실행(UI에서 Trigger DAG + PARAM에 처리 날짜 입력), Airflow log 확인. PostgreSQL · pgpool · redis 재시작과 Spark 작업 실행 중 worker 재시작은 금지
+- **Spark 로그 분석은 범위 밖이다.** Spark/YARN/Spark UI는 "상태를 보고 판단·전달하는" 수준까지만 가르치고, 원인 분석은 Airflow log 수준에서 멈춘다. Spark UI·YARN UI에서 로그를 여는 방법, Airflow log에 섞여 나오는 Spark driver log를 읽는 방법은 가르치지 않는다. Tez도 같다 — 이름·역할과 YARN UI 상태까지만 다루고 Tez UI·로그는 다루지 않는다
 - **난이도가 높거나 위험한 조치는 비개발자에게 맡기지 않는다.** 이런 조치는 "하지 말 것 + 누구에게 무엇을 전달할 것"으로 가르친다. 허용·금지 경계의 상세는 intent의 Open questions에서 확정한다
 
 ## 작성 규칙
