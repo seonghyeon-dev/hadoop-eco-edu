@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Node (pptxgenjs)
+node_modules/
+
+# pptx 시각 QA 중간 산출물 (PDF 변환·슬라이드 이미지)
+qa/
+
+# Office 임시 파일
+~$*
