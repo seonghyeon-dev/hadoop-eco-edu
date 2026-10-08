@@ -43,9 +43,15 @@ drafted-by: Claude
 | 수강자 | 비개발자. Linux는 초보 수준, 서버 SSH 접속 권한 있음 [확인 필요: 인원] |
 | 발표자 | 사용자 (Windows PC에서 발표·공유) |
 | Airflow | 2.7.1, CeleryExecutor. 프로세스: airflow worker · scheduler · webserver · flower, PostgreSQL(metadata DB), pgpool, redis(Celery broker). DAG의 Spark 실행은 SparkSubmitOperator |
-| Spark | 3.x, 클러스터 매니저 YARN [확인 필요: 마이너 버전] |
-| 저장소·테이블 | HDFS. 테이블은 대부분 Hive, 일부 Iceberg. **Hive → Iceberg 전환 과도기** — 최근 전환한 테이블은 아직 Hive에도 동시 적재 중 |
-| 모니터링 도구 | Airflow UI, YARN UI, Spark UI |
+| Airflow 프로세스 수 | systemd service 기준 `airflow-worker.service` 3개, `airflow-scheduler.service` 2개, `airflow-webserver.service` 2개, `airflow-flower.service` 1개. Celery 설정(`[celery]`)은 기본값 |
+| pgpool | PostgreSQL HA와 커넥션 풀 |
+| Hadoop | 3.2.3 (HDFS, YARN) |
+| Spark | 3.5.2, 클러스터 매니저 YARN. dynamic allocation 사용 안 함 |
+| Hive · Tez | Hive 3.1.2, Tez 0.10.1 |
+| Iceberg | 1.6.1 (`iceberg-spark-runtime-3.5_2.13-1.6.1`). 카탈로그는 Hive Metastore |
+| 저장소·테이블 | HDFS만 사용. 테이블은 대부분 Hive, 일부 Iceberg. **Hive → Iceberg 전환 과도기** — 최근 전환한 테이블은 아직 Hive에도 동시 적재 중 |
+| 파일 형식·파티션 | Hive `_raw`: TEXTFILE, 파티션 `dt`(varchar(8), YYYYMMDD) / Hive `_orc`: ORC, 파티션 `dt` / Hive `_temp`: ORC, 파티션 없음 / Iceberg: Parquet |
+| 모니터링 도구 | Airflow UI, YARN UI, Spark UI(Spark History Server 운영 중) |
 | Oracle DB | ① `get_jobs`가 조회하는 job_history 테이블 ② HMS(Hive Metastore) 스키마. **교육 전에 다른 버전의 Oracle DB로 전환** — Airflow · Spark · HMS 작업은 개발자가 수행 |
 | 교육 대상 아닌 시스템 | Oracle 자체(DB 관리), Trino — 운영에서 사용하지만 다루지 않는다 |
 | 제작 환경 | Mac (Claude Code). 발표·공유는 Windows |
@@ -95,16 +101,28 @@ drafted-by: Claude
 - **PARAM**: 날짜 범위를 받고, 그 범위로 job_history를 조회한다 (사용자 설명: `spark-tuning`의 Iceberg 방식과 유사. 단 그쪽은 to-be 설계이므로 as-is 필드 이름·형식은 별도 확인)
 - **worker 재시작 전 확인**: 실행 중인 Spark Task로 판단한다
 - **재시작 방법**: ansible playbook에서 재시작할 프로세스를 지정하거나, systemctl로 개별 처리한다
-- **Hive 적재 상세**: `_raw`에는 새 데이터가 계속 추가된다. 배치 주기가 되면 ORC로 변환해 `_tmp` 테이블로 옮기고, `_orc`를 완전히 비운 뒤 `_tmp`의 데이터 파일을 `hdfs mv`로 `_orc`에 옮긴다. 사용자는 예전 데이터는 `_orc`, 최근 데이터는 `_raw`에서 조회한다
+- **Hive 적재 상세**: `_raw`에는 새 데이터가 계속 추가된다. 배치 주기가 되면 ORC로 변환해 `_temp` 테이블로 옮기고, `_orc`를 완전히 비운 뒤 `_temp`의 데이터 파일을 `hdfs mv`로 `_orc`에 옮긴다. 사용자는 예전 데이터는 `_orc`, 최근 데이터는 `_raw`에서 조회한다
 - **job_history 설명 문구**: "어디까지 적재했는지 적어 두는 장부"가 대체로 맞지만 더 적절한 표현 검토 요청 → spec 3절에 "적재 대장" 안 제시
 
 사용자 답변 (2026-10-04, 4차):
 
 - **Hive 적재는 Spark가 아니라 Tez를 쓴다** — Hive SQL로 적재한다
 - **`_raw`는 비우지 않는다.** retention 처리 때만 과거 데이터를 삭제한다
-- **`_tmp` 적재**: 변환 전에 `_tmp`를 전부 비우고, `_raw`에서 대상 날짜 데이터를 select해 `_tmp`에 쌓는다
+- **`_temp` 적재**: 변환 전에 `_temp`를 전부 비우고, `_raw`에서 대상 날짜 데이터를 select해 `_temp`에 쌓는다
 - **Hive 변환 배치도 job_history를 쓴다.** Iceberg처럼 avro 경로를 받지 않고, 처리할 날짜만 받아 온다
 - **처리 범위 확인 위치**: get_jobs Task log. 실패 내용은 Hive SQL 또는 Spark job에 해당하는 Airflow Task log
+
+사용자 답변 (2026-10-08, 운영서버 정보):
+
+- 버전: Hadoop 3.2.3, Spark 3.5.2, Hive 3.1.2, Tez 0.10.1, Iceberg 1.6.1(`iceberg-spark-runtime-3.5_2.13-1.6.1`), Airflow 2.7.1
+- Airflow 프로세스 수: worker 3, scheduler 2, webserver 2, flower 1 (systemd service 이름 `airflow-<프로세스>.service`). `[celery]` 설정은 기본값
+- pgpool 용도: PostgreSQL HA와 커넥션 풀
+- as-is DAG의 `catchup`은 False
+- Spark dynamic allocation은 쓰지 않는다
+- Iceberg 카탈로그는 Hive Metastore, 저장소는 HDFS만 쓴다, 파일 형식은 Parquet
+- Spark History Server를 운영한다 — 끝난 Spark 작업도 Spark UI로 볼 수 있다
+- Hive 테이블: `_raw`(TEXTFILE)·`_orc`(ORC)는 `dt` 파티션(varchar(8), YYYYMMDD), `_temp`(ORC)는 파티션 없음. **중간 테이블 이름은 `_tmp`가 아니라 `_temp`** (정정)
+- **DAG 기능 설명은 사용자가 직접 작성한다.** PARAM, get_jobs·job_history, 배치 주기, Hive SQL Task 실행 방식, `_orc` 교체 범위 같은 DAG 동작 상세는 Claude가 묻지 않고 `[사용자 작성: 무엇]` 자리표시자로 둔다
 
 기술·운영 제약:
 
@@ -118,9 +136,9 @@ drafted-by: Claude
 **범위**
 
 - Hive·Iceberg 동시 적재 — 어떤 테이블인지, Hive 적재는 언제 끝나는지(교육 자료에 "과도기" 상태를 어떻게 적을지가 달라진다)
-- Iceberg 테이블의 구성 — 카탈로그(Hive Metastore인지), 저장 위치(HDFS인지)
+- ~~Iceberg 테이블의 구성~~ → 카탈로그 Hive Metastore, 저장소 HDFS, Parquet (2026-10-08)
 - ~~Spark UI를 어디까지 볼 것인가~~ → Spark UI에서 로그를 보는 방법은 교육하지 않는다 (2026-10-04). 상태 확인(진행률·소요 시간·실패 개수)까지만 다룬다
-- Spark History Server 운영 여부 — 끝난 작업의 Spark UI를 볼 수 있는지
+- ~~Spark History Server 운영 여부~~ → 운영 중 (2026-10-08)
 - Oracle·Trino를 전체 구조도에 이름만이라도 표시할지, 아예 뺄지
 
 **교육 설계**
@@ -159,39 +177,42 @@ drafted-by: Claude
 - **재실행**은 다른 기능이다
   - **Clear**: 특정 DAG Run(특정 날짜·구간)의 Task를 지우고 다시 실행한다. 실패한 날짜를 그대로 다시 처리한다
   - **Trigger DAG**: 지금 시각 기준으로 **새 수동 DAG Run을 하나 만든다.** 실패한 구간을 다시 처리하는 것이 아니다
-- [확인 필요] as-is DAG들의 `catchup` 설정. 이 값에 따라 Unpause의 위험도가 달라진다
+- ~~as-is DAG들의 `catchup` 설정~~ → **False** (2026-10-08). Unpause해도 멈춰 있던 구간을 한꺼번에 실행하지 않고, 가장 최근 구간의 DAG Run 하나만 만든다(Airflow 2.7 문서의 catchup 동작). 대량 backfill 위험은 없지만 Unpause 직후 DAG Run이 바로 하나 생길 수 있다
 - ~~교육에서 말하는 "DAG 재실행"이 Clear인지 Trigger인지~~ → **수동 Trigger로 확정** (2026-10-04)
 - ~~Trigger로 실패한 날짜가 복구되는가~~ → 처리 대상을 PARAM으로 받으므로 Trigger 때 날짜를 입력해 복구한다 (2026-10-04)
 - ~~재실행해도 중복 적재되지 않는가~~ → job_history로 중복 없음 (2026-10-04)
 - ~~Trigger DAG와 w/ config 중 무엇을 쓰는지~~ → Trigger DAG, config 없이 PARAM 필드에 날짜 입력 (2026-10-04)
-- ~~실패한 DAG Run이 처리하려던 날짜를 어디서 확인하는가~~ → get_jobs Task log (2026-10-04). [확인 필요: 범위가 찍히는 줄 — 캡처로 확정]
+- ~~실패한 DAG Run이 처리하려던 날짜를 어디서 확인하는가~~ → get_jobs Task log (2026-10-04). [사용자 작성: 범위가 찍히는 줄 — 캡처로 확정]
 - ~~여러 날짜가 실패하면 날짜마다 Trigger하는지~~ → PARAM이 날짜 범위라 범위 하나로 넣는다 (2026-10-04)
-- [확인 필요] PARAM 필드 이름, 입력 형식, DAG마다 같은지
-- [확인 필요] 스케줄 실행 때 PARAM이 어떻게 정해지는지(기본값)
+- [사용자 작성] PARAM 필드 이름, 입력 형식, DAG마다 같은지
+- [사용자 작성] 스케줄 실행 때 PARAM이 어떻게 정해지는지(기본값)
 
 **as-is 사실 (사용자 제공 대기)**
 
-- Spark 마이너 버전
+- ~~Spark 마이너 버전, Hive·Tez 버전, Iceberg 파일 형식~~ → 해소 (2026-10-08, Constraints 참조)
 - ~~Airflow 구성 — Executor 종류, 프로세스 목록~~ → 해소 (2026-10-04, Constraints 참조)
-- Airflow 서버 배치(어느 서버에 어느 프로세스), worker 수, pgpool 용도, systemctl unit 이름
+- ~~worker 수, pgpool 용도, systemctl unit 이름~~ → 해소 (2026-10-08, Constraints 참조). 서버별 배치는 교육에 필요하지 않아 묻지 않는다
 - ~~재시작 허용 범위, Spark 작업 중 worker 재시작, deploy mode, Flower 포함 여부~~ → 해소 (2026-10-04, Constraints 참조)
 - ~~worker 재시작 전 판단 기준, playbook 재시작 범위, Hive 조회 대상~~ → 해소 (2026-10-04, Constraints 참조)
-- worker가 여러 대일 때 재시작 전 확인 범위 — 해당 worker의 Task만 보면 되는지
+- worker가 여러 대일 때 재시작 전 확인 범위 — 해당 worker의 Task만 보면 되는지. Celery queue가 기본값이라 3대 모두 같은 queue를 받으므로, 어느 Task가 어느 worker에서 도는지는 Task Instance의 Hostname으로 구분해야 한다
 - 교육에서 playbook과 systemctl 중 무엇을 가르칠지
 - ~~`_raw` 누적 여부, 변환 범위, 변환 배치의 job_history 사용~~ → 해소 (2026-10-04, Constraints 참조)
-- `_orc`를 비우는 범위 — 대상 날짜(파티션)만인지 `_orc` 전체인지. `_tmp`에는 대상 날짜만 쌓으므로, `_orc` 전체를 비운다면 예전 데이터가 `_orc`에 남는 방식과 맞지 않는다
-- `_orc`를 비운 뒤 `hdfs mv`로 옮겨 넣기 전에 배치가 실패하면, 그동안 `_orc`에서 그 데이터가 빠져 있다. 이때 같은 날짜로 Trigger 재실행하면 복구되는지, 바로 전달해야 하는지
-- 배치 주기, Hive 파티션 사용 여부
+- ~~Hive 파티션 사용 여부~~ → `_raw`·`_orc`는 `dt` 파티션, `_temp`는 없음 (2026-10-08)
 - 실행 중인 Hive SQL Task도 worker 재시작 금지 조건인지 — worker가 Hive SQL 실행도 지켜보므로 Spark Task와 같은 위험이 있을 수 있다
-- Hive SQL Task의 실행 방식(Operator), log에 YARN application ID가 찍히는지
-- Spark를 Iceberg 적재에만 쓰는지
-- Hive·Tez 버전
-- job_history의 as-is 상태 값과 의미, 조회 Task 이름 — "적재 대장" 설명이 맞는지 판단 근거
-- Iceberg 파일 형식
 - 재시작 명령어 (systemctl, ansible playbook) — 사용자 기재 예정
 - 에스컬레이션 경로 — 누구에게, 어떤 정보(DAG 이름, Task, 시각, log 일부)를 전달하는지
 - 과거 장애 사례와 기존 운영 관행
 - 화면 캡처 확보 방법 — 운영 화면을 캡처해도 되는지, 마스킹이 필요한 정보(서버 주소, 계정 등)
+
+**DAG 동작 상세 (사용자 작성 — Claude가 묻지 않는다)**
+
+- `_orc`를 비우는 범위 — 대상 날짜(`dt` 파티션)만인지 `_orc` 전체인지
+- `_orc`를 비운 뒤 `hdfs mv`로 옮겨 넣기 전에 배치가 실패했을 때 같은 날짜로 Trigger 재실행하면 복구되는지
+- 배치 주기
+- Hive SQL Task의 실행 방식(Operator), log에 YARN application ID가 찍히는지
+- Spark를 Iceberg 적재에만 쓰는지
+- job_history의 상태 값과 의미, get_jobs가 고르는 조건
+- Iceberg 유지보수(Compaction, snapshot 정리) 작업 여부
 
 **산출물 관리**
 

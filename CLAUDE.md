@@ -8,7 +8,7 @@
 
 | 구분 | 내용 |
 |------|------|
-| **대상 시스템** | as-is Hadoop eco: Airflow 2.7.1, Spark 3.x(마이너 미확인) on **YARN**, Hive SQL on **Tez**(Hive 적재 엔진), HDFS, Hive 테이블(대부분) + Iceberg 테이블(일부, 일부는 Hive와 동시 적재) |
+| **대상 시스템** | as-is Hadoop eco: Airflow 2.7.1, Spark 3.5.2 on **YARN**, Hive 3.1.2 SQL on **Tez** 0.10.1(Hive 적재 엔진), Hadoop 3.2.3(HDFS·YARN), Iceberg 1.6.1, Hive 테이블(대부분) + Iceberg 테이블(일부, 일부는 Hive와 동시 적재) |
 | **메인 기술** | Airflow, Spark, Iceberg. **Hive도 다룬다** — Hive·Iceberg 개념 비교, Hive → Iceberg 전환의 장단점 |
 | **교육 내용** | ① 기술·시스템 개념과 구조 ② 모니터링 방법 ③ 장애 대응 |
 | **모니터링 도구** | Airflow UI, YARN UI, Spark UI, Flower(잠정 — 제거 가능) |
@@ -37,8 +37,9 @@
 
 - **as-is 사실(버전, 서버 구성, 서비스 이름, 명령어, 화면, 운영 관행)은 사용자가 제공한 것만 쓴다.** 모르면 추정하지 말고 `[확인 필요: 무엇]` 마커를 남긴 뒤 사용자에게 묻는다
 - **명령어(systemctl unit 이름, ansible playbook 명령)는 사용자가 직접 기재한다.** Claude는 자리표시자 `[명령어: 사용자 기재]`만 둔다. 비개발자가 그대로 따라 칠 절차라서 틀리면 장애가 난다
+- **DAG 동작 상세(PARAM, get_jobs·job_history, 배치 주기, Task 실행 방식 등)는 사용자가 직접 작성한다.** Claude는 묻지 않고 자리표시자 `[사용자 작성: 무엇]`만 둔다
 - **교육은 Oracle DB 전환 후에 진행한다.** 화면 캡처·설정·구성 설명은 전환 후 상태 기준이다
-- 공식 문서 기반의 일반 개념(예: Airflow task 상태의 의미)은 써도 된다. 단 **Airflow 2.7 / Spark 3.x 문서** 기준이어야 한다
+- 공식 문서 기반의 일반 개념(예: Airflow task 상태의 의미)은 써도 된다. 단 **Airflow 2.7 / Spark 3.5 / Hive 3.1 / Iceberg 1.6 문서** 기준이어야 한다
 
 ## 산출물 규칙 — Mac에서 만들고 Windows에서 발표
 
