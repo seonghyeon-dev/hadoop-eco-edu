@@ -81,11 +81,14 @@
 ```
 ├── CLAUDE.md
 ├── .gitignore
-└── intent/
-    ├── README.md                     # intent/spec/plan 작성 규칙과 목록
-    └── course/
-        └── hadoop-eco-ops/
-            └── intent.md             # 교육 과정 전체의 intent
+├── intent/
+│   ├── README.md                     # intent/spec/plan 작성 규칙과 목록
+│   └── course/
+│       └── hadoop-eco-ops/
+│           ├── intent.md             # 교육 과정 전체의 intent
+│           └── spec.md               # 커리큘럼 spec 초안
+└── samples/
+    └── hadoop-eco-ops-sample.html    # HTML 발표 샘플 7장 — 완성본 아님, 계속 수정
 ```
 
 산출물 폴더(원고·pptx·HTML·이미지)는 `plan.md`에서 정한다.
