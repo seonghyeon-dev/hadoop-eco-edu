@@ -1,0 +1,27 @@
+/* 웹폰트 없이 Windows 기본 폰트로 표시한다 (발표·열람은 Windows) */
+:root {
+  --md-text-font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --md-code-font-family: Consolas, "D2Coding", ui-monospace, Menlo, monospace;
+}
+
+/* 한글 문서: 단어 중간에서 줄이 끊기지 않도록 */
+.md-typeset {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 넓은 화면에서 본문 폭을 조금 더 쓴다 (표가 많은 문서) */
+@media screen and (min-width: 76.25em) {
+  .md-grid {
+    max-width: 78rem;
+  }
+}
+
+/* 표: 셀 안 코드가 줄바꿈되지 않도록 */
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+}
+.md-typeset table:not([class]) td code,
+.md-typeset table:not([class]) th code {
+  white-space: nowrap;
+}

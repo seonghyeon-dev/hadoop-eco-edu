@@ -1,5 +1,5 @@
 ---
-title: Hadoop eco 운영 교육자료 (비개발자 대상)
+title: Hadoop eco 운영 교육자료
 status: draft
 category: course
 originated: 2026-10-04
@@ -9,12 +9,12 @@ author: Seonghyeon Lee
 drafted-by: Claude
 ---
 
-# Intent: Hadoop eco 운영 교육자료 (비개발자 대상)
+# Intent: Hadoop eco 운영 교육자료
 
 ## Problem statement
 
-- 현재 운영 중인 as-is Hadoop eco 시스템의 데이터 파이프라인을 **비개발자 조직이 직접 운영**하려 한다. 이들은 개발 역량이 없어 코드나 고급 기술은 다룰 수 없지만, **장애 대응이나 DB 전환 같은 단순 작업은 스스로 하기를 원한다.**
-- 그러려면 시스템이 어떻게 생겼는지, 어디를 보면 정상·비정상을 알 수 있는지, 어디까지 손대도 되는지를 비개발자 눈높이로 설명한 자료가 필요하다. 지금은 없다.
+- 현재 운영 중인 as-is Hadoop eco 시스템의 데이터 파이프라인을 **운영 조직이 직접 운영**하려 한다. 이들은 코드나 고급 기술은 다루지 않지만, **장애 대응이나 DB 전환 같은 단순 작업은 스스로 하기를 원한다.**
+- 그러려면 시스템이 어떻게 생겼는지, 어디를 보면 정상·비정상을 알 수 있는지, 어디까지 손대도 되는지를 수강자 눈높이로 설명한 자료가 필요하다. 지금은 없다.
 - 설계·튜닝 작업은 to-be(Kubernetes) 시스템 기준으로 진행되어 왔고(`spark-tuning` 저장소), to-be는 아직 운영 전이라 교육 대상이 아니다.
 
 ## Proposed outcome
@@ -40,7 +40,7 @@ drafted-by: Claude
 
 | 대상 | 내용 |
 |------|------|
-| 수강자 | 비개발자. Linux는 초보 수준, 서버 SSH 접속 권한 있음 [확인 필요: 인원] |
+| 수강자 | 운영 담당자(코드는 다루지 않는다). Linux는 초보 수준, 서버 SSH 접속 권한 있음 [확인 필요: 인원] |
 | 발표자 | 사용자 (Windows PC에서 발표·공유) |
 | Airflow | 2.7.1, CeleryExecutor. 프로세스: airflow worker · scheduler · webserver · flower, PostgreSQL(metadata DB), pgpool, redis(Celery broker). DAG의 Spark 실행은 SparkSubmitOperator |
 | Airflow 프로세스 수 | systemd service 기준 `airflow-worker.service` 3개, `airflow-scheduler.service` 2개, `airflow-webserver.service` 2개, `airflow-flower.service` 1개. Celery 설정(`[celery]`)은 기본값 |
@@ -66,11 +66,11 @@ drafted-by: Claude
 - Oracle, Trino는 교육 대상이 아니다
 - **Oracle DB 전환은 개발자가 교육 전에 수행한다 (A안).** 교육은 **전환 후 상태**를 기준으로 하고, DB 전환은 배경 설명만 한다. 화면 캡처·설정 설명도 전환 후 기준으로 맞춘다
 - **회사 템플릿을 쉽게 적용할 수 있게 만든다** — 템플릿 파일은 받을 수 없으므로 사용자가 Windows에서 직접 입힌다
-- **비개발자 대응 범위**
+- **수강자 대응 범위**
   - 코드에는 관여하지 않는다
   - 허용: Airflow 프로세스 재시작(systemctl 또는 ansible playbook), Airflow DAG 재실행, Airflow log 분석
   - Spark는 난이도가 있어 **Spark 로그까지는 보지 않는다.** Airflow log 수준까지만 확인할 수 있도록 설명한다
-  - 난이도가 높거나 위험도가 높아 비개발자에게 맡기면 안 되는 조치는 맡기지 않는다
+  - 난이도가 높거나 위험도가 높아 수강자에게 맡기면 안 되는 조치는 맡기지 않는다
 - **Linux 사용법 자체는 가르치지 않는다.** 수강자는 Linux 초보지만 SSH 권한은 있다
 - 재시작 명령어(systemctl, ansible playbook)는 **사용자가 추후 직접 기재**한다
 - 회사 pptx 템플릿은 있으나 **공유할 수 없다**
@@ -124,6 +124,12 @@ drafted-by: Claude
 - Hive 테이블: `_raw`(TEXTFILE)·`_orc`(ORC)는 `dt` 파티션(varchar(8), YYYYMMDD), `_temp`(ORC)는 파티션 없음. **중간 테이블 이름은 `_tmp`가 아니라 `_temp`** (정정)
 - **DAG 기능 설명은 사용자가 직접 작성한다.** PARAM, get_jobs·job_history, 배치 주기, Hive SQL Task 실행 방식, `_orc` 교체 범위 같은 DAG 동작 상세는 Claude가 묻지 않고 `[사용자 작성: 무엇]` 자리표시자로 둔다
 
+사용자 결정 (2026-10-22):
+
+- 자료와 문서에서 **'비개발자'라는 표현을 쓰지 않는다.** 독자는 '수강자' 또는 '운영 담당자'로 부른다
+- 작업물은 `spark-tuning`처럼 **MkDocs + GitHub Pages**로 게시해 브라우저에서 본다
+- HTML 발표 자료는 **동적·반응형**으로 만든다 — 단계별 펼치기, 움직이는 데이터 흐름, 눌러서 펼치는 설명. 참고: dashmotion(흐름선·이동 점 기법), 사용자 Google Drive 폴더(이 환경에서 접근 불가 — 미확인)
+
 기술·운영 제약:
 
 - Airflow 2.7.1 기준으로 화면·용어를 쓴다. 3.x 화면·용어는 쓰지 않는다
@@ -145,7 +151,7 @@ drafted-by: Claude
 
 - 수강자 인원
 - 교육 형태와 분량 — 총 시간, 회차, 실습 포함 여부
-- HTML 공유 방식 — 파일 전달인지, 사내 서버 게시인지
+- ~~HTML 공유 방식~~ → GitHub Pages 게시 (2026-10-22). 단일 파일·오프라인 조건은 유지한다(파일로도 전달 가능). [확인 필요: 저장소가 private이라 Pages 게시 조건(요금제·공개 범위) 확인]
 - 회사 템플릿의 슬라이드 비율 — 사용자 답변 "일반적인 크기"(지금 확인 불가). **16:9로 만들고 시험 deck에서 확인한다.** 비율이 다르면 템플릿을 입힐 때 도식이 늘어나거나 찌그러진다
 - 템플릿 적용 방식 검증 — 본 제작 전에 2~3장짜리 시험 deck을 만들어 사용자가 Windows에서 회사 템플릿을 입혀 본다. 레이아웃 매핑이 깨지면 제작 방식을 바꾼다 (`CLAUDE.md` "회사 템플릿 호환" 규칙)
 
