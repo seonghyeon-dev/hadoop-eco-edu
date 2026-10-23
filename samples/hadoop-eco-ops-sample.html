@@ -1,95 +1,133 @@
 <!doctype html>
-<!-- 샘플 — 완성본이 아니다. 표현 방식을 검토하며 계속 수정한다. -->
+<!-- 샘플 — 완성본이 아니다. 표현 방식을 검토하며 계속 수정한다. 외부 파일·CDN 없이 이 파일 하나로 오프라인에서 열린다. -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hadoop eco 운영 교육 샘플</title>
 <style>
-/* Layout: 16:9 슬라이드 한 장씩 넘겨 보는 발표 화면. 좁은 화면에서는 전체 슬라이드를 세로로 이어 보여 준다 */
+/* 화면 구성: 16:9 슬라이드를 한 장씩, 슬라이드 안에서는 단계(→)별로 펼친다.
+   좁은 화면(760px 이하)과 인쇄는 모든 슬라이드를 세로로 잇고, 모든 단계를 펼친 상태로 보여 준다. */
 :root {
-  --bg: #e9edf1;
+  --bg: #eceff3;
   --surface: #ffffff;
-  --ink: #17212b;
-  --muted: #5a6774;
-  --line: #d3dae1;
-  --grp: #f3f6f8;
-  --accent: #0e6f78;
-  --accent-bg: #e0f0f1;
+  --ink: #16202a;
+  --muted: #5b6876;
+  --faint: #c5ced7;
+  --line: #d5dce3;
+  --grp: #f4f6f8;
+  --accent: #0e7c86;
+  --accent-bg: #e0f1f2;
+  --alt: #4f57c9;
+  --alt-bg: #e8e9fa;
   --ok: #2d7a3e;
-  --ok-bg: #e6f3e8;
-  --stop: #b1382e;
-  --stop-bg: #f9e8e6;
+  --ok-bg: #e5f3e7;
+  --stop: #b4382d;
+  --stop-bg: #f9e7e5;
   --mark: #8a5a00;
   --mark-bg: #fff3d4;
   --on-accent: #ffffff;
+  --shadow: 0 1px 2px rgb(16 32 48 / .06), 0 6px 24px rgb(16 32 48 / .06);
   --sans: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --mono: Consolas, "D2Coding", ui-monospace, Menlo, monospace;
+  --chrome: 128px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e141a; --surface: #172028; --ink: #e5ecf2; --muted: #9babb8; --line: #2b3945; --grp: #1c2731;
-    --accent: #4fb6b8; --accent-bg: #143033; --ok: #66c27a; --ok-bg: #16301c; --stop: #ef7d72; --stop-bg: #3a1d1a;
-    --mark: #f0c25e; --mark-bg: #372c10; --on-accent: #0e141a; color-scheme: dark;
+    --bg: #0d1318; --surface: #161f27; --ink: #e4ebf1; --muted: #98a8b6; --faint: #34434f; --line: #2a3843; --grp: #1b2630;
+    --accent: #4fb8bb; --accent-bg: #133033; --alt: #9aa1f2; --alt-bg: #23264a; --ok: #69c47c; --ok-bg: #15301b;
+    --stop: #f07f74; --stop-bg: #3a1c19; --mark: #f0c25e; --mark-bg: #362b10; --on-accent: #0d1318;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0e141a; --surface: #172028; --ink: #e5ecf2; --muted: #9babb8; --line: #2b3945; --grp: #1c2731;
-  --accent: #4fb6b8; --accent-bg: #143033; --ok: #66c27a; --ok-bg: #16301c; --stop: #ef7d72; --stop-bg: #3a1d1a;
-  --mark: #f0c25e; --mark-bg: #372c10; --on-accent: #0e141a; color-scheme: dark;
+  --bg: #0d1318; --surface: #161f27; --ink: #e4ebf1; --muted: #98a8b6; --faint: #34434f; --line: #2a3843; --grp: #1b2630;
+  --accent: #4fb8bb; --accent-bg: #133033; --alt: #9aa1f2; --alt-bg: #23264a; --ok: #69c47c; --ok-bg: #15301b;
+  --stop: #f07f74; --stop-bg: #3a1c19; --mark: #f0c25e; --mark-bg: #362b10; --on-accent: #0d1318;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3); color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; padding: 0 16px; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; padding: 0 16px; word-break: keep-all; overflow-wrap: anywhere; }
+button { font: inherit; color: inherit; }
 
-/* 상단 막대 */
-.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding-block: 12px; max-width: 1400px; margin: 0 auto; }
+/* ---------- 상단 막대 ---------- */
+.bar { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding-block: 12px 10px; max-width: 1500px; margin: 0 auto; }
 .bar .name { font-weight: 700; font-size: 14px; }
 .bar .name span { color: var(--muted); font-weight: 400; }
-.ctrl { display: flex; align-items: center; gap: 6px; }
-.ctrl button { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 11px; cursor: pointer; }
+.ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ctrl button { font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 .ctrl button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .ctrl button:disabled { opacity: .4; cursor: default; }
 .ctrl button[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
-.ctrl button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-#count { font-size: 13px; color: var(--muted); min-width: 4.2em; text-align: center; font-variant-numeric: tabular-nums; }
-.hint { font-size: 12px; color: var(--muted); }
+.ctrl kbd { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 4px; }
+button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#count { font-size: 13px; color: var(--muted); min-width: 6.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
 
-/* 슬라이드 */
-.stage { display: grid; justify-items: center; gap: 12px; padding-block: 4px 24px; }
-.slide { display: none; width: min(100%, calc((100vh - 150px) * 16 / 9)); width: min(100%, calc((100dvh - 150px) * 16 / 9)); min-width: 0; aspect-ratio: 16 / 9; container-type: inline-size; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 1px 3px rgb(0 0 0 / .06); }
+/* ---------- 슬라이드 ---------- */
+.stage { display: grid; justify-items: center; gap: 12px; padding-block: 6px 24px; }
+.slide { display: none; position: relative; width: min(100%, calc((100vh - var(--chrome)) * 16 / 9)); width: min(100%, calc((100dvh - var(--chrome)) * 16 / 9)); min-width: 0; aspect-ratio: 16 / 9; container-type: inline-size; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
 .slide.on { display: block; }
-.in { font-size: 1.6cqw; height: 100%; display: flex; flex-direction: column; gap: 1.1em; padding: 2.3em 3em 1.4em; }
-.head { display: flex; flex-direction: column; gap: .35em; }
-.eb { font-size: .78em; letter-spacing: .05em; color: var(--accent); font-weight: 700; }
-.slide h2 { margin: 0; font-size: 1.85em; line-height: 1.3; font-weight: 700; text-wrap: balance; }
+.in { position: relative; font-size: 1.6cqw; height: 100%; display: flex; flex-direction: column; gap: 1em; padding: 2.2em 3em 1.2em; }
+.head { display: flex; flex-direction: column; gap: .3em; }
+.eb { font-size: .78em; letter-spacing: .04em; color: var(--accent); font-weight: 700; }
+.slide h2 { margin: 0; font-size: 1.8em; line-height: 1.3; font-weight: 700; text-wrap: balance; }
 .content { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: .8em; }
-.meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4em 1em; font-size: .68em; color: var(--muted); border-top: 1px solid var(--line); padding-top: .7em; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4em 1em; font-size: .66em; color: var(--muted); border-top: 1px solid var(--line); padding-top: .6em; }
 .meta b { font-family: var(--mono); font-weight: 700; color: var(--ink); }
+.hint { color: var(--muted); font-size: .8em; }
+
+/* 단계 표시 점 (슬라이드 오른쪽 아래) */
+.dots { display: inline-flex; align-items: center; gap: .45em; }
+.dots button { width: 1.35em; height: 1.35em; padding: 0; border-radius: 50%; border: 1.5px solid var(--faint); background: transparent; cursor: pointer; font-size: inherit; }
+.dots button.done { background: var(--faint); }
+.dots button.now { background: var(--accent); border-color: var(--accent); }
+.dots .lab { margin-right: .2em; }
+
+/* ---------- 단계별 펼치기 ----------
+   data-at="k": k단계부터 보인다 / data-only="k": k단계에서만 보인다 / data-dim="k": k단계 전에는 흐리게 */
+[data-at], [data-only] { transition: opacity .45s ease, transform .45s ease, visibility .45s; }
+[data-at]:not(.vis), [data-only]:not(.vis) { opacity: 0; visibility: hidden; transform: translateY(.35em); }
+svg [data-at]:not(.vis), svg [data-only]:not(.vis) { transform: none; }
+[data-dim] { transition: opacity .45s ease; }
+[data-dim].dimmed { opacity: .22; }
 
 /* 자리표시자 칩 */
 .mk { display: inline-block; font-size: .86em; color: var(--mark); background: var(--mark-bg); border: 1px dashed var(--mark); border-radius: 4px; padding: 0 .45em; line-height: 1.6; white-space: nowrap; }
-.mks { display: flex; flex-wrap: wrap; gap: .4em; font-size: .78em; }
+.mks { display: flex; flex-wrap: wrap; gap: .4em; font-size: .76em; }
 code { font-family: var(--mono); font-size: .95em; }
 
 /* 제목 슬라이드 */
-.cover .content { justify-content: center; gap: 1.2em; }
-.cover h1 { margin: 0; font-size: 2.7em; line-height: 1.25; text-wrap: balance; }
+.cover { padding-top: 3.2em; }
+.cover .content { justify-content: center; gap: 1em; }
+.cover h1 { margin: 0; font-size: 2.6em; line-height: 1.25; text-wrap: balance; }
 .cover .sub { font-size: 1.2em; color: var(--muted); margin: 0; }
-.vers { display: flex; flex-wrap: wrap; gap: .5em; margin-top: .6em; font-size: .8em; }
+.vers { display: flex; flex-wrap: wrap; gap: .5em; font-size: .8em; }
 .vers span { font-family: var(--mono); border: 1px solid var(--line); background: var(--grp); border-radius: 4px; padding: .15em .6em; }
 .vers span b { font-family: var(--sans); font-weight: 700; margin-right: .35em; }
+.cover .dia { margin-top: .6em; max-width: 78%; }
+.keys { display: flex; flex-wrap: wrap; gap: .4em 1.2em; font-size: .72em; color: var(--muted); }
+.keys kbd { font-family: var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 .4em; color: var(--ink); background: var(--grp); }
 
 /* 구역 머리글 */
-.section .content { justify-content: center; gap: .3em; }
+.section .content { justify-content: center; gap: .4em; }
 .section .num { font-family: var(--mono); font-size: 1.3em; color: var(--accent); font-weight: 700; }
 .section h2 { font-size: 3em; }
-.section .sub { font-size: 1.3em; color: var(--muted); margin: 0; }
+.section .sub { font-size: 1.3em; color: var(--muted); margin: 0 0 1.2em; }
+.map { display: flex; flex-wrap: wrap; align-items: stretch; gap: .5em; font-size: .8em; }
+.map .round { display: flex; gap: .4em; padding: .5em; border: 1px dashed var(--line); border-radius: 8px; position: relative; padding-top: 1.5em; }
+.map .round > span { position: absolute; top: .3em; left: .7em; font-size: .8em; color: var(--muted); }
+.map .m { border: 1px solid var(--line); border-radius: 6px; padding: .35em .7em; background: var(--grp); color: var(--muted); }
+.map .m b { font-family: var(--mono); margin-right: .35em; }
+.map .m.cur { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 /* 콘텐츠 2개 */
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; flex: 1; min-height: 0; }
-.col { border-radius: 6px; padding: 1.1em 1.3em; min-width: 0; }
+.col { border-radius: 8px; padding: 1.1em 1.3em; min-width: 0; }
 .col.ok { background: var(--ok-bg); }
 .col.stop { background: var(--stop-bg); }
 .col h3 { margin: 0 0 .7em; font-size: 1.12em; display: flex; align-items: center; gap: .5em; }
@@ -97,112 +135,273 @@ code { font-family: var(--mono); font-size: .95em; }
 .ok .ico { background: var(--ok); }
 .stop .ico { background: var(--stop); }
 .col ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: .55em; }
-.col li { padding-left: .1em; }
 .col li b { display: block; }
 .col li span { color: var(--muted); font-size: .9em; }
-.col .to { margin: .9em 0 0; font-size: .85em; color: var(--stop); font-weight: 700; }
+.col .to { margin: .9em 0 0; font-size: .95em; color: var(--stop); font-weight: 700; }
 
-/* 표 */
-.tbl { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: .78em; }
-th, td { text-align: left; vertical-align: top; padding: .42em .7em; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-weight: 700; font-size: .92em; }
-td:first-child { font-weight: 700; white-space: nowrap; }
-td:last-child { color: var(--muted); }
+/* 구성요소 카드 (M1-03) */
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7em; flex: 1; min-height: 0; align-content: start; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: .7em .85em; display: flex; flex-direction: column; gap: .35em; font-size: .8em; min-width: 0; background: var(--surface); }
+.card h4 { margin: 0; font-size: 1.15em; color: var(--accent); }
+.card .role { font-weight: 700; }
+.card .an { color: var(--ink); background: var(--grp); border-radius: 4px; padding: .2em .45em; }
+.card .an::before { content: "비유 · "; color: var(--muted); font-weight: 700; }
+.card .df { color: var(--stop); font-size: .95em; }
+.card .df::before { content: "다른 점 · "; font-weight: 700; }
+.card.legend-card { background: var(--grp); border-style: dashed; justify-content: center; color: var(--muted); }
 
-/* 도식 */
-.dia { min-width: 0; }
-.dia svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
+/* ---------- 도식 (SVG) ---------- */
+.dia { min-width: 0; position: relative; }
+.dia svg { display: block; width: 100%; height: auto; font-family: var(--sans); overflow: visible; }
+.dia.fit { flex: 1; min-height: 0; }
+.dia.fit svg { height: 100%; }
+.sim-l { display: flex; flex-direction: column; min-height: 0; }
 .n { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
 .n-accent { fill: var(--accent-bg); stroke: var(--accent); stroke-width: 1.5; }
+.n-alt { fill: var(--alt-bg); stroke: var(--alt); stroke-width: 1.5; }
 .n-ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
 .n-stop { fill: var(--stop-bg); stroke: var(--stop); stroke-width: 1.5; }
 .grp { fill: var(--grp); stroke: var(--line); stroke-width: 1.5; }
 .n-mk { fill: var(--mark-bg); stroke: var(--mark); stroke-width: 1; stroke-dasharray: 4 3; }
-.e { stroke: var(--muted); stroke-width: 1.8; fill: none; }
-.e-accent { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
-.ah { fill: var(--muted); }
-.ah-accent { fill: var(--accent); }
+.e { stroke: var(--faint); stroke-width: 1.8; fill: none; }
 .t { fill: var(--ink); }
 .t-b { fill: var(--ink); font-weight: 700; }
 .t-m { fill: var(--muted); }
 .t-a { fill: var(--accent); font-weight: 700; }
+.t-alt { fill: var(--alt); font-weight: 700; }
+.t-stop { fill: var(--stop); font-weight: 700; }
 .t-mk { fill: var(--mark); }
 .t-mono { font-family: var(--mono); }
 .step { fill: var(--accent); }
 .step-t { fill: var(--on-accent); font-weight: 700; }
-.legend { display: flex; flex-wrap: wrap; gap: .5em 1.4em; font-size: .8em; color: var(--muted); align-items: center; }
+.ah { fill: none; stroke: var(--muted); stroke: context-stroke; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 움직이는 흐름선 — stroke-dashoffset 변화량이 점선 한 주기와 같아야 끊김 없이 돈다 */
+.flow { fill: none; stroke-width: 2; stroke-dasharray: 6 6; stroke-linecap: round; }
+.flow.async { stroke-dasharray: 2 4; }
+.c-acc { stroke: var(--accent); }
+.c-alt { stroke: var(--alt); }
+.c-mut { stroke: var(--muted); }
+.dot-acc { fill: var(--accent); }
+.dot-alt { fill: var(--alt); }
+.dot-mut { fill: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .flow { animation: dash12 .9s linear infinite; }
+  .flow.async { animation: dash6 1.2s linear infinite; }
+  .pulse { animation: pulse 2s ease-in-out infinite; }
+}
+@keyframes dash12 { to { stroke-dashoffset: -12; } }
+@keyframes dash6 { to { stroke-dashoffset: -6; } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+body.paused .flow, body.paused .pulse { animation-play-state: paused; }
+
+/* 누를 수 있는 도식 요소 */
+.hot { cursor: pointer; }
+.hot:hover rect, .hot:focus-visible rect { stroke-width: 2.5; }
+.hot.sel rect:first-of-type { stroke: var(--accent); stroke-width: 3; }
+.hot:focus { outline: none; }
+.pop { position: absolute; right: 0; top: 0; width: 38%; background: var(--surface); border: 1px solid var(--accent); border-radius: 8px; box-shadow: var(--shadow); padding: .8em 1em; font-size: .8em; display: none; }
+.pop.open { display: block; }
+.pop h4 { margin: 0 0 .4em; color: var(--accent); font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; }
+.pop h4 button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1em; }
+.pop dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .3em .7em; }
+.pop dt { color: var(--muted); font-weight: 700; white-space: nowrap; }
+.pop dd { margin: 0; }
+
+.legend { display: flex; flex-wrap: wrap; gap: .4em 1.4em; font-size: .78em; color: var(--muted); align-items: center; }
 .sw { display: inline-block; width: 1em; height: 1em; border-radius: 3px; vertical-align: -.15em; margin-right: .4em; border: 1.5px solid; }
 .sw.ok { background: var(--ok-bg); border-color: var(--ok); }
 .sw.stop { background: var(--stop-bg); border-color: var(--stop); }
-.legend .num { display: inline-grid; place-items: center; width: 1.4em; height: 1.4em; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: .85em; margin-right: .3em; }
+.sw.acc { background: var(--accent-bg); border-color: var(--accent); }
+.sw.alt { background: var(--alt-bg); border-color: var(--alt); }
 
-/* 메모 */
-.notes { width: min(100%, calc((100vh - 150px) * 16 / 9)); width: min(100%, calc((100dvh - 150px) * 16 / 9)); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; font-size: 14px; }
-.notes h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .05em; color: var(--muted); }
+/* M2-08 · M2-09: 색으로 재시작 가능/불가 구분 (단계가 되면 칠한다) */
+.proc rect.box { transition: fill .5s, stroke .5s; }
+.slide .paint-ok rect.box, .slide .paint-stop rect.box { fill: var(--surface); stroke: var(--line); }
+.slide.painted .paint-ok rect.box { fill: var(--ok-bg); stroke: var(--ok); }
+.slide.painted .paint-stop rect.box { fill: var(--stop-bg); stroke: var(--stop); }
+
+/* M2-09: 멈춘 프로세스 시연 */
+.sim { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.2em; flex: 1; min-height: 0; }
+.picks { display: flex; flex-wrap: wrap; gap: .4em; font-size: .78em; margin-top: .6em; }
+.picks button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: .25em .8em; cursor: pointer; font-size: inherit; }
+.picks button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.symp { border: 1px solid var(--line); border-radius: 8px; padding: 1em 1.2em; display: flex; flex-direction: column; gap: .6em; font-size: .86em; background: var(--grp); }
+.symp h3 { margin: 0; font-size: 1.15em; }
+.symp .lab { font-size: .82em; font-weight: 700; color: var(--muted); }
+.symp p { margin: 0; }
+.symp .act { border-radius: 6px; padding: .5em .7em; font-weight: 700; }
+.symp .act.ok { background: var(--ok-bg); color: var(--ok); }
+.symp .act.stop { background: var(--stop-bg); color: var(--stop); }
+.symp .empty { color: var(--muted); }
+.proc.down rect.box { fill: var(--grp) !important; stroke: var(--muted) !important; stroke-dasharray: 5 4; }
+.proc.down text { opacity: .45; }
+.proc .badge { opacity: 0; transition: opacity .3s; }
+.proc.down .badge { opacity: 1; }
+.cut { opacity: .12; }
+.cut.flow { animation: none; }
+
+/* M4-07: Hive 적재 단계 */
+.lvl { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .9s ease, opacity .5s ease; }
+.lvl-bg { fill: none; stroke: var(--line); stroke-dasharray: 3 3; }
+.f-text { fill: url(#hatch); stroke: var(--muted); stroke-width: 1; }
+.f-old { fill: var(--faint); }
+.f-new { fill: var(--accent); opacity: .85; }
+.f-orc { fill: var(--accent); opacity: .55; }
+.hatch-line { stroke: var(--muted); stroke-width: 1.2; }
+.gap-box { fill: var(--stop-bg); stroke: var(--stop); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.steplist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: .5em; font-size: .74em; }
+.steplist li { border: 1px solid var(--line); border-radius: 6px; padding: .45em .6em; cursor: pointer; color: var(--muted); transition: background .3s, color .3s, border-color .3s; }
+.steplist li b { display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; border-radius: 50%; background: var(--faint); color: var(--surface); margin-right: .35em; font-size: .9em; }
+.steplist li.done { color: var(--ink); }
+.steplist li.done b { background: var(--muted); }
+.steplist li.now { border-color: var(--accent); background: var(--accent-bg); color: var(--ink); }
+.steplist li.now b { background: var(--accent); color: var(--on-accent); }
+
+/* M4-12: 시간축 비교 */
+.seg-ok { fill: var(--accent-bg); stroke: var(--accent); stroke-width: 1.2; }
+.seg-ok2 { fill: var(--alt-bg); stroke: var(--alt); stroke-width: 1.2; }
+.seg-bad { fill: var(--stop-bg); stroke: var(--stop); stroke-width: 1.2; }
+.ph { stroke: var(--ink); stroke-width: 2; }
+.ph-h { fill: var(--ink); }
+.probe { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: .4em .8em; align-items: center; font-size: .82em; }
+.probe .lab { color: var(--muted); font-weight: 700; }
+.probe .val { border-radius: 6px; padding: .25em .7em; font-weight: 700; transition: background .2s, color .2s; }
+.val.good { background: var(--accent-bg); color: var(--accent); }
+.val.good2 { background: var(--alt-bg); color: var(--alt); }
+.val.bad { background: var(--stop-bg); color: var(--stop); }
+.scrub { display: flex; align-items: center; gap: .8em; font-size: .76em; color: var(--muted); }
+.scrub input { flex: 1; accent-color: var(--accent); }
+
+/* ---------- 발표 메모 ---------- */
+.notes { width: min(100%, calc((100vh - var(--chrome)) * 16 / 9)); width: min(100%, calc((100dvh - var(--chrome)) * 16 / 9)); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; font-size: 14px; }
+.notes h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .04em; color: var(--muted); }
 .notes ul { margin: 0; padding-left: 1.2em; }
+.notes li + li { margin-top: 3px; }
 .notes .mk { font-size: 13px; white-space: normal; }
+.notes .pp { color: var(--accent); font-weight: 700; }
 
-/* 좁은 화면: 전체 슬라이드를 세로로 */
+/* ---------- 전체 보기 (O) ---------- */
+body.ov .stage { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); max-width: 1500px; margin: 0 auto; align-items: start; }
+body.ov .slide { display: block; width: 100%; cursor: pointer; }
+body.ov .slide:hover { outline: 2px solid var(--accent); }
+body.ov .slide.on { outline: 3px solid var(--accent); }
+body.ov .slide * { pointer-events: none; }
+body.ov .notes { display: none; }
+body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: visible; transform: none; }
+
+/* ---------- 전체 화면 ---------- */
+:fullscreen body { padding: 0; }
+:fullscreen .bar, :fullscreen .notes { display: none; }
+:fullscreen .stage { padding: 0; min-height: 100vh; align-content: center; }
+:fullscreen .slide { width: min(100vw, calc(100vh * 16 / 9)); border: 0; border-radius: 0; box-shadow: none; }
+
+/* ---------- 좁은 화면: 전체 슬라이드를 세로로, 모든 단계를 펼쳐서 ---------- */
 @media (max-width: 760px) {
-  .slide, .slide.on { display: block; width: 100%; aspect-ratio: auto; }
-  .in { font-size: 15px; height: auto; padding: 20px 18px 14px; }
-  .cover h1 { font-size: 1.9em; }
-  .section h2 { font-size: 2.2em; }
-  .slide h2 { font-size: 1.4em; }
-  .two { grid-template-columns: 1fr; }
+  .slide, .slide.on, body.ov .slide { display: block; width: 100%; aspect-ratio: auto; }
+  .in { font-size: 15px; height: auto; padding: 20px 16px 14px; }
+  .cover h1 { font-size: 1.8em; }
+  .cover .dia { max-width: 100%; }
+  .section h2 { font-size: 2.1em; }
+  .slide h2 { font-size: 1.35em; }
+  .two, .sim { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr 1fr; }
+  .steplist { grid-template-columns: 1fr; }
   .dia { overflow-x: auto; }
-  .dia svg { min-width: 620px; }
-  table { min-width: 620px; }
-  #prev, #next, #count, .hint { display: none; }
+  .dia svg { min-width: 600px; }
+  .dia.fit svg { height: auto; }
+  .pop { position: static; width: auto; margin-top: .6em; }
+  .probe { grid-template-columns: auto 1fr; }
+  [data-at], [data-only] { opacity: 1 !important; visibility: visible !important; transform: none !important; }
+  [data-dim].dimmed { opacity: 1; }
+  #prev, #next, #count, #ovBtn, #fsBtn, .dots, .bar kbd { display: none; }
   .notes { width: 100%; }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .slide.on { animation: in .18s ease-out; }
-  @keyframes in { from { opacity: .6; } to { opacity: 1; } }
+
+/* ---------- 움직임 줄이기 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
 }
-@media (max-width: 760px) { .slide.on { animation: none; } }
+
+/* ---------- 인쇄: 슬라이드 한 장 = 한 쪽, 모든 단계를 펼쳐서 ---------- */
+@media print {
+  @page { size: 297mm 167mm; margin: 0; }
+  body { padding: 0; background: #fff; }
+  .bar, .notes, .dots, .picks, .scrub { display: none !important; }
+  .stage { display: block; padding: 0; }
+  .slide, .slide.on { display: block; width: 100%; border: 0; border-radius: 0; box-shadow: none; break-after: page; }
+  [data-at], [data-only] { opacity: 1 !important; visibility: visible !important; transform: none !important; }
+  [data-dim].dimmed { opacity: 1; }
+}
 </style>
 </head>
 <body>
 
 <header class="bar">
-  <div class="name">Hadoop eco 운영 교육 <span>· 샘플 7장 (spec 102장 중)</span></div>
+  <div class="name">Hadoop eco 운영 교육 <span>· 샘플 9장 (spec 102장 중)</span></div>
   <div class="ctrl">
-    <span class="hint">← → 넘기기 · N 메모 · F 전체 화면</span>
-    <button id="prev" type="button" aria-label="이전 슬라이드">이전</button>
-    <span id="count" aria-live="polite">1 / 7</span>
-    <button id="next" type="button" aria-label="다음 슬라이드">다음</button>
-    <button id="noteBtn" type="button" aria-pressed="false">메모</button>
-    <button id="fsBtn" type="button">전체 화면</button>
+    <button id="prev" type="button" aria-label="이전">이전</button>
+    <span id="count" aria-live="polite">1 / 9</span>
+    <button id="next" type="button" aria-label="다음">다음</button>
+    <button id="ovBtn" type="button" aria-pressed="false">전체 보기<kbd>O</kbd></button>
+    <button id="noteBtn" type="button" aria-pressed="false">메모<kbd>N</kbd></button>
+    <button id="pauseBtn" type="button" aria-pressed="false">움직임 멈춤<kbd>P</kbd></button>
+    <button id="themeBtn" type="button">화면 색<kbd>T</kbd></button>
+    <button id="fsBtn" type="button">전체 화면<kbd>F</kbd></button>
   </div>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
 </header>
 
-<main class="stage">
+<main class="stage" id="stage">
 
-<!-- 1. M0-01 제목 슬라이드 -->
-<section class="slide on" aria-label="슬라이드 1">
+<!-- ===================================================== 1. M0-01 제목 슬라이드 -->
+<section class="slide on" aria-label="슬라이드 1 제목">
   <div class="in cover">
     <div class="content">
-      <div class="eb">as-is Hadoop eco · 비개발자 운영 교육</div>
+      <div class="eb">as-is Hadoop eco · 운영 교육</div>
       <h1>Hadoop eco 데이터 파이프라인 운영 교육</h1>
       <p class="sub">Airflow · Spark · Iceberg — 구조, 모니터링, 장애 대응</p>
       <div class="vers">
         <span><b>Airflow</b>2.7.1</span><span><b>Spark</b>3.5.2</span><span><b>Hive</b>3.1.2</span><span><b>Tez</b>0.10.1</span><span><b>Iceberg</b>1.6.1</span><span><b>Hadoop</b>3.2.3</span>
       </div>
+      <div class="dia">
+        <svg viewBox="0 0 960 140" role="img" aria-label="데이터 원천에서 Spark와 Tez를 거쳐 테이블로 데이터가 흐르고, Airflow가 위에서 지시한다">
+          <defs>
+            <marker id="m1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker>
+          </defs>
+          <path class="flow c-acc" d="M190 105 H386" marker-end="url(#m1)"/>
+          <path class="flow c-acc" d="M570 105 H766" marker-end="url(#m1)"/>
+          <path class="flow async c-mut" d="M480 50 V76" marker-end="url(#m1)"/>
+          <g class="dot-acc">
+            <circle r="5" class="dot"><animateMotion dur="2.4s" repeatCount="indefinite" path="M190 105 H766"/></circle>
+            <circle r="5" class="dot"><animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite" path="M190 105 H766"/></circle>
+          </g>
+          <rect class="n" x="10" y="80" width="180" height="50" rx="25"/>
+          <text class="t-b" x="100" y="111" text-anchor="middle" font-size="17">데이터 원천</text>
+          <rect class="n-accent" x="390" y="80" width="180" height="50" rx="8"/>
+          <text class="t-b" x="480" y="111" text-anchor="middle" font-size="17">Spark · Tez</text>
+          <rect class="n" x="770" y="80" width="180" height="50" rx="25"/>
+          <text class="t-b" x="860" y="111" text-anchor="middle" font-size="17">Hive · Iceberg 테이블</text>
+          <rect class="n" x="390" y="6" width="180" height="42" rx="8"/>
+          <text x="480" y="33" text-anchor="middle" font-size="16"><tspan class="t-b">Airflow</tspan><tspan class="t-m"> 지시</tspan></text>
+        </svg>
+      </div>
+      <div class="keys"><span><kbd>→</kbd> <kbd>Space</kbd> 다음 단계</span><span><kbd>←</kbd> 이전</span><span><kbd>O</kbd> 전체 보기</span><span><kbd>N</kbd> 발표 메모</span><span><kbd>F</kbd> 전체 화면</span><span><kbd>P</kbd> 움직임 멈춤</span></div>
     </div>
     <div class="meta"><span><b>M0-01</b> · 레이아웃: 제목 슬라이드</span><span>Oracle DB 전환 후 상태 기준</span></div>
   </div>
   <template class="note">
     <ul>
-      <li>spec 5절 목차 102장 중 7장을 골라, 표준 레이아웃과 도식 유형을 하나씩 보여 주는 샘플이다.</li>
+      <li>spec 5절 목차 102장 중 9장을 골라, 표준 레이아웃과 동적 표현 방식을 하나씩 보여 주는 샘플이다.</li>
+      <li>슬라이드 안의 내용은 <b>→ 키를 누를 때마다 한 단계씩</b> 펼쳐진다. 발표자가 말하는 순서와 화면이 같이 움직이게 하려는 것이다.</li>
       <li>버전은 2026-10-08 운영서버 정보 기준.</li>
+      <li><span class="pp">pptx 대응</span> 아래 흐름 그림은 장식이다. pptx에서는 정지 도형으로 둔다.</li>
     </ul>
   </template>
 </section>
 
-<!-- 2. M0-03 콘텐츠 2개 -->
-<section class="slide" aria-label="슬라이드 2">
+<!-- ===================================================== 2. M0-03 콘텐츠 2개 -->
+<section class="slide" aria-label="슬라이드 2 하는 일과 하지 않는 일">
   <div class="in">
     <div class="head">
       <div class="eb">M0 오리엔테이션</div>
@@ -210,7 +409,7 @@ td:last-child { color: var(--muted); }
     </div>
     <div class="content">
       <div class="two">
-        <div class="col ok">
+        <div class="col ok" data-at="1">
           <h3><span class="ico" aria-hidden="true">✓</span>하는 일</h3>
           <ul>
             <li><b>DAG 재실행</b><span>Airflow UI에서 Trigger DAG, PARAM에 처리 날짜 범위 입력</span></li>
@@ -218,7 +417,7 @@ td:last-child { color: var(--muted); }
             <li><b>Airflow log 확인</b><span>증상을 보고 1차로 분류</span></li>
           </ul>
         </div>
-        <div class="col stop">
+        <div class="col stop" data-at="2">
           <h3><span class="ico" aria-hidden="true">✕</span>하지 않는 일</h3>
           <ul>
             <li><b>DAG 파일 · 코드 수정</b></li>
@@ -226,258 +425,518 @@ td:last-child { color: var(--muted); }
             <li><b>PostgreSQL · pgpool · redis 재시작</b></li>
             <li><b>Spark 작업 실행 중 worker 재시작</b></li>
           </ul>
-          <p class="to">→ 담당자에게 전달한다</p>
+          <p class="to" data-at="3">→ 하지 않는 일은 담당자에게 전달한다</p>
         </div>
       </div>
     </div>
-    <div class="meta"><span><b>M0-03</b> · 레이아웃: 콘텐츠 2개</span><span>상세는 M6-03</span></div>
+    <div class="meta"><span><b>M0-03</b> · 레이아웃: 콘텐츠 2개</span><span class="dots"></span></div>
   </div>
   <template class="note">
     <ul>
-      <li>오른쪽 목록에는 <b>확정된 금지 항목만</b> 넣었다.</li>
-      <li>금지 후보(Clear, Mark Success/Failed, backfill, DAG Run 삭제, Pause/Unpause, YARN application kill 등)는 장애 대응 경계 승인 후 추가한다. <span class="mk">[확인 필요: 장애 대응 허용·금지 경계 승인]</span></li>
+      <li>① 하는 일 → ② 하지 않는 일 → ③ "전달한다" 순서로 펼친다. 마지막 줄이 이 슬라이드의 결론이다.</li>
+      <li>오른쪽 목록에는 <b>확정된 금지 항목만</b> 넣었다. 금지 후보(Clear, Mark Success/Failed, backfill, DAG Run 삭제, Pause/Unpause, YARN application kill 등)는 경계 승인 후 추가한다. <span class="mk">[확인 필요: 장애 대응 허용·금지 경계 승인]</span></li>
+      <li><span class="pp">pptx 대응</span> 왼쪽 단 → 오른쪽 단 → 마지막 줄에 '나타내기' 애니메이션 3개.</li>
     </ul>
   </template>
 </section>
 
-<!-- 3. M1-01 구역 머리글 -->
-<section class="slide" aria-label="슬라이드 3">
+<!-- ===================================================== 3. M1-01 구역 머리글 -->
+<section class="slide" aria-label="슬라이드 3 전체 구조 구역 시작">
   <div class="in section">
     <div class="content">
       <div class="num">M1</div>
       <h2>전체 구조</h2>
       <p class="sub">데이터가 흐르는 길</p>
+      <div class="map" aria-label="과정 지도">
+        <div class="round"><span>1회차 · 개념과 구조</span>
+          <div class="m"><b>M0</b>오리엔테이션</div><div class="m cur"><b>M1</b>전체 구조</div><div class="m"><b>M2</b>Airflow</div><div class="m"><b>M3</b>Spark · Tez · YARN</div><div class="m"><b>M4</b>HDFS · Hive · Iceberg</div>
+        </div>
+        <div class="round"><span>2회차 · 실무</span>
+          <div class="m"><b>M5</b>모니터링</div><div class="m"><b>M6</b>장애 대응</div><div class="m"><b>M7</b>마무리</div>
+        </div>
+      </div>
     </div>
     <div class="meta"><span><b>M1-01</b> · 레이아웃: 구역 머리글</span><span>1회차</span></div>
   </div>
-  <template class="note"><ul><li>1회차(M0–M4, 개념·구조)의 첫 구역. 회차 구성은 제안 단계다. <span class="mk">[확인 필요: 교육 총 시간·회차]</span></li></ul></template>
+  <template class="note">
+    <ul>
+      <li>구역 머리글마다 과정 지도를 두고 지금 위치를 칠한다. 수강자가 "지금 어디쯤인지"를 잃지 않게 하려는 것이다.</li>
+      <li>회차 구성은 제안 단계다. <span class="mk">[확인 필요: 교육 총 시간·회차]</span></li>
+      <li><span class="pp">pptx 대응</span> 과정 지도는 도형 묶음으로 만들어 구역 머리글마다 복사하고 칠하는 칸만 바꾼다.</li>
+    </ul>
+  </template>
 </section>
 
-<!-- 4. M1-02 핵심 도식 -->
-<section class="slide" aria-label="슬라이드 4">
+<!-- ===================================================== 4. M1-02 핵심 도식 -->
+<section class="slide" aria-label="슬라이드 4 데이터 흐름 핵심 도식">
   <div class="in">
     <div class="head">
       <div class="eb">M1 전체 구조</div>
       <h2>데이터는 Airflow의 지시로 Spark · Tez가 처리해 HDFS 위 테이블에 쌓는다</h2>
     </div>
     <div class="content">
-      <div class="dia">
-        <svg viewBox="0 0 960 372" role="img" aria-label="데이터 원천에서 Spark와 Tez를 거쳐 HDFS의 Iceberg 테이블과 Hive 테이블로 가는 흐름. Airflow가 YARN 위의 작업을 지시한다">
+      <div class="dia fit" id="coreDia">
+        <svg viewBox="0 0 960 376" role="img" aria-label="데이터 원천에서 Spark를 거쳐 Iceberg 테이블로, Tez를 거쳐 Hive 테이블로 가는 흐름. Airflow가 YARN 위의 작업을 지시한다">
           <defs>
-            <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
-            <marker id="a1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-accent" d="M0 0L10 5L0 10z"/></marker>
+            <marker id="m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker>
           </defs>
-          <!-- Airflow -->
-          <rect class="n-accent" x="230" y="6" width="420" height="58" rx="8"/>
-          <text x="440" y="42" text-anchor="middle" font-size="19"><tspan class="t-a">Airflow</tspan><tspan class="t"> — 언제, 무엇을 할지 지시한다</tspan></text>
-          <line class="e-accent" x1="440" y1="64" x2="440" y2="110" marker-end="url(#a1a)"/>
-          <text class="t-m" x="452" y="93" font-size="14">작업 지시</text>
-          <!-- YARN -->
-          <rect class="grp" x="230" y="112" width="420" height="254" rx="10"/>
+          <!-- 그룹 -->
+          <rect class="grp" x="230" y="112" width="420" height="258" rx="10"/>
           <text x="248" y="140" font-size="15"><tspan class="t-b">YARN</tspan><tspan class="t-m"> — CPU · 메모리를 나눠 준다</tspan></text>
-          <rect class="n" x="280" y="158" width="320" height="78" rx="8"/>
-          <text class="t-b" x="440" y="191" text-anchor="middle" font-size="19">Spark</text>
-          <text class="t-m" x="440" y="218" text-anchor="middle" font-size="15">Iceberg 테이블에 적재</text>
-          <rect class="n" x="280" y="268" width="320" height="78" rx="8"/>
-          <text class="t-b" x="440" y="301" text-anchor="middle" font-size="19">Tez</text>
-          <text class="t-m" x="440" y="328" text-anchor="middle" font-size="15">Hive SQL 실행 · Hive 테이블에 적재</text>
-          <!-- 원천 -->
-          <rect class="n" x="8" y="214" width="150" height="72" rx="8"/>
-          <text class="t-b" x="83" y="256" text-anchor="middle" font-size="17">데이터 원천</text>
+          <rect class="grp" x="720" y="112" width="232" height="258" rx="10"/>
+          <text x="738" y="140" font-size="15"><tspan class="t-b">HDFS</tspan><tspan class="t-m"> — 파일을 보관한다</tspan></text>
+          <!-- 정지선 (항상) -->
+          <path class="e" d="M440 64 V108"/>
+          <path class="e" d="M158 238 H214 V198 H276"/>
+          <path class="e" d="M158 258 H214 V308 H276"/>
+          <path class="e" d="M600 198 H742"/>
+          <path class="e" d="M600 308 H742"/>
+          <!-- 단계 1: Airflow 지시 -->
+          <g data-at="1">
+            <path class="flow async c-mut" d="M440 64 V108" marker-end="url(#m4)"/>
+            <text class="t-m" x="452" y="92" font-size="14">작업 지시만 한다 — 데이터는 지나가지 않는다</text>
+          </g>
+          <!-- 단계 2: Spark → Iceberg -->
+          <g data-at="2">
+            <path class="flow c-acc" d="M158 238 H214 V198 H276" marker-end="url(#m4)"/>
+            <path class="flow c-acc" d="M600 198 H742" marker-end="url(#m4)"/>
+            <g class="dot-acc">
+              <circle r="5" class="dot"><animateMotion dur="2.6s" repeatCount="indefinite" path="M158 238 H214 V198 H742"/></circle>
+              <circle r="5" class="dot"><animateMotion dur="2.6s" begin="-1.3s" repeatCount="indefinite" path="M158 238 H214 V198 H742"/></circle>
+            </g>
+          </g>
+          <!-- 단계 3: Tez → Hive -->
+          <g data-at="3">
+            <path class="flow c-alt" d="M158 258 H214 V308 H276" marker-end="url(#m4)"/>
+            <path class="flow c-alt" d="M600 308 H742" marker-end="url(#m4)"/>
+            <g class="dot-alt">
+              <circle r="5" class="dot"><animateMotion dur="2.6s" begin="-.6s" repeatCount="indefinite" path="M158 258 H214 V308 H742"/></circle>
+              <circle r="5" class="dot"><animateMotion dur="2.6s" begin="-1.9s" repeatCount="indefinite" path="M158 258 H214 V308 H742"/></circle>
+            </g>
+          </g>
+          <!-- 노드 (흐름 위에 그려 점이 노드 아래로 지나가게) -->
+          <g class="hot" data-info="airflow" tabindex="0" role="button" aria-label="Airflow 설명 열기">
+            <rect class="n-accent" x="230" y="6" width="420" height="58" rx="8"/>
+            <text x="440" y="42" text-anchor="middle" font-size="19"><tspan class="t-a">Airflow</tspan><tspan class="t"> — 언제, 무엇을 할지 지시한다</tspan></text>
+          </g>
+          <g class="hot" data-info="spark" tabindex="0" role="button" aria-label="Spark 설명 열기" data-dim="2">
+            <rect class="n" x="280" y="160" width="320" height="76" rx="8"/>
+            <text class="t-b" x="440" y="192" text-anchor="middle" font-size="19">Spark</text>
+            <text class="t-m" x="440" y="218" text-anchor="middle" font-size="15">Iceberg 테이블에 적재</text>
+          </g>
+          <g class="hot" data-info="tez" tabindex="0" role="button" aria-label="Tez 설명 열기" data-dim="3">
+            <rect class="n" x="280" y="270" width="320" height="76" rx="8"/>
+            <text class="t-b" x="440" y="302" text-anchor="middle" font-size="19">Tez</text>
+            <text class="t-m" x="440" y="328" text-anchor="middle" font-size="15">Hive SQL 실행 · Hive 테이블에 적재</text>
+          </g>
+          <g class="hot" data-info="source" tabindex="0" role="button" aria-label="데이터 원천 설명 열기">
+            <rect class="n" x="8" y="210" width="150" height="76" rx="8"/>
+            <text class="t-b" x="83" y="254" text-anchor="middle" font-size="17">데이터 원천</text>
+          </g>
           <rect class="n-mk" x="12" y="296" width="142" height="26" rx="4"/>
           <text class="t-mk" x="83" y="314" text-anchor="middle" font-size="13">[확인 필요: 종류]</text>
-          <line class="e" x1="158" y1="240" x2="278" y2="200" marker-end="url(#a1)"/>
-          <line class="e" x1="158" y1="262" x2="278" y2="304" marker-end="url(#a1)"/>
-          <!-- HDFS -->
-          <rect class="grp" x="720" y="112" width="232" height="254" rx="10"/>
-          <text x="738" y="140" font-size="15"><tspan class="t-b">HDFS</tspan><tspan class="t-m"> — 파일을 보관한다</tspan></text>
-          <rect class="n" x="746" y="158" width="180" height="78" rx="8"/>
-          <text class="t-b" x="836" y="191" text-anchor="middle" font-size="17">Iceberg 테이블</text>
-          <text class="t-m" x="836" y="218" text-anchor="middle" font-size="14">Parquet</text>
-          <rect class="n" x="746" y="268" width="180" height="78" rx="8"/>
-          <text class="t-b" x="836" y="301" text-anchor="middle" font-size="17">Hive 테이블</text>
-          <text class="t-m t-mono" x="836" y="328" text-anchor="middle" font-size="14">_raw · _temp · _orc</text>
-          <line class="e" x1="600" y1="197" x2="744" y2="197" marker-end="url(#a1)"/>
-          <line class="e" x1="600" y1="307" x2="744" y2="307" marker-end="url(#a1)"/>
+          <g class="hot" data-info="iceberg" tabindex="0" role="button" aria-label="Iceberg 테이블 설명 열기" data-dim="2">
+            <rect class="n" x="746" y="160" width="180" height="76" rx="8"/>
+            <text class="t-b" x="836" y="192" text-anchor="middle" font-size="17">Iceberg 테이블</text>
+            <text class="t-m" x="836" y="218" text-anchor="middle" font-size="14">Parquet</text>
+          </g>
+          <g class="hot" data-info="hive" tabindex="0" role="button" aria-label="Hive 테이블 설명 열기" data-dim="3">
+            <rect class="n" x="746" y="270" width="180" height="76" rx="8"/>
+            <text class="t-b" x="836" y="302" text-anchor="middle" font-size="17">Hive 테이블</text>
+            <text class="t-m t-mono" x="836" y="328" text-anchor="middle" font-size="14">_raw · _temp · _orc</text>
+          </g>
+          <g class="hot" data-info="yarn" tabindex="0" role="button" aria-label="YARN 설명 열기">
+            <rect x="244" y="122" width="56" height="26" rx="4" fill="transparent" stroke="none"/>
+          </g>
         </svg>
+        <div class="pop" id="corePop" role="dialog" aria-live="polite"></div>
       </div>
-      <div class="mks"><span class="mk">[사용자 작성: Spark는 Iceberg 적재에만 쓰는지]</span><span class="mk">[확인 필요: Oracle · Trino를 도식에 표시할지]</span></div>
+      <div class="legend">
+        <span><i class="sw acc"></i>Spark → Iceberg 적재</span>
+        <span><i class="sw alt"></i>Tez(Hive SQL) → Hive 적재</span>
+        <span class="hint">상자를 누르면 역할 · 비유 · 보는 화면이 열린다</span>
+      </div>
     </div>
-    <div class="meta"><span><b>M1-02</b> · 레이아웃: 제목만 + 도형</span><span>핵심 도식 — 이후 모듈에서 반복 사용</span></div>
+    <div class="meta"><span><b>M1-02</b> · 레이아웃: 제목만 + 도형</span><span class="dots"></span></div>
   </div>
   <template class="note">
     <ul>
-      <li>이 그림은 M1-04~07, M3, M4에서 일부를 강조해 다시 쓴다.</li>
-      <li>Airflow는 시키기만 하고 데이터를 직접 만지지 않는다는 점을 먼저 짚는다(M1-04 예고).</li>
+      <li>① Airflow 지시(점선, 데이터는 지나가지 않음) → ② Spark 경로 → ③ Tez 경로 순서로 켠다. 흐르는 점은 <b>데이터</b>이고, Airflow 점선에는 점이 없다는 것을 짚는다.</li>
+      <li>상자를 누르면 M1-03의 역할 · 비유가 열린다. 질문이 나올 때 그 자리에서 보여 주는 용도다.</li>
       <li><span class="mk">[확인 필요: 데이터 원천의 종류]</span> <span class="mk">[사용자 작성: Spark는 Iceberg 적재에만 쓰는지]</span> <span class="mk">[확인 필요: Oracle · Trino 표시 여부]</span></li>
+      <li><span class="pp">pptx 대응</span> 같은 도형을 3장에 복사하고 켜지는 경로만 바꾼 뒤 '모핑' 전환을 건다. 또는 한 장에서 경로별 '나타내기' 애니메이션. 흐르는 점은 pptx로 옮기지 않는다.</li>
     </ul>
   </template>
 </section>
 
-<!-- 5. M1-03 제목 및 내용 (표) -->
-<section class="slide" aria-label="슬라이드 5">
+<!-- ===================================================== 5. M1-03 구성요소 카드 -->
+<section class="slide" aria-label="슬라이드 5 구성요소의 역할">
   <div class="in">
     <div class="head">
       <div class="eb">M1 전체 구조</div>
       <h2>구성요소는 각각 한 가지 역할만 맡는다</h2>
     </div>
     <div class="content">
-      <div class="tbl">
-        <table>
-          <thead><tr><th>구성요소</th><th>역할</th><th>비유</th><th>비유와 다른 점</th></tr></thead>
-          <tbody>
-            <tr><td>Airflow</td><td>언제, 무엇을, 어떤 순서로 할지 지시한다</td><td>작업 일정표를 든 작업반장</td><td>상황을 보고 순서를 바꾸지 않는다. 데이터는 직접 만지지 않는다</td></tr>
-            <tr><td>YARN</td><td>클러스터의 CPU · 메모리를 나눠 준다</td><td>공용 작업장의 자리 배정 담당</td><td>나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</td></tr>
-            <tr><td>Spark</td><td>큰 계산을 쪼개 여러 서버에서 동시에 처리한다</td><td>계산팀 (driver = 팀장, executor = 팀원)</td><td>팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</td></tr>
-            <tr><td>Tez</td><td>Hive SQL을 실제 작업으로 바꿔 실행한다</td><td>Hive SQL 주문서를 받는 또 다른 계산팀</td><td>—</td></tr>
-            <tr><td>HDFS</td><td>파일을 조각내 여러 서버에 복사본과 함께 보관한다</td><td>여러 창고에 나눠 보관하는 창고 시스템</td><td>파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</td></tr>
-            <tr><td>Hive Metastore</td><td>테이블이 어느 파일인지 목록을 관리한다</td><td>도서관 목록 카드</td><td>목록 카드는 Oracle DB에 저장된다</td></tr>
-            <tr><td>Iceberg</td><td>파일 목록과 적재 이력을 메타데이터 파일로 관리한다</td><td>새 서류만 덧붙이는 장부</td><td>장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</td></tr>
-          </tbody>
-        </table>
+      <div class="cards">
+        <div class="card"><h4>Airflow</h4><div class="role">언제, 무엇을, 어떤 순서로 할지 지시한다</div><div class="an" data-at="1">작업 일정표를 든 작업반장</div><div class="df" data-at="2">상황을 보고 순서를 바꾸지 않는다. 데이터는 직접 만지지 않는다</div></div>
+        <div class="card"><h4>YARN</h4><div class="role">클러스터의 CPU · 메모리를 나눠 준다</div><div class="an" data-at="1">공용 작업장의 자리 배정 담당</div><div class="df" data-at="2">나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</div></div>
+        <div class="card"><h4>Spark</h4><div class="role">큰 계산을 쪼개 여러 서버에서 동시에 처리한다</div><div class="an" data-at="1">계산팀 (driver = 팀장, executor = 팀원)</div><div class="df" data-at="2">팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</div></div>
+        <div class="card"><h4>Tez</h4><div class="role">Hive SQL을 실제 작업으로 바꿔 실행한다</div><div class="an" data-at="1">Hive SQL 주문서를 받는 또 다른 계산팀</div></div>
+        <div class="card"><h4>HDFS</h4><div class="role">파일을 조각내 여러 서버에 복사본과 함께 보관한다</div><div class="an" data-at="1">여러 창고에 나눠 보관하는 창고 시스템</div><div class="df" data-at="2">파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</div></div>
+        <div class="card"><h4>Hive Metastore</h4><div class="role">테이블이 어느 파일인지 목록을 관리한다</div><div class="an" data-at="1">도서관 목록 카드</div><div class="df" data-at="2">목록 카드는 Oracle DB에 저장된다</div></div>
+        <div class="card"><h4>Iceberg</h4><div class="role">파일 목록과 적재 이력을 메타데이터 파일로 관리한다</div><div class="an" data-at="1">새 서류만 덧붙이는 장부</div><div class="df" data-at="2">장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</div></div>
+        <div class="card legend-card" data-at="2">비유는 항상 "다른 점"과 함께 기억한다. 비유만 남으면 실제 동작을 잘못 기억한다.</div>
       </div>
     </div>
-    <div class="meta"><span><b>M1-03</b> · 레이아웃: 제목 및 내용</span><span>비유 목록은 spec 3절</span></div>
+    <div class="meta"><span><b>M1-03</b> · 레이아웃: 제목 및 내용</span><span class="dots"></span></div>
   </div>
   <template class="note">
     <ul>
-      <li>비유는 항상 "비유와 다른 점"과 함께 말한다. 비유만 남으면 실제 동작을 잘못 기억한다.</li>
+      <li>처음에는 역할만 보인다 → ① 비유 → ② 비유와 다른 점. 표 한 장을 한꺼번에 보여 주면 읽느라 설명을 듣지 않는다.</li>
       <li>Spark의 "팀원 수가 바뀌지 않는다"는 as-is가 dynamic allocation을 쓰지 않기 때문이다.</li>
+      <li><span class="pp">pptx 대응</span> 표 대신 카드 도형 7개. 비유 줄 묶음 → 다른 점 줄 묶음에 '나타내기' 애니메이션 2개.</li>
     </ul>
   </template>
 </section>
 
-<!-- 6. M2-08 Airflow 프로세스 구성 -->
-<section class="slide" aria-label="슬라이드 6">
+<!-- ===================================================== 6. M2-08 Airflow 프로세스 구성 -->
+<section class="slide" aria-label="슬라이드 6 Airflow 프로세스 구성" data-paint-at="4">
   <div class="in">
     <div class="head">
       <div class="eb">M2 Airflow</div>
       <h2>Airflow는 여러 프로세스가 역할을 나눠 함께 움직인다</h2>
     </div>
     <div class="content">
-      <div class="dia">
+      <div class="dia fit">
         <svg viewBox="0 0 960 386" role="img" aria-label="CeleryExecutor 구성. scheduler가 redis에 작업을 넣고 worker가 가져가 실행한다. flower는 worker 상태를 본다. 프로세스는 pgpool을 거쳐 PostgreSQL에 기록한다">
           <defs>
-            <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+            <marker id="m6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker>
           </defs>
-          <!-- 1행 -->
-          <rect class="n-ok" x="20" y="10" width="250" height="80" rx="8"/>
-          <text x="145" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">webserver</tspan><tspan class="t-m"> ×2</tspan></text>
-          <text class="t-m" x="145" y="70" text-anchor="middle" font-size="15">Airflow UI 화면</text>
-          <rect class="n-ok" x="690" y="10" width="250" height="80" rx="8"/>
-          <text x="815" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">flower</tspan><tspan class="t-m"> ×1</tspan></text>
-          <text class="t-m" x="815" y="70" text-anchor="middle" font-size="15">worker 상태 화면</text>
-          <!-- 2행 -->
-          <rect class="n-ok" x="20" y="150" width="250" height="80" rx="8"/>
-          <text x="145" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">scheduler</tspan><tspan class="t-m"> ×2</tspan></text>
-          <text class="t-m" x="145" y="210" text-anchor="middle" font-size="15">언제 무엇을 실행할지 결정</text>
-          <rect class="n-stop" x="355" y="150" width="250" height="80" rx="8"/>
-          <text class="t-b" x="480" y="184" text-anchor="middle" font-size="19">redis</text>
-          <text class="t-m" x="480" y="210" text-anchor="middle" font-size="15">작업 대기열 (Celery broker)</text>
-          <rect class="n-ok" x="690" y="150" width="250" height="80" rx="8"/>
-          <text x="815" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">worker</tspan><tspan class="t-m"> ×3</tspan></text>
-          <text class="t-m" x="815" y="210" text-anchor="middle" font-size="15">Task를 실제로 실행</text>
-          <line class="e" x1="270" y1="190" x2="353" y2="190" marker-end="url(#a2)"/>
-          <text class="t-m" x="312" y="180" text-anchor="middle" font-size="13">작업 지시</text>
-          <line class="e" x1="605" y1="190" x2="688" y2="190" marker-end="url(#a2)"/>
-          <text class="t-m" x="647" y="180" text-anchor="middle" font-size="13">가져감</text>
-          <line class="e" x1="815" y1="90" x2="815" y2="148" marker-end="url(#a2)"/>
-          <text class="t-m" x="826" y="124" font-size="13">상태 조회</text>
-          <!-- 3행 -->
-          <text class="t-m" x="20" y="318" font-size="14">webserver · scheduler · worker는</text>
-          <text class="t-m" x="20" y="340" font-size="14">실행 기록을 DB에 쓰고 읽는다</text>
-          <line class="e" x1="270" y1="330" x2="353" y2="330" marker-end="url(#a2)"/>
-          <rect class="n-stop" x="355" y="290" width="250" height="80" rx="8"/>
-          <text class="t-b" x="480" y="324" text-anchor="middle" font-size="19">pgpool</text>
-          <text class="t-m" x="480" y="350" text-anchor="middle" font-size="15">HA · 커넥션 풀</text>
-          <rect class="n-stop" x="690" y="290" width="250" height="80" rx="8"/>
-          <text class="t-b" x="815" y="324" text-anchor="middle" font-size="19">PostgreSQL</text>
-          <text class="t-m" x="815" y="350" text-anchor="middle" font-size="15">metadata DB (실행 기록)</text>
-          <line class="e" x1="605" y1="330" x2="688" y2="330" marker-end="url(#a2)"/>
+          <!-- 정지선 -->
+          <path class="e" d="M270 190 H351"/><path class="e" d="M605 190 H686"/><path class="e" d="M815 90 V146"/>
+          <path class="e" d="M20 50 H6 V350 H351"/><path class="e" d="M145 230 V330 H351"/><path class="e" d="M815 230 V260 H480 V286"/><path class="e" d="M605 330 H686"/>
+          <!-- 단계 1: 실행 흐름 -->
+          <g data-at="1">
+            <path class="flow c-acc" d="M270 190 H351" marker-end="url(#m6)"/>
+            <path class="flow c-acc" d="M605 190 H686" marker-end="url(#m6)"/>
+            <text class="t-a" x="310" y="178" text-anchor="middle" font-size="13">작업 넣기</text>
+            <text class="t-a" x="645" y="178" text-anchor="middle" font-size="13">가져가기</text>
+            <g class="dot-acc">
+              <circle r="5" class="dot"><animateMotion dur="1.4s" repeatCount="indefinite" path="M270 190 H351"/></circle>
+              <circle r="5" class="dot"><animateMotion dur="1.4s" begin="-.7s" repeatCount="indefinite" path="M605 190 H686"/></circle>
+            </g>
+          </g>
+          <!-- 단계 2: 상태 화면 -->
+          <g data-at="2">
+            <path class="flow async c-mut" d="M815 90 V146" marker-end="url(#m6)"/>
+            <text class="t-m" x="826" y="124" font-size="13">상태 조회</text>
+          </g>
+          <!-- 단계 3: 기록 -->
+          <g data-at="3">
+            <path class="flow c-alt" d="M20 50 H6 V350 H351" marker-end="url(#m6)"/>
+            <path class="flow c-alt" d="M145 230 V330 H351" marker-end="url(#m6)"/>
+            <path class="flow c-alt" d="M815 230 V260 H480 V286" marker-end="url(#m6)"/>
+            <path class="flow c-alt" d="M605 330 H686" marker-end="url(#m6)"/>
+            <text class="t-alt" x="160" y="290" font-size="13">실행 기록 쓰기 · 읽기</text>
+            <g class="dot-alt">
+              <circle r="4.5" class="dot"><animateMotion dur="1.8s" repeatCount="indefinite" path="M815 230 V260 H480 V286"/></circle>
+              <circle r="4.5" class="dot"><animateMotion dur="1.4s" begin="-.5s" repeatCount="indefinite" path="M605 330 H686"/></circle>
+            </g>
+          </g>
+          <!-- 노드 -->
+          <g class="proc paint-ok"><rect class="box" x="20" y="10" width="250" height="80" rx="8"/>
+            <text x="145" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">webserver</tspan><tspan class="t-m"> ×2</tspan></text>
+            <text class="t-m" x="145" y="70" text-anchor="middle" font-size="15">Airflow UI 화면</text></g>
+          <g class="proc paint-ok"><rect class="box" x="690" y="10" width="250" height="80" rx="8"/>
+            <text x="815" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">flower</tspan><tspan class="t-m"> ×1</tspan></text>
+            <text class="t-m" x="815" y="70" text-anchor="middle" font-size="15">worker 상태 화면</text></g>
+          <g class="proc paint-ok"><rect class="box" x="20" y="150" width="250" height="80" rx="8"/>
+            <text x="145" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">scheduler</tspan><tspan class="t-m"> ×2</tspan></text>
+            <text class="t-m" x="145" y="210" text-anchor="middle" font-size="15">언제 무엇을 실행할지 결정</text></g>
+          <g class="proc paint-stop"><rect class="box" x="355" y="150" width="250" height="80" rx="8"/>
+            <text class="t-b" x="480" y="184" text-anchor="middle" font-size="19">redis</text>
+            <text class="t-m" x="480" y="210" text-anchor="middle" font-size="15">작업 대기열 (Celery broker)</text></g>
+          <g class="proc paint-ok"><rect class="box" x="690" y="150" width="250" height="80" rx="8"/>
+            <text x="815" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">worker</tspan><tspan class="t-m"> ×3</tspan></text>
+            <text class="t-m" x="815" y="210" text-anchor="middle" font-size="15">Task를 실제로 실행</text></g>
+          <g class="proc paint-stop"><rect class="box" x="355" y="290" width="250" height="80" rx="8"/>
+            <text class="t-b" x="480" y="324" text-anchor="middle" font-size="19">pgpool</text>
+            <text class="t-m" x="480" y="350" text-anchor="middle" font-size="15">HA · 커넥션 풀</text></g>
+          <g class="proc paint-stop"><rect class="box" x="690" y="290" width="250" height="80" rx="8"/>
+            <text class="t-b" x="815" y="324" text-anchor="middle" font-size="19">PostgreSQL</text>
+            <text class="t-m" x="815" y="350" text-anchor="middle" font-size="15">metadata DB (실행 기록)</text></g>
         </svg>
       </div>
-      <div class="legend">
+      <div class="legend" data-at="4">
         <span><i class="sw ok"></i>재시작할 수 있다 — Airflow 프로세스 4종</span>
         <span><i class="sw stop"></i>재시작하지 않는다 — 담당자에게 전달</span>
         <span>×숫자 = 운영 중인 프로세스 수</span>
       </div>
     </div>
-    <div class="meta"><span><b>M2-08</b> · 레이아웃: 제목만 + 도형</span><span>CeleryExecutor</span></div>
+    <div class="meta"><span><b>M2-08</b> · 레이아웃: 제목만 + 도형</span><span class="dots"></span></div>
   </div>
   <template class="note">
     <ul>
-      <li>프로세스마다 멈췄을 때 증상이 다르다는 것은 다음 장(M2-09 증상표)에서 다룬다.</li>
-      <li>worker는 Spark 작업이 실행 중이면 재시작하지 않는다(확정). 재시작 절차는 M6-17~20.</li>
+      <li>① 실행 흐름(scheduler → redis → worker) → ② flower가 worker 상태를 본다 → ③ 모두 pgpool을 거쳐 PostgreSQL에 기록 → ④ 색: 재시작 가능 / 불가.</li>
+      <li>색을 마지막에 칠하는 이유: 구조를 먼저 이해한 뒤에 "어디까지 손대도 되는가"를 얹어야 기억에 남는다.</li>
       <li>systemd service 이름 형식: <code>airflow-&lt;프로세스&gt;.service</code>. 명령어 슬라이드(M6-19)는 <span class="mk">[명령어: 사용자 기재]</span></li>
+      <li><span class="pp">pptx 대응</span> 연결선 묶음 3개에 '나타내기', 마지막에 색이 칠해진 같은 도형 슬라이드로 '모핑'.</li>
     </ul>
   </template>
 </section>
 
-<!-- 7. M4-07 Hive 적재 5단계 -->
-<section class="slide" aria-label="슬라이드 7">
+<!-- ===================================================== 7. M2-09 멈춘 프로세스 시연 -->
+<section class="slide" aria-label="슬라이드 7 프로세스가 멈췄을 때의 증상" id="simSlide">
+  <div class="in">
+    <div class="head">
+      <div class="eb">M2 Airflow</div>
+      <h2>프로세스마다 멈췄을 때의 증상이 다르다</h2>
+    </div>
+    <div class="content">
+      <div class="sim">
+        <div class="sim-l">
+          <div class="dia fit">
+            <svg viewBox="0 0 960 386" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Airflow 프로세스 구성도. 멈춘 프로세스를 고르면 끊기는 연결이 흐려진다">
+              <defs>
+                <marker id="m7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker>
+              </defs>
+              <path class="flow c-acc" data-p="scheduler redis" d="M270 190 H351" marker-end="url(#m7)"/>
+              <path class="flow c-acc" data-p="redis worker" d="M605 190 H686" marker-end="url(#m7)"/>
+              <path class="flow async c-mut" data-p="flower worker" d="M815 90 V146" marker-end="url(#m7)"/>
+              <path class="flow c-alt" data-p="webserver db" d="M20 50 H6 V350 H351" marker-end="url(#m7)"/>
+              <path class="flow c-alt" data-p="scheduler db" d="M145 230 V330 H351" marker-end="url(#m7)"/>
+              <path class="flow c-alt" data-p="worker db" d="M815 230 V260 H480 V286" marker-end="url(#m7)"/>
+              <path class="flow c-alt" data-p="db" d="M605 330 H686" marker-end="url(#m7)"/>
+              <g class="dot-acc">
+                <circle r="5" class="dot" data-p="scheduler redis"><animateMotion dur="1.4s" repeatCount="indefinite" path="M270 190 H351"/></circle>
+                <circle r="5" class="dot" data-p="redis worker"><animateMotion dur="1.4s" begin="-.7s" repeatCount="indefinite" path="M605 190 H686"/></circle>
+              </g>
+              <g class="proc hot" data-node="webserver" tabindex="0" role="button" aria-label="webserver 멈춤 시연"><rect class="box n-ok" x="20" y="10" width="250" height="80" rx="8"/>
+                <text x="145" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">webserver</tspan><tspan class="t-m"> ×2</tspan></text>
+                <text class="t-m" x="145" y="70" text-anchor="middle" font-size="15">Airflow UI 화면</text>
+                <text class="badge t-stop" x="258" y="30" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="flower" tabindex="0" role="button" aria-label="flower 멈춤 시연"><rect class="box n-ok" x="690" y="10" width="250" height="80" rx="8"/>
+                <text x="815" y="44" text-anchor="middle" font-size="19"><tspan class="t-b">flower</tspan><tspan class="t-m"> ×1</tspan></text>
+                <text class="t-m" x="815" y="70" text-anchor="middle" font-size="15">worker 상태 화면</text>
+                <text class="badge t-stop" x="928" y="30" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="scheduler" tabindex="0" role="button" aria-label="scheduler 멈춤 시연"><rect class="box n-ok" x="20" y="150" width="250" height="80" rx="8"/>
+                <text x="145" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">scheduler</tspan><tspan class="t-m"> ×2</tspan></text>
+                <text class="t-m" x="145" y="210" text-anchor="middle" font-size="15">언제 무엇을 실행할지 결정</text>
+                <text class="badge t-stop" x="258" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="redis" tabindex="0" role="button" aria-label="redis 멈춤 시연"><rect class="box n-stop" x="355" y="150" width="250" height="80" rx="8"/>
+                <text class="t-b" x="480" y="184" text-anchor="middle" font-size="19">redis</text>
+                <text class="t-m" x="480" y="210" text-anchor="middle" font-size="15">작업 대기열 (Celery broker)</text>
+                <text class="badge t-stop" x="593" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="worker" tabindex="0" role="button" aria-label="worker 멈춤 시연"><rect class="box n-ok" x="690" y="150" width="250" height="80" rx="8"/>
+                <text x="815" y="184" text-anchor="middle" font-size="19"><tspan class="t-b">worker</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="815" y="210" text-anchor="middle" font-size="15">Task를 실제로 실행</text>
+                <text class="badge t-stop" x="928" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="db" tabindex="0" role="button" aria-label="pgpool 멈춤 시연"><rect class="box n-stop" x="355" y="290" width="250" height="80" rx="8"/>
+                <text class="t-b" x="480" y="324" text-anchor="middle" font-size="19">pgpool</text>
+                <text class="t-m" x="480" y="350" text-anchor="middle" font-size="15">HA · 커넥션 풀</text>
+                <text class="badge t-stop" x="593" y="310" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="db" tabindex="0" role="button" aria-label="PostgreSQL 멈춤 시연"><rect class="box n-stop" x="690" y="290" width="250" height="80" rx="8"/>
+                <text class="t-b" x="815" y="324" text-anchor="middle" font-size="19">PostgreSQL</text>
+                <text class="t-m" x="815" y="350" text-anchor="middle" font-size="15">metadata DB (실행 기록)</text>
+                <text class="badge t-stop" x="928" y="310" text-anchor="end" font-size="14">멈춤</text></g>
+            </svg>
+          </div>
+          <div class="picks" role="group" aria-label="멈춘 프로세스 고르기">
+            <button type="button" data-pick="webserver">webserver</button>
+            <button type="button" data-pick="scheduler">scheduler</button>
+            <button type="button" data-pick="worker">worker</button>
+            <button type="button" data-pick="flower">flower</button>
+            <button type="button" data-pick="redis">redis</button>
+            <button type="button" data-pick="db">PostgreSQL · pgpool</button>
+          </div>
+        </div>
+        <div class="symp" id="symp" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="meta"><span><b>M2-09</b> · 레이아웃: 콘텐츠 2개 (HTML은 시연형)</span><span class="hint">상자나 버튼을 누른다</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>수강자에게 "worker가 멈추면 화면에서 무엇이 보일까?"를 먼저 묻고, 답을 들은 뒤 누른다.</li>
+      <li>증상은 Airflow 2.7 · Celery의 일반 동작 기준이다. 같은 프로세스가 <b>전부</b> 멈췄을 때를 가정했다(scheduler ×2, webserver ×2, worker ×3이라 하나만 멈추면 나머지가 이어받을 수 있다). <span class="mk">[확인 필요: 운영에서 실제로 본 증상과 맞는지]</span></li>
+      <li><span class="pp">pptx 대응</span> 프로세스별 증상 표 한 장(spec M2-09 원안). 이 시연 화면은 질문이 나올 때 HTML로 띄운다.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- ===================================================== 8. M4-07 Hive 적재 5단계 -->
+<section class="slide" aria-label="슬라이드 8 Hive 적재 단계" id="hiveSlide">
   <div class="in">
     <div class="head">
       <div class="eb">M4 HDFS · Hive · Iceberg</div>
       <h2>새 데이터는 <code>_raw</code>에 계속 추가되고, 배치 주기마다 <code>_temp</code>를 거쳐 <code>_orc</code>로 옮겨진다</h2>
     </div>
     <div class="content">
-      <div class="dia">
-        <svg viewBox="0 0 960 300" role="img" aria-label="Hive 적재 5단계. 1 _raw에 계속 Insert. 2 _temp를 비움. 3 _raw에서 대상 날짜를 select해 _temp에 쌓음. 4 _orc를 비움. 5 hdfs mv로 _temp 파일을 _orc로 옮김">
+      <div class="dia fit">
+        <svg viewBox="0 0 960 318" role="img" aria-label="Hive 적재 5단계. 1 _raw에 계속 Insert. 2 _temp를 비움. 3 _raw에서 대상 날짜를 select해 _temp에 쌓음. 4 _orc를 비움. 5 hdfs mv로 _temp 파일을 _orc로 옮김">
           <defs>
-            <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+            <marker id="m8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker>
+            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="8"/></pattern>
           </defs>
-          <!-- ① -->
-          <text class="t-b" x="135" y="22" text-anchor="middle" font-size="16">새 데이터</text>
-          <line class="e" x1="135" y1="32" x2="135" y2="104" marker-end="url(#a3)"/>
-          <circle class="step" cx="160" cy="66" r="12"/><text class="step-t" x="160" y="71" text-anchor="middle" font-size="14">1</text>
-          <text class="t" x="180" y="71" font-size="14">계속 Insert</text>
-          <!-- 표 3개 -->
-          <rect class="n" x="20" y="106" width="230" height="110" rx="8"/>
-          <text class="t-b t-mono" x="135" y="148" text-anchor="middle" font-size="19">{테이블}_raw</text>
-          <text class="t-m" x="135" y="178" text-anchor="middle" font-size="14">TEXTFILE · dt 파티션</text>
-          <rect class="n" x="365" y="106" width="230" height="110" rx="8"/>
-          <text class="t-b t-mono" x="480" y="148" text-anchor="middle" font-size="19">{테이블}_temp</text>
-          <text class="t-m" x="480" y="178" text-anchor="middle" font-size="14">ORC · 파티션 없음</text>
-          <rect class="n" x="710" y="106" width="230" height="110" rx="8"/>
-          <text class="t-b t-mono" x="825" y="148" text-anchor="middle" font-size="19">{테이블}_orc</text>
-          <text class="t-m" x="825" y="178" text-anchor="middle" font-size="14">ORC · dt 파티션</text>
-          <!-- ② -->
-          <circle class="step" cx="392" cy="62" r="12"/><text class="step-t" x="392" y="67" text-anchor="middle" font-size="14">2</text>
-          <text class="t" x="412" y="67" font-size="14">먼저 전부 비운다</text>
-          <!-- ③ -->
-          <line class="e" x1="250" y1="161" x2="363" y2="161" marker-end="url(#a3)"/>
-          <circle class="step" cx="306" cy="136" r="12"/><text class="step-t" x="306" y="141" text-anchor="middle" font-size="14">3</text>
-          <text class="t" x="306" y="186" text-anchor="middle" font-size="13">대상 날짜만</text>
-          <text class="t t-mono" x="306" y="203" text-anchor="middle" font-size="13">select</text>
-          <!-- ④ -->
-          <circle class="step" cx="737" cy="50" r="12"/><text class="step-t" x="737" y="55" text-anchor="middle" font-size="14">4</text>
-          <text class="t" x="757" y="55" font-size="14">비운다</text>
-          <rect class="n-mk" x="725" y="72" width="200" height="24" rx="4"/>
-          <text class="t-mk" x="825" y="89" text-anchor="middle" font-size="12">[사용자 작성: 비우는 범위]</text>
-          <!-- ⑤ -->
-          <line class="e" x1="595" y1="161" x2="708" y2="161" marker-end="url(#a3)"/>
-          <circle class="step" cx="651" cy="136" r="12"/><text class="step-t" x="651" y="141" text-anchor="middle" font-size="14">5</text>
-          <text class="t t-mono" x="651" y="190" text-anchor="middle" font-size="13">hdfs mv</text>
+          <!-- 상자 3개 -->
+          <rect class="n" x="20" y="96" width="230" height="160" rx="8"/>
+          <text class="t-b t-mono" x="135" y="124" text-anchor="middle" font-size="18">{테이블}_raw</text>
+          <text class="t-m" x="135" y="144" text-anchor="middle" font-size="13">TEXTFILE · dt 파티션</text>
+          <rect class="n" x="365" y="96" width="230" height="160" rx="8"/>
+          <text class="t-b t-mono" x="480" y="124" text-anchor="middle" font-size="18">{테이블}_temp</text>
+          <text class="t-m" x="480" y="144" text-anchor="middle" font-size="13">ORC · 파티션 없음</text>
+          <rect class="n" x="710" y="96" width="230" height="160" rx="8"/>
+          <text class="t-b t-mono" x="825" y="124" text-anchor="middle" font-size="18">{테이블}_orc</text>
+          <text class="t-m" x="825" y="144" text-anchor="middle" font-size="13">ORC · dt 파티션</text>
+          <!-- 채움 높이 = 들어 있는 데이터의 양 (설명용) -->
+          <rect class="lvl-bg" x="34" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl-bg" x="379" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl-bg" x="724" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl f-text" id="lvRaw" x="34" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl f-old" id="lvTempOld" x="379" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl f-new" id="lvTempNew" x="379" y="158" width="202" height="84" rx="4"/>
+          <rect class="lvl f-orc" id="lvOrc" x="724" y="158" width="202" height="84" rx="4"/>
+          <!-- ① 새 데이터 -->
+          <text class="t-b" x="135" y="20" text-anchor="middle" font-size="15">새 데이터</text>
+          <path class="e" d="M135 30 V92" marker-end="url(#m8)"/>
+          <g data-at="1">
+            <path class="flow c-mut" d="M135 30 V92"/>
+            <g class="dot-mut"><circle r="4.5" class="dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M135 30 V92"/></circle></g>
+            <circle class="step" cx="160" cy="58" r="12"/><text class="step-t" x="160" y="63" text-anchor="middle" font-size="14">1</text>
+            <text class="t" x="180" y="63" font-size="14">계속 Insert</text>
+          </g>
+          <!-- ② _temp 비우기 -->
+          <g data-at="2">
+            <circle class="step" cx="392" cy="70" r="12"/><text class="step-t" x="392" y="75" text-anchor="middle" font-size="14">2</text>
+            <text class="t" x="412" y="75" font-size="14">먼저 전부 비운다</text>
+          </g>
+          <!-- ③ select → _temp -->
+          <path class="e" d="M250 200 H361" marker-end="url(#m8)"/>
+          <g data-at="3">
+            <path class="flow c-acc" d="M250 200 H361" marker-end="url(#m8)"/>
+            <circle class="step" cx="306" cy="176" r="12"/><text class="step-t" x="306" y="181" text-anchor="middle" font-size="14">3</text>
+            <text class="t" x="306" y="224" text-anchor="middle" font-size="13">대상 날짜만</text>
+            <text class="t t-mono" x="306" y="241" text-anchor="middle" font-size="13">select</text>
+          </g>
+          <g class="dot-acc" id="pk3">
+            <circle r="5" opacity="0"><animateMotion begin="indefinite" dur="1s" path="M236 200 H400"/><animate attributeName="opacity" begin="indefinite" dur="1s" values="1;1"/></circle>
+            <circle r="5" opacity="0"><animateMotion begin="indefinite" dur="1s" path="M236 200 H400"/><animate attributeName="opacity" begin="indefinite" dur="1s" values="1;1"/></circle>
+            <circle r="5" opacity="0"><animateMotion begin="indefinite" dur="1s" path="M236 200 H400"/><animate attributeName="opacity" begin="indefinite" dur="1s" values="1;1"/></circle>
+          </g>
+          <!-- ④ _orc 비우기 -->
+          <g data-at="4">
+            <circle class="step" cx="737" cy="70" r="12"/><text class="step-t" x="737" y="75" text-anchor="middle" font-size="14">4</text>
+            <text class="t" x="757" y="75" font-size="14">비운다</text>
+            <rect class="n-mk" x="725" y="262" width="200" height="24" rx="4"/>
+            <text class="t-mk" x="825" y="279" text-anchor="middle" font-size="12">[사용자 작성: 비우는 범위]</text>
+          </g>
+          <g data-only="4">
+            <rect class="gap-box" x="724" y="158" width="202" height="84" rx="4"/>
+            <text class="t-stop" x="825" y="194" text-anchor="middle" font-size="14">비어 있는 구간</text>
+            <text class="t-stop" x="825" y="214" text-anchor="middle" font-size="12.5">지금 조회하면 결과가</text>
+            <text class="t-stop" x="825" y="231" text-anchor="middle" font-size="12.5">비거나 모자란다</text>
+          </g>
+          <!-- ⑤ hdfs mv -->
+          <path class="e" d="M595 200 H706" marker-end="url(#m8)"/>
+          <g data-at="5">
+            <path class="flow c-acc" d="M595 200 H706" marker-end="url(#m8)"/>
+            <circle class="step" cx="651" cy="176" r="12"/><text class="step-t" x="651" y="181" text-anchor="middle" font-size="14">5</text>
+            <text class="t t-mono" x="651" y="230" text-anchor="middle" font-size="13">hdfs mv</text>
+          </g>
+          <g class="dot-acc" id="pk5">
+            <circle r="5" opacity="0"><animateMotion begin="indefinite" dur=".6s" path="M581 200 H745"/><animate attributeName="opacity" begin="indefinite" dur=".6s" values="1;1"/></circle>
+            <circle r="5" opacity="0"><animateMotion begin="indefinite" dur=".6s" path="M581 200 H745"/><animate attributeName="opacity" begin="indefinite" dur=".6s" values="1;1"/></circle>
+          </g>
           <!-- 아래 주석 -->
-          <text class="t-m" x="135" y="244" text-anchor="middle" font-size="13">비우지 않는다</text>
-          <text class="t-m" x="135" y="262" text-anchor="middle" font-size="13">retention 때만 과거 데이터 삭제</text>
-          <text class="t-m" x="825" y="244" text-anchor="middle" font-size="13">예전 데이터를 조회하는 곳</text>
-          <text class="t-m" x="135" y="280" text-anchor="middle" font-size="13">최근 데이터를 조회하는 곳</text>
+          <text class="t-m" x="135" y="276" text-anchor="middle" font-size="13">최근 데이터를 조회하는 곳</text>
+          <text class="t-m" x="135" y="296" text-anchor="middle" font-size="13">비우지 않는다 · retention 때만 과거 삭제</text>
+          <text class="t-m" x="825" y="306" text-anchor="middle" font-size="13">예전 데이터를 조회하는 곳</text>
         </svg>
       </div>
-      <div class="legend">
-        <span><i class="num">1</i>항상</span>
-        <span><i class="num">2</i>~<i class="num">5</i>배치 주기마다 차례로 <span class="mk">[사용자 작성: 배치 주기]</span></span>
-        <span>모두 Hive SQL(Tez)로 실행</span>
-      </div>
+      <ol class="steplist">
+        <li data-goto="1"><b>1</b>새 데이터를 <code>_raw</code>에 계속 Insert</li>
+        <li data-goto="2"><b>2</b><code>_temp</code>를 전부 비운다</li>
+        <li data-goto="3"><b>3</b>대상 날짜를 select해 <code>_temp</code>(ORC)에</li>
+        <li data-goto="4"><b>4</b><code>_orc</code>를 비운다</li>
+        <li data-goto="5"><b>5</b><code>hdfs mv</code>로 <code>_orc</code>에 옮긴다</li>
+      </ol>
     </div>
-    <div class="meta"><span><b>M4-07</b> · 레이아웃: 제목만 + 도형</span><span>다음 장: <code>_orc</code>가 비는 순간 (M4-08)</span></div>
+    <div class="meta"><span><b>M4-07</b> · 레이아웃: 제목만 + 도형 · 1은 항상, 2~5는 배치 주기마다 <span class="mk">[사용자 작성: 배치 주기]</span></span><span class="dots"></span></div>
   </div>
   <template class="note">
     <ul>
-      <li>4와 5 사이에는 <code>_orc</code> 조회 결과가 비거나 모자란다. 이것이 Hive 방식의 한계이고, 다음 장(M4-08)에서 다룬다.</li>
-      <li><code>hdfs mv</code>는 파일을 복사하지 않고 이름표만 바꿔 다는 것이라 빠르다.</li>
-      <li><span class="mk">[사용자 작성: 4에서 비우는 범위 — dt 파티션만인지 _orc 전체인지]</span> <span class="mk">[사용자 작성: 배치 주기]</span></li>
+      <li>→ 키로 한 단계씩 진행한다. 아래 단계 칸을 눌러 바로 가도 된다. 상자 안의 채움 높이는 들어 있는 데이터의 양이다(설명용).</li>
+      <li>무늬 채움 = TEXT, 단색 채움 = ORC. ③에서 select하면서 형식이 바뀐다.</li>
+      <li>⑤ <code>hdfs mv</code>는 복사가 아니라 이동이라 <code>_temp</code>가 비고 <code>_orc</code>가 찬다. 파일을 복사하지 않고 이름표만 바꿔 다는 것이라 빠르다.</li>
+      <li>④에서 빨간 구간이 Hive 방식의 한계다. 다음 장(M4-12)에서 Iceberg와 비교한다.</li>
+      <li><span class="mk">[사용자 작성: 4에서 비우는 범위 — dt 파티션만인지 _orc 전체인지]</span> 범위가 정해지면 ④의 빨간 구간 크기를 그에 맞춘다.</li>
+      <li><span class="pp">pptx 대응</span> 단계마다 1장씩 5장 + '모핑' 전환. 채움 높이를 도형 크기로 바꿔 두면 모핑이 자연스럽게 늘고 준다.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- ===================================================== 9. M4-12 비는 순간 비교 -->
+<section class="slide" aria-label="슬라이드 9 Hive와 Iceberg의 조회 결과 비교" id="tlSlide">
+  <div class="in">
+    <div class="head">
+      <div class="eb">M4 HDFS · Hive · Iceberg</div>
+      <h2>Iceberg는 적재가 완전히 끝나야 결과가 보이므로, <code>_orc</code>처럼 비는 순간이 없다</h2>
+    </div>
+    <div class="content">
+      <div class="dia fit">
+        <svg viewBox="0 0 960 268" role="img" aria-label="시간에 따른 조회 결과. Hive _orc는 비우고 옮겨 넣는 사이에 비어 있는 구간이 있고, Iceberg는 commit 순간에 snapshot 1에서 snapshot 2로 한 번에 바뀐다">
+          <!-- Hive 줄 -->
+          <g data-at="1">
+            <text class="t-b" x="20" y="92" font-size="16">Hive</text>
+            <text class="t-m t-mono" x="20" y="112" font-size="14">_orc 조회</text>
+            <rect class="seg-ok" x="200" y="70" width="320" height="46" rx="4"/>
+            <rect class="seg-bad" x="520" y="70" width="160" height="46" rx="4"/>
+            <rect class="seg-ok" x="680" y="70" width="240" height="46" rx="4"/>
+            <text class="t-a" x="360" y="99" text-anchor="middle" font-size="15">정상</text>
+            <text class="t-stop" x="600" y="99" text-anchor="middle" font-size="14">비거나 모자람</text>
+            <text class="t-a" x="800" y="99" text-anchor="middle" font-size="15">정상</text>
+            <text class="t-m" x="520" y="58" text-anchor="middle" font-size="13">④ _orc 비움</text>
+            <text class="t-m" x="680" y="58" text-anchor="middle" font-size="13">⑤ hdfs mv 끝</text>
+          </g>
+          <!-- Iceberg 줄 -->
+          <g data-at="2">
+            <text class="t-b" x="20" y="202" font-size="16">Iceberg</text>
+            <text class="t-m" x="20" y="222" font-size="14">테이블 조회</text>
+            <path class="flow async c-mut" d="M400 152 H636"/>
+            <text class="t-m" x="518" y="144" text-anchor="middle" font-size="13">새 파일을 쓰는 중 — 아직 안 보인다</text>
+            <rect class="seg-ok" x="200" y="180" width="440" height="46" rx="4"/>
+            <rect class="seg-ok2" x="640" y="180" width="280" height="46" rx="4"/>
+            <text class="t-a" x="420" y="209" text-anchor="middle" font-size="15">snapshot 1을 읽는다</text>
+            <text class="t-alt" x="780" y="209" text-anchor="middle" font-size="15">snapshot 2를 읽는다</text>
+            <text class="t-alt" x="640" y="172" text-anchor="middle" font-size="13">commit</text>
+          </g>
+          <!-- 시간축 -->
+          <path class="e" d="M200 248 H920"/>
+          <text class="t-m" x="920" y="264" text-anchor="end" font-size="13">시간 →</text>
+          <!-- 조회 시점 (재생 막대) -->
+          <g data-at="3" id="phG">
+            <line class="ph" id="phLine" x1="200" y1="40" x2="200" y2="244"/>
+            <circle class="ph-h" id="phDot" cx="200" cy="248" r="6"/>
+          </g>
+        </svg>
+      </div>
+      <div class="probe" data-at="3">
+        <span class="lab">이 시각에 조회하면 · Hive</span><span class="val good" id="pvHive">정상</span>
+        <span class="lab">Iceberg</span><span class="val good" id="pvIce">snapshot 1</span>
+      </div>
+      <div class="scrub" data-at="3">
+        <span>조회 시각</span><input type="range" id="scrub" min="0" max="1000" value="0" aria-label="조회 시각 옮기기"><span>끌어서 옮긴다</span>
+      </div>
+    </div>
+    <div class="meta"><span><b>M4-12</b> · 레이아웃: 제목만 + 도형</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Hive 줄 → ② Iceberg 줄 → ③ 조회 시각을 움직여 "같은 시각에 조회하면 무엇이 보이나"를 비교한다. 막대를 끌어 멈춰 세울 수 있다.</li>
+      <li>Iceberg는 새 파일을 다 쓴 뒤 commit 한 번에 snapshot을 바꾼다. 그 전까지는 이전 snapshot을 그대로 읽으므로 비는 순간이 없다(Iceberg 1.6 문서의 원자적 commit).</li>
+      <li>두 줄의 시각은 설명을 위해 나란히 놓은 것이고, 실제 소요 시간 비교가 아니다.</li>
+      <li><span class="mk">[사용자 작성: _orc를 비우는 범위]</span> — 전체가 아니라 대상 날짜만이면 "비어 있음"이 아니라 "그 날짜만 빠짐"으로 문구를 바꾼다.</li>
+      <li><span class="pp">pptx 대응</span> 두 줄을 차례로 '나타내기', 조회 시각 막대는 '이동 경로' 애니메이션 1개. 끌어서 옮기는 기능은 HTML 전용.</li>
     </ul>
   </template>
 </section>
@@ -490,33 +949,296 @@ td:last-child { color: var(--muted); }
 
 <script>
 (function () {
+  'use strict';
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
-  var prev = document.getElementById('prev');
-  var next = document.getElementById('next');
-  var count = document.getElementById('count');
-  var notes = document.getElementById('notes');
-  var notesBody = document.getElementById('notesBody');
-  var noteBtn = document.getElementById('noteBtn');
-  var fsBtn = document.getElementById('fsBtn');
-  var i = 0;
+  var $ = function (id) { return document.getElementById(id); };
+  var prev = $('prev'), next = $('next'), count = $('count'), prog = $('prog');
+  var notes = $('notes'), notesBody = $('notesBody');
+  var noteBtn = $('noteBtn'), ovBtn = $('ovBtn'), pauseBtn = $('pauseBtn'), themeBtn = $('themeBtn'), fsBtn = $('fsBtn');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var narrowMq = window.matchMedia('(max-width: 760px)');
+  var i = 0, cur = 0, paused = false;
 
-  function show(n) {
-    i = Math.max(0, Math.min(slides.length - 1, n));
-    slides.forEach(function (s, k) { s.classList.toggle('on', k === i); });
-    count.textContent = (i + 1) + ' / ' + slides.length;
-    prev.disabled = i === 0;
-    next.disabled = i === slides.length - 1;
-    var t = slides[i].querySelector('template.note');
-    notesBody.innerHTML = t ? t.innerHTML : '';
-    try { history.replaceState(null, '', '#s' + (i + 1)); } catch (e) {}
+  // 슬라이드별 단계 수 = 안에 있는 data-at / data-only / data-dim / data-goto 의 최댓값
+  slides.forEach(function (s) {
+    var n = 0;
+    s.querySelectorAll('[data-at],[data-only],[data-dim],[data-goto]').forEach(function (e) {
+      n = Math.max(n, +(e.dataset.at || e.dataset.only || e.dataset.dim || e.dataset.goto));
+    });
+    s.steps = n;
+  });
+
+  // 움직임을 줄이는 설정이면 SMIL 점을 없앤다 (SMIL은 CSS 미디어 쿼리를 따르지 않는다)
+  if (reduce) {
+    document.querySelectorAll('.dot').forEach(function (d) { d.remove(); });
   }
+
+  // ---------- 단계 상태 적용 ----------
+  function applyStep(s, c) {
+    s.dataset.cur = c;
+    s.querySelectorAll('[data-at]').forEach(function (e) { e.classList.toggle('vis', c >= +e.dataset.at); });
+    s.querySelectorAll('[data-only]').forEach(function (e) { e.classList.toggle('vis', c === +e.dataset.only); });
+    s.querySelectorAll('[data-dim]').forEach(function (e) { e.classList.toggle('dimmed', c < +e.dataset.dim); });
+    s.querySelectorAll('[data-goto]').forEach(function (e) {
+      var g = +e.dataset.goto;
+      e.classList.toggle('now', c === g);
+      e.classList.toggle('done', c > g);
+    });
+    if (s.dataset.paintAt) s.classList.toggle('painted', c >= +s.dataset.paintAt);
+    var dots = s.querySelector('.dots');
+    if (dots) {
+      if (!dots.childElementCount && s.steps) {
+        var lab = document.createElement('span');
+        lab.className = 'lab'; lab.textContent = '단계';
+        dots.appendChild(lab);
+        for (var k = 0; k <= s.steps; k++) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.dataset.step = k;
+          b.setAttribute('aria-label', k === 0 ? '처음 상태' : k + '단계');
+          dots.appendChild(b);
+        }
+      }
+      dots.querySelectorAll('button').forEach(function (b) {
+        var k = +b.dataset.step;
+        b.classList.toggle('now', k === c);
+        b.classList.toggle('done', k < c);
+      });
+    }
+    if (s.id === 'hiveSlide') hiveState(c);
+    if (s.id === 'tlSlide') tlState(c);
+  }
+
+  function isNarrow() { return narrowMq.matches; }
+  function isOverview() { return document.body.classList.contains('ov'); }
+
+  function render(fromStep) {
+    var s = slides[i];
+    slides.forEach(function (x, k) {
+      x.classList.toggle('on', k === i);
+      if (isNarrow() || isOverview()) applyStep(x, x.steps);
+    });
+    if (!isNarrow() && !isOverview()) applyStep(s, cur);
+    count.textContent = (i + 1) + ' / ' + slides.length + (s.steps ? ' · ' + cur + '/' + s.steps : '');
+    prev.disabled = i === 0 && cur === 0;
+    next.disabled = i === slides.length - 1 && cur === s.steps;
+    var frac = (i + (s.steps ? cur / (s.steps + 1) : 0)) / (slides.length - 1 || 1);
+    prog.style.width = Math.min(100, frac * 100) + '%';
+    var t = s.querySelector('template.note');
+    notesBody.innerHTML = t ? t.innerHTML : '';
+    if (fromStep !== undefined) playStep(s, fromStep, cur);
+    try { history.replaceState(null, '', '#s' + (i + 1) + (cur ? '-' + cur : '')); } catch (e) {}
+  }
+
+  function go(n, c) {
+    var old = cur, sameSlide = n === i;
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    cur = Math.max(0, Math.min(slides[i].steps, c));
+    closePop();
+    render(sameSlide ? old : undefined);
+  }
+  function fwd() {
+    if (isOverview()) return;
+    if (cur < slides[i].steps) go(i, cur + 1);
+    else if (i < slides.length - 1) go(i + 1, 0);
+  }
+  function back() {
+    if (isOverview()) return;
+    if (cur > 0) go(i, cur - 1);
+    else if (i > 0) go(i - 1, slides[i - 1].steps);
+  }
+
+  // 단계 전환 때만 한 번 재생하는 SMIL 점 (Hive 적재 ③ ⑤)
+  function burst(id, gap) {
+    if (reduce || paused) return;
+    var g = $(id);
+    if (!g) return;
+    g.querySelectorAll('circle').forEach(function (c, k) {
+      c.querySelectorAll('animateMotion, animate').forEach(function (a) {
+        try { a.beginElementAt(k * gap); } catch (e) {}
+      });
+    });
+  }
+  function playStep(s, from, to) {
+    if (s.id === 'hiveSlide' && to === from + 1) {
+      if (to === 3) burst('pk3', .3);
+      if (to === 5) burst('pk5', .2);
+    }
+  }
+
+  // ---------- M4-07 채움 높이 ----------
+  function lv(id, scale, op) {
+    var e = $(id);
+    if (!e) return;
+    e.style.transform = 'scaleY(' + scale + ')';
+    e.style.opacity = op === undefined ? '' : op;
+  }
+  function hiveState(c) {
+    lv('lvRaw', .72);
+    lv('lvTempOld', c >= 2 ? 0 : .45);
+    lv('lvTempNew', c >= 3 && c < 5 ? .38 : 0);
+    lv('lvOrc', c === 4 ? 0 : .82);
+  }
+
+  // ---------- M4-12 조회 시각 ----------
+  var tl = { t: 0, last: 0, raf: 0 };
+  var X0 = 200, X1 = 920;
+  function tlSet(t) {
+    tl.t = t;
+    var x = X0 + (X1 - X0) * t;
+    $('phLine').setAttribute('x1', x); $('phLine').setAttribute('x2', x);
+    $('phDot').setAttribute('cx', x);
+    $('scrub').value = Math.round(t * 1000);
+    var hv = $('pvHive'), iv = $('pvIce');
+    var bad = x >= 520 && x < 680;
+    hv.textContent = bad ? '비거나 모자람' : '정상';
+    hv.className = 'val ' + (bad ? 'bad' : 'good');
+    var s2 = x >= 640;
+    iv.textContent = s2 ? 'snapshot 2' : 'snapshot 1';
+    iv.className = 'val ' + (s2 ? 'good2' : 'good');
+  }
+  function tlLoop(ts) {
+    if (!tl.last) tl.last = ts;
+    var dt = ts - tl.last; tl.last = ts;
+    tlSet((tl.t + dt / 9000) % 1);
+    tl.raf = requestAnimationFrame(tlLoop);
+  }
+  function tlStop() { cancelAnimationFrame(tl.raf); tl.raf = 0; tl.last = 0; }
+  function tlState(c) {
+    var s = $('tlSlide');
+    var run = c >= 3 && s.classList.contains('on') && !paused && !reduce && !isOverview() && !isNarrow();
+    if (run && !tl.raf) tl.raf = requestAnimationFrame(tlLoop);
+    if (!run) tlStop();
+    if (!tl.raf) tlSet(tl.t || (c >= 3 ? .62 : 0));
+  }
+  $('scrub').addEventListener('input', function (e) {
+    tlStop();
+    tlSet(+e.target.value / 1000);
+  });
+
+  // ---------- M1-02 상자 설명 ----------
+  var INFO = {
+    airflow: ['Airflow', '언제, 무엇을, 어떤 순서로 할지 지시한다', '작업 일정표를 든 작업반장', '상황을 보고 순서를 바꾸지 않는다. 데이터는 직접 만지지 않는다', 'Airflow UI (M5)'],
+    yarn: ['YARN', '클러스터의 CPU · 메모리를 나눠 준다', '공용 작업장의 자리 배정 담당', '나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다', 'YARN UI (M5)'],
+    spark: ['Spark', '큰 계산을 쪼개 여러 서버에서 동시에 처리한다', '계산팀 (driver = 팀장, executor = 팀원)', '팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다', 'Spark UI — YARN UI의 링크로 들어간다 (M5)'],
+    tez: ['Tez', 'Hive SQL을 실제 작업으로 바꿔 실행한다', 'Hive SQL 주문서를 받는 또 다른 계산팀', '', 'YARN UI에서 상태까지만 본다 (M5)'],
+    iceberg: ['Iceberg 테이블', '파일 목록과 적재 이력을 메타데이터 파일로 관리한다. 새 데이터만 덧붙인다(append)', '새 서류만 덧붙이는 장부', '장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다', ''],
+    hive: ['Hive 테이블', '_raw(TEXTFILE)에 쌓고, 배치 주기마다 _temp(ORC)를 거쳐 _orc(ORC)로 옮긴다', '도서관 목록 카드(Hive Metastore) + 폴더의 파일', '목록 카드는 Oracle DB에 저장된다', ''],
+    source: ['데이터 원천', '<span class="mk">[확인 필요: 데이터 원천의 종류]</span>', '', '', '']
+  };
+  var pop = $('corePop'), selHot = null;
+  function esc(t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function openPop(key, el) {
+    var d = INFO[key];
+    if (!d) return;
+    var rows = '<dt>역할</dt><dd>' + (key === 'source' ? d[1] : esc(d[1])) + '</dd>';
+    if (d[2]) rows += '<dt>비유</dt><dd>' + esc(d[2]) + '</dd>';
+    if (d[3]) rows += '<dt>다른 점</dt><dd>' + esc(d[3]) + '</dd>';
+    if (d[4]) rows += '<dt>보는 화면</dt><dd>' + esc(d[4]) + '</dd>';
+    pop.innerHTML = '<h4>' + esc(d[0]) + '<button type="button" aria-label="닫기">✕</button></h4><dl>' + rows + '</dl>';
+    pop.classList.add('open');
+    if (selHot) selHot.classList.remove('sel');
+    selHot = el; el.classList.add('sel');
+    pop.querySelector('button').addEventListener('click', closePop);
+  }
+  function closePop() {
+    pop.classList.remove('open');
+    if (selHot) { selHot.classList.remove('sel'); selHot = null; }
+  }
+  document.querySelectorAll('#coreDia .hot').forEach(function (h) {
+    function act(e) { e.stopPropagation(); if (selHot === h) closePop(); else openPop(h.dataset.info, h); }
+    h.addEventListener('click', act);
+    h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(e); } });
+  });
+
+  // ---------- M2-09 멈춘 프로세스 시연 ----------
+  var SYMP = {
+    webserver: { name: 'webserver', see: 'Airflow UI 화면이 열리지 않는다.', run: 'DAG 실행은 계속된다. 화면만 못 본다.', act: ['ok', '재시작할 수 있다 — webserver'] },
+    scheduler: { name: 'scheduler', see: '새 DAG Run · Task가 시작되지 않는다. 화면 위에 scheduler 경고 배너가 뜬다.', run: '이미 worker가 실행 중인 Task는 계속 돈다.', act: ['ok', '재시작할 수 있다 — scheduler'] },
+    worker: { name: 'worker', see: 'Task가 queued에 머문다.', run: '실행 중이던 Task는 실패 처리될 수 있다.', act: ['ok', '재시작할 수 있다 — 단, 실행 중인 Spark Task가 없을 때만 (M6-18)'] },
+    flower: { name: 'flower', see: 'Flower 화면만 열리지 않는다.', run: 'DAG 실행에는 영향이 없다.', act: ['ok', '재시작할 수 있다 — flower'] },
+    redis: { name: 'redis', see: 'Task가 worker에 전달되지 않아 queued에 쌓인다.', run: '새 Task가 실행되지 않는다.', act: ['stop', '재시작하지 않는다 — 담당자에게 전달'] },
+    db: { name: 'PostgreSQL · pgpool', see: 'Airflow UI와 scheduler 모두 오류가 난다.', run: '실행 기록을 쓰고 읽지 못한다.', act: ['stop', '재시작하지 않는다 — 담당자에게 전달'] }
+  };
+  var symp = $('symp'), sim = $('simSlide'), picked = null;
+  function pick(key) {
+    picked = picked === key ? null : key;
+    sim.querySelectorAll('[data-pick]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.pick === picked)); });
+    sim.querySelectorAll('.proc').forEach(function (p) { p.classList.toggle('down', p.dataset.node === picked); });
+    sim.querySelectorAll('[data-p]').forEach(function (e) {
+      var on = picked && e.dataset.p.split(' ').indexOf(picked) >= 0;
+      e.classList.toggle('cut', !!on);
+    });
+    if (!picked) {
+      symp.innerHTML = '<h3>어느 프로세스가 멈췄을까?</h3><p class="empty">왼쪽 상자나 아래 버튼을 누르면, 그 프로세스가 <b>전부</b> 멈췄을 때 화면에서 보이는 증상과 할 일이 나온다.</p><p class="empty">끊기는 연결은 흐려진다.</p>';
+      return;
+    }
+    var d = SYMP[picked];
+    symp.innerHTML = '<h3>' + esc(d.name) + '가 멈추면</h3>' +
+      '<div><div class="lab">화면에서 보이는 것</div><p>' + esc(d.see) + '</p></div>' +
+      '<div><div class="lab">실행에 미치는 영향</div><p>' + esc(d.run) + '</p></div>' +
+      '<div class="act ' + d.act[0] + '">' + esc(d.act[1]) + '</div>' +
+      '<p><span class="mk">[확인 필요: 운영에서 실제로 본 증상과 맞는지]</span></p>';
+  }
+  sim.querySelectorAll('[data-pick]').forEach(function (b) { b.addEventListener('click', function () { pick(b.dataset.pick); }); });
+  sim.querySelectorAll('.proc').forEach(function (p) {
+    p.addEventListener('click', function () { pick(p.dataset.node); });
+    p.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(p.dataset.node); } });
+  });
+  pick(null);
+
+  // ---------- 단계 칸 · 단계 점 클릭 ----------
+  document.querySelectorAll('[data-goto]').forEach(function (e) {
+    e.addEventListener('click', function () {
+      var k = slides.indexOf(e.closest('.slide'));
+      go(k, +e.dataset.goto);
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.dots button');
+    if (b) go(slides.indexOf(b.closest('.slide')), +b.dataset.step);
+  });
+
+  // ---------- 전체 보기 ----------
+  function toggleOv(force) {
+    var on = force === undefined ? !isOverview() : force;
+    document.body.classList.toggle('ov', on);
+    ovBtn.setAttribute('aria-pressed', String(on));
+    render();
+    if (on) slides[i].scrollIntoView({ block: 'center' });
+    else window.scrollTo(0, 0);
+  }
+  slides.forEach(function (s, k) {
+    s.addEventListener('click', function () { if (isOverview()) { i = k; cur = 0; toggleOv(false); } });
+  });
+
+  // ---------- 메모 · 움직임 · 화면 색 · 전체 화면 ----------
   function toggleNotes() {
     notes.hidden = !notes.hidden;
     noteBtn.setAttribute('aria-pressed', String(!notes.hidden));
   }
+  function togglePause() {
+    paused = !paused;
+    document.body.classList.toggle('paused', paused);
+    document.querySelectorAll('svg').forEach(function (s) {
+      try { paused ? s.pauseAnimations() : s.unpauseAnimations(); } catch (e) {}
+    });
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+    tlState(+(slides[i].dataset.cur || 0));
+  }
+  function currentTheme() {
+    var t = document.documentElement.dataset.theme;
+    if (t) return t;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function toggleTheme() {
+    var t = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('hadoop-edu-theme', t); } catch (e) {}
+  }
+  try { var saved = localStorage.getItem('hadoop-edu-theme'); if (saved) document.documentElement.dataset.theme = saved; } catch (e) {}
   function toggleFs() {
     try {
-      if (document.fullscreenElement) { document.exitFullscreen(); }
+      if (document.fullscreenElement) document.exitFullscreen();
       else if (document.documentElement.requestFullscreen) {
         var p = document.documentElement.requestFullscreen();
         if (p && p.catch) p.catch(function () {});
@@ -524,23 +1246,46 @@ td:last-child { color: var(--muted); }
     } catch (e) {}
   }
 
-  prev.addEventListener('click', function () { show(i - 1); });
-  next.addEventListener('click', function () { show(i + 1); });
+  prev.addEventListener('click', back);
+  next.addEventListener('click', fwd);
+  ovBtn.addEventListener('click', function () { toggleOv(); });
   noteBtn.addEventListener('click', toggleNotes);
+  pauseBtn.addEventListener('click', togglePause);
+  themeBtn.addEventListener('click', toggleTheme);
   fsBtn.addEventListener('click', toggleFs);
+
   document.addEventListener('keydown', function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
     var k = e.key;
-    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); show(i + 1); }
-    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); show(i - 1); }
-    else if (k === 'Home') { show(0); }
-    else if (k === 'End') { show(slides.length - 1); }
+    if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && !e.target.closest('button, [role="button"]'))) { e.preventDefault(); fwd(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); back(); }
+    else if (k === 'Home') { go(0, 0); }
+    else if (k === 'End') { go(slides.length - 1, slides[slides.length - 1].steps); }
+    else if (k === 'o' || k === 'O') { toggleOv(); }
     else if (k === 'n' || k === 'N') { toggleNotes(); }
+    else if (k === 'p' || k === 'P') { togglePause(); }
+    else if (k === 't' || k === 'T') { toggleTheme(); }
     else if (k === 'f' || k === 'F') { toggleFs(); }
+    else if (k === 'Escape') { if (isOverview()) toggleOv(false); else closePop(); }
   });
 
-  var m = /^#s(\d+)$/.exec(location.hash || '');
-  show(m ? parseInt(m[1], 10) - 1 : 0);
+  // 터치: 좌우로 밀어 넘긴다 (좁은 화면은 세로 스크롤이라 쓰지 않는다)
+  var tx = null, ty = null;
+  document.addEventListener('touchstart', function (e) { if (e.touches.length === 1) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; } }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (tx === null || isNarrow() || isOverview()) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx < 0 ? fwd() : back(); }
+    tx = null;
+  }, { passive: true });
+
+  if (narrowMq.addEventListener) narrowMq.addEventListener('change', function () { render(); });
+
+  var m = /^#s(\d+)(?:-(\d+))?$/.exec(location.hash || '');
+  if (m) { i = Math.max(0, Math.min(slides.length - 1, parseInt(m[1], 10) - 1)); cur = Math.min(slides[i].steps, parseInt(m[2] || '0', 10)); }
+  render();
 })();
 </script>
 

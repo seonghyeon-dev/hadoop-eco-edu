@@ -1,0 +1,97 @@
+site_name: Hadoop eco 운영 교육자료
+site_description: as-is Hadoop eco(Airflow · Spark · Hive · Iceberg) 운영 교육 — 구조, 모니터링, 장애 대응
+site_url: https://seonghyeon-dev.github.io/hadoop-eco-edu/
+repo_url: https://github.com/seonghyeon-dev/hadoop-eco-edu
+repo_name: seonghyeon-dev/hadoop-eco-edu
+edit_uri: edit/main/
+
+# 문서가 저장소 루트(intent/, samples/)에 그대로 있으므로
+# docs/ 로 옮기지 않고 mkdocs-same-dir 플러그인으로 루트를 docs_dir 로 쓴다.
+# samples/*.html 은 마크다운이 아니라서 변환 없이 그대로 복사된다(발표 샘플 원본 그대로 열림).
+docs_dir: .
+site_dir: site
+
+exclude_docs: |
+  site/
+  mkdocs.yml
+  requirements-docs.txt
+  node_modules/
+  qa/
+
+# 문서 간 링크·페이지 내 앵커가 깨지면 빌드 로그에 경고로 남긴다
+validation:
+  links:
+    not_found: warn
+    anchors: warn
+
+theme:
+  name: material
+  language: ko
+  # 웹폰트를 내려받지 않는다. 글꼴은 assets/extra.css 에서 Windows 기본 폰트(맑은 고딕)로 지정
+  font: false
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: 다크 모드로 전환
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: 라이트 모드로 전환
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.tracking
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.view
+
+extra_css:
+  - assets/extra.css
+
+plugins:
+  - same-dir
+  - search:
+      lang:
+        - ko
+        - en
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      # 기본 slugify 는 한글을 제거해 문서 내부 목차 링크가 깨진다. GitHub 와 같은 규칙으로 한글 앵커를 유지한다.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - 홈: README.md
+  - 작업 규칙: CLAUDE.md
+  - 설계:
+      - intent · spec · plan 작성 규칙: intent/README.md
+      - 교육 과정 intent: intent/course/hadoop-eco-ops/intent.md
+      - 커리큘럼 spec: intent/course/hadoop-eco-ops/spec.md
