@@ -1,6 +1,6 @@
 # Hadoop eco 운영 교육자료
 
-현재 운영 중인 **as-is Hadoop eco 시스템**의 데이터 파이프라인(Airflow · Spark · Iceberg)을 **운영 담당자**에게 가르치는 교육자료를 만든다. 메인 산출물은 PowerPoint(`.pptx`)이고, 이해를 돕는 HTML을 보조로 둔다.
+현재 운영 중인 **as-is Hadoop eco 시스템**의 데이터 파이프라인(Airflow · Spark · Iceberg)을 **운영 담당자**에게 가르치는 교육자료를 만든다. **당분간 HTML만으로 발표한다**(사용자 2026-10-24). PowerPoint(`.pptx`)는 필요해지면 전환하고, 아래 pptx 규칙은 그때 적용한다.
 
 작업의 배경·범위·미결 사항은 `intent/course/hadoop-eco-ops/intent.md`가 단일 원천이다. 이 파일은 **모든 작업에 적용되는 규칙**만 담는다.
 
@@ -47,12 +47,13 @@
 - **pptx 폰트는 Windows 기본 폰트를 쓴다**(`맑은 고딕` 등). Mac에만 있는 폰트(Apple SD Gothic Neo 등)를 쓰면 발표 PC에서 글자가 바뀌어 레이아웃이 깨진다
 - pptx 생성은 `anthropic-skills:pptx` 스킬을 쓴다. 스킬의 시각 QA(슬라이드 → 이미지 렌더링 → 확인)에 필요한 로컬 도구는 아래 "도구" 절을 따른다
 - **HTML은 단일 파일, 외부 의존성 없이 만든다.** CDN·웹폰트를 쓰지 않는다. 파일 하나만 전달받아 Windows 브라우저에서 오프라인으로 열려야 한다
-- **HTML 발표 자료는 동적·반응형으로 만든다** (사용자 2026-10-22). 슬라이드 안의 내용은 → 키로 한 단계씩 펼치고, 데이터 흐름은 움직이는 흐름선·점으로 보여 주고(dashmotion 방식: `stroke-dashoffset` + SVG `animateMotion`), 질문이 나올 만한 곳은 눌러서 펼치게 한다. 단 **움직임 없이도 내용이 다 전달돼야 한다** — 좁은 화면·인쇄·움직임 줄이기 설정에서는 모든 단계를 펼친 정지 화면으로 보인다
-- HTML의 동적 표현마다 발표 메모에 **pptx 대응**(PowerPoint 애니메이션 '나타내기' 순서, 슬라이드 분할 + '모핑' 전환 등)을 적는다. 메인 산출물은 pptx이므로 HTML에서만 되는 표현은 pptx에서 무엇으로 바꿀지 정해 둔다
+- **HTML 발표 자료는 동적·반응형으로 만든다** (사용자 2026-10-22). 슬라이드 안의 내용은 → 키로 한 단계씩 펼치고, 질문이 나올 만한 곳은 눌러서 펼치게 한다. 단 **움직임 없이도 내용이 다 전달돼야 한다** — 좁은 화면·인쇄·움직임 줄이기 설정에서는 모든 단계를 펼친 정지 화면으로 보인다
+- **도식은 모두 archify로 만든다** (사용자 2026-10-24). 슬라이드에는 요점을 HTML로 두고, 자세한 설명은 `D`(또는 '자세히' 버튼)로 archify 도식을 전체 화면으로 열어 한다. archify 도식은 `samples/archify/`의 JSON을 고쳐 다시 렌더링한 뒤 `embed.py`로 발표 HTML 안에 넣는다 — 발표 파일은 여전히 하나다. 누르거나 끌어서 조작하는 시연은 HTML로 둔다
+- HTML의 동적 표현마다 발표 메모에 **pptx 대응**(PowerPoint 애니메이션 '나타내기' 순서, 슬라이드 분할 + '모핑' 전환 등)을 적는다. pptx로 전환할 때 HTML에서만 되는 표현을 무엇으로 바꿀지 정해 두려는 것이다
 
 ### 회사 템플릿 호환
 
-회사 pptx 템플릿은 공유받을 수 없다. 사용자가 Windows PowerPoint에서 직접 입히므로, **템플릿을 입혔을 때 내용이 그대로 따라오도록** 만든다.
+pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 없다. 사용자가 Windows PowerPoint에서 직접 입히므로, **템플릿을 입혔을 때 내용이 그대로 따라오도록** 만든다.
 
 - **표준 레이아웃을 쓴다** — 제목 슬라이드 / 제목 및 내용 / 구역 머리글 / 콘텐츠 2개 / 제목만 / 빈 화면. 레이아웃을 새로 만들지 않는다. 템플릿을 입힐 때 PowerPoint가 레이아웃 이름으로 짝을 짓기 때문이다
 - **제목과 본문 텍스트는 placeholder에 넣는다.** 텍스트 상자를 직접 배치하면 템플릿의 글꼴·위치를 따라가지 않는다. 도식 안의 라벨만 예외다
@@ -71,6 +72,7 @@
 | Poppler (`pdftoppm`) | PDF → 이미지 (시각 QA) | 미설치 |
 | `markitdown[pptx]`, `pillow`, `defusedxml`, `lxml` (pip) | 내용 추출·검증 | 미설치 |
 | `mkdocs-material`, `mkdocs-same-dir` (pip, `requirements-docs.txt`) | 문서 사이트 빌드 | GitHub Actions에서 설치 |
+| [archify](https://github.com/tt-a1i/archify) 3.2.0 | 도식 렌더링 (`node bin/archify.mjs finalize <type> <json> <html> --quality showcase`). Node 18 이상, 자동 검사에 Chrome 필요. 결과 HTML에 렌더러 코드가 들어간다(MIT) | 저장소 밖에 clone해서 쓴다 |
 
 - LibreOffice는 없는 폰트를 대체해 그린다. QA 미리보기를 믿으려면 pptx에 지정한 폰트를 Mac에도 설치해야 한다
 
@@ -98,12 +100,13 @@
 │           ├── intent.md             # 교육 과정 전체의 intent
 │           └── spec.md               # 커리큘럼 spec 초안
 └── samples/
-    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장(동적) — HTML 발표 자료의 기준, 완성본 아님·계속 수정
-    ├── hadoop-eco-ops-archify.html   # archify로 만든 도식 샘플 (Airflow 프로세스 구성과 재시작 범위)
-    ├── hadoop-eco-ops-archify-dataflow.html  # archify로 만든 데이터 흐름 도식 샘플
-    └── archify/                      # archify 입력 — 고칠 때는 JSON을 수정해 다시 렌더링
-        ├── airflow-processes.json
-        └── data-flow.json
+    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다
+    └── archify/                      # archify 도식 — <이름>.json(입력)을 고쳐 <이름>.html로 렌더링
+        ├── airflow-processes.*       # Airflow 프로세스 구성과 재시작 범위 (architecture)
+        ├── data-flow.*               # 데이터가 테이블에 쌓이는 길 (dataflow)
+        ├── hive-batch.*              # Hive 적재 5단계 (workflow)
+        ├── hive-iceberg-timeline.*   # 적재 중 조회 — Hive와 Iceberg (timeline, 예시 시각)
+        └── embed.py                  # 렌더링한 도식을 발표 HTML 안에 넣는다
 ```
 
 산출물 폴더(원고·pptx·HTML·이미지)는 `plan.md`에서 정한다.

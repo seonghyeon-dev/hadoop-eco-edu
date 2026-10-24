@@ -18,13 +18,20 @@
 
 | 자료 | 내용 |
 |------|------|
-| [HTML 발표 샘플](samples/hadoop-eco-ops-sample.html) | spec 102장 중 일부를 동적 발표 형태로 만든 샘플. 완성본이 아니며 계속 수정한다 |
-| [archify 도식 샘플](samples/hadoop-eco-ops-archify.html) | [archify](https://github.com/tt-a1i/archify)로 만든 Airflow 프로세스 구성과 재시작 범위 도식. 입력 JSON은 `samples/archify/airflow-processes.json` |
-| [archify 데이터 흐름 샘플](samples/hadoop-eco-ops-archify-dataflow.html) | archify로 만든 데이터 흐름 도식 — Spark → Iceberg, Hive SQL → `_raw` → `_temp` → `_orc`. 미확인 사항은 `[확인 필요]`·`[사용자 작성]`으로 표시. 입력 JSON은 `samples/archify/data-flow.json` |
+| [HTML 발표 샘플](samples/hadoop-eco-ops-sample.html) | spec 102장 중 9장으로 형식을 검토하는 샘플. 개요는 HTML 슬라이드로, 자세한 설명은 `D` 키로 archify 도식을 띄운다. 샘플일 뿐이며 내용은 다시 고친다 |
 
-HTML 발표 샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
+발표 샘플에 들어 있는 archify 도식은 따로 열어 볼 수도 있다.
 
-archify 샘플에는 archify 렌더러 코드가 들어 있다 — MIT License, Copyright (c) 2026 tt-a1i (Archify), Copyright (c) 2025 Cocoon AI.
+| 도식 | 형식 | 쓰는 슬라이드 |
+|------|------|------|
+| [데이터가 테이블에 쌓이는 길](samples/archify/data-flow.html) | dataflow | M1-02 |
+| [Airflow 프로세스 구성과 재시작 범위](samples/archify/airflow-processes.html) | architecture | M2-08, M2-09 |
+| [Hive 적재 5단계](samples/archify/hive-batch.html) | workflow | M4-07 |
+| [적재 중 조회 — Hive와 Iceberg](samples/archify/hive-iceberg-timeline.html) | timeline (예시 시각) | M4-12 |
+
+HTML 발표 샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `D` 자세히(archify 도식) · `Esc` 돌아오기, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
+
+archify 도식(과 그것을 넣은 발표 샘플)에는 archify 렌더러 코드가 들어 있다 — MIT License, Copyright (c) 2026 tt-a1i (Archify), Copyright (c) 2025 Cocoon AI.
 
 ## 설계 문서
 

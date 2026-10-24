@@ -4,63 +4,198 @@
   "meta": {
     "title": "데이터가 테이블에 쌓이는 길",
     "locale": "ko",
-    "output": "samples/hadoop-eco-ops-archify-dataflow.html",
+    "output": "samples/archify/data-flow.html",
     "quality_profile": "showcase",
     "legend": {
       "entries": {
-        "emphasis": { "label": "새 데이터 적재" },
-        "default": { "label": "배치 변환 · 이동" },
-        "dashed": { "label": "Airflow의 실행 지시 — 데이터가 아님" },
-        "database": { "label": "HDFS 위 테이블" }
+        "emphasis": {
+          "label": "새 데이터 적재"
+        },
+        "default": {
+          "label": "배치 변환 · 이동"
+        },
+        "dashed": {
+          "label": "Airflow의 실행 지시 — 데이터가 아님"
+        },
+        "database": {
+          "label": "HDFS 위 테이블"
+        }
       }
     }
   },
   "stages": [
-    { "label": "원천" },
-    { "label": "실행" },
-    { "label": "1차 적재" },
-    { "label": "ORC 변환" },
-    { "label": "조회 대상" }
+    {
+      "label": "원천"
+    },
+    {
+      "label": "실행"
+    },
+    {
+      "label": "1차 적재"
+    },
+    {
+      "label": "ORC 변환"
+    },
+    {
+      "label": "조회 대상"
+    }
   ],
   "nodes": [
-    { "id": "source", "type": "external", "label": "원천 데이터", "sublabel": "[확인 필요: 위치·형태]", "stage": 0, "row": 1 },
-    { "id": "spark", "type": "backend", "label": "Spark", "sublabel": "3.5.2 · YARN", "stage": 1, "row": 0 },
-    { "id": "airflow", "type": "backend", "icon": "clock", "label": "Airflow", "sublabel": "DAG · 2.7.1", "stage": 1, "row": 1 },
-    { "id": "hive", "type": "backend", "label": "Hive SQL", "sublabel": "Tez · YARN", "stage": 1, "row": 2 },
-    { "id": "raw", "type": "database", "label": "{테이블}_raw", "sublabel": "TEXTFILE · dt 파티션", "tag": "최근 데이터 조회", "stage": 2, "row": 2 },
-    { "id": "temp", "type": "database", "label": "{테이블}_temp", "sublabel": "ORC · 파티션 없음", "tag": "중간 테이블", "stage": 3, "row": 3 },
-    { "id": "iceberg", "type": "database", "label": "Iceberg 테이블", "sublabel": "Parquet", "stage": 4, "row": 0 },
-    { "id": "orc", "type": "database", "label": "{테이블}_orc", "sublabel": "ORC · dt 파티션", "tag": "예전 데이터 조회", "stage": 4, "row": 2 }
+    {
+      "id": "source",
+      "type": "external",
+      "label": "원천 데이터",
+      "sublabel": "[확인 필요: 위치·형태]",
+      "stage": 0,
+      "row": 1
+    },
+    {
+      "id": "spark",
+      "type": "backend",
+      "label": "Spark",
+      "sublabel": "3.5.2 · YARN",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "airflow",
+      "type": "backend",
+      "icon": "clock",
+      "label": "Airflow",
+      "sublabel": "DAG · 2.7.1",
+      "stage": 1,
+      "row": 1
+    },
+    {
+      "id": "hive",
+      "type": "backend",
+      "label": "Hive SQL",
+      "sublabel": "Tez · YARN",
+      "stage": 1,
+      "row": 2
+    },
+    {
+      "id": "raw",
+      "type": "database",
+      "label": "{테이블}_raw",
+      "sublabel": "TEXTFILE · dt 파티션",
+      "tag": "최근 데이터 조회",
+      "stage": 2,
+      "row": 2
+    },
+    {
+      "id": "temp",
+      "type": "database",
+      "label": "{테이블}_temp",
+      "sublabel": "ORC · 파티션 없음",
+      "tag": "중간 테이블",
+      "stage": 3,
+      "row": 3
+    },
+    {
+      "id": "iceberg",
+      "type": "database",
+      "label": "Iceberg 테이블",
+      "sublabel": "Parquet",
+      "stage": 4,
+      "row": 0
+    },
+    {
+      "id": "orc",
+      "type": "database",
+      "label": "{테이블}_orc",
+      "sublabel": "ORC · dt 파티션",
+      "tag": "예전 데이터 조회",
+      "stage": 4,
+      "row": 2
+    }
   ],
   "flows": [
-    { "id": "src-spark", "from": "source", "to": "spark", "label": "원천 데이터" },
-    { "id": "src-hive", "from": "source", "to": "hive", "label": "원천 데이터" },
-    { "id": "run-spark", "from": "airflow", "to": "spark", "label": "실행 지시", "variant": "dashed" },
-    { "id": "run-hive", "from": "airflow", "to": "hive", "label": "실행 지시", "variant": "dashed" },
-    { "id": "spark-append", "from": "spark", "to": "iceberg", "label": "새 데이터 append", "variant": "emphasis" },
-    { "id": "hive-insert", "from": "hive", "to": "raw", "label": "새 데이터 Insert", "variant": "emphasis" },
-    { "id": "raw-temp", "from": "raw", "to": "temp", "label": "날짜별 ORC 변환" },
-    { "id": "temp-orc", "from": "temp", "to": "orc", "label": "hdfs mv" }
+    {
+      "id": "src-spark",
+      "from": "source",
+      "to": "spark",
+      "label": "원천 데이터"
+    },
+    {
+      "id": "src-hive",
+      "from": "source",
+      "to": "hive",
+      "label": "원천 데이터"
+    },
+    {
+      "id": "run-spark",
+      "from": "airflow",
+      "to": "spark",
+      "label": "실행 지시",
+      "variant": "dashed"
+    },
+    {
+      "id": "run-hive",
+      "from": "airflow",
+      "to": "hive",
+      "label": "실행 지시",
+      "variant": "dashed"
+    },
+    {
+      "id": "spark-append",
+      "from": "spark",
+      "to": "iceberg",
+      "label": "새 데이터 append",
+      "variant": "emphasis"
+    },
+    {
+      "id": "hive-insert",
+      "from": "hive",
+      "to": "raw",
+      "label": "새 데이터 Insert",
+      "variant": "emphasis"
+    },
+    {
+      "id": "raw-temp",
+      "from": "raw",
+      "to": "temp",
+      "label": "날짜별 ORC 변환"
+    },
+    {
+      "id": "temp-orc",
+      "from": "temp",
+      "to": "orc",
+      "label": "hdfs mv"
+    }
   ],
   "cards": [
-    { "dot": "emerald", "title": "두 갈래 적재", "items": [
-      "Iceberg — Spark가 새 데이터를 테이블에 append한다",
-      "Hive — Hive SQL(Tez)이 _raw에 새 데이터를 계속 Insert하고, 배치 주기마다 ORC로 바꿔 _orc로 옮긴다",
-      "최근 Iceberg로 전환한 테이블은 Hive에도 동시에 적재한다 (전환 과도기)",
-      "테이블은 모두 HDFS에 있고, Iceberg 카탈로그는 Hive Metastore다"
-    ] },
-    { "dot": "amber", "title": "Hive 배치 변환 순서", "items": [
-      "① _temp를 비운다",
-      "② _raw에서 대상 날짜 데이터를 골라 ORC로 _temp에 쌓는다",
-      "③ _orc를 비운다",
-      "④ _temp의 데이터 파일을 hdfs mv로 _orc에 옮긴다",
-      "조회 — 예전 데이터는 _orc, 최근 데이터는 _raw에서 본다"
-    ] },
-    { "dot": "slate", "title": "아직 채우지 않은 것", "items": [
-      "[확인 필요: 원천 데이터의 위치·형태]",
-      "[사용자 작성: Spark를 Iceberg 적재에만 쓰는지]",
-      "[사용자 작성: ③에서 _orc를 비우는 범위 — 대상 날짜만인지 전체인지]",
-      "[사용자 작성: 배치 주기]"
-    ] }
+    {
+      "dot": "emerald",
+      "title": "두 갈래 적재",
+      "items": [
+        "Iceberg — Spark가 새 데이터를 테이블에 append한다",
+        "Hive — Hive SQL(Tez)이 _raw에 새 데이터를 계속 Insert하고, 배치 주기마다 ORC로 바꿔 _orc로 옮긴다",
+        "최근 Iceberg로 전환한 테이블은 Hive에도 동시에 적재한다 (전환 과도기)",
+        "테이블은 모두 HDFS에 있고, Iceberg 카탈로그는 Hive Metastore다"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Hive 적재 5단계",
+      "items": [
+        "1 _raw에 새 데이터를 계속 Insert한다",
+        "2 배치 주기가 되면 _temp를 비운다",
+        "3 _raw에서 대상 날짜 데이터를 골라 ORC로 _temp에 쌓는다",
+        "4 _orc를 비운다",
+        "5 _temp의 데이터 파일을 hdfs mv로 _orc에 옮긴다",
+        "조회 — 예전 데이터는 _orc, 최근 데이터는 _raw에서 본다"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "아직 채우지 않은 것",
+      "items": [
+        "[확인 필요: 원천 데이터의 위치·형태]",
+        "[사용자 작성: Spark를 Iceberg 적재에만 쓰는지]",
+        "[사용자 작성: 4에서 _orc를 비우는 범위 — 대상 날짜만인지 전체인지]",
+        "[사용자 작성: 배치 주기]"
+      ]
+    }
   ]
 }

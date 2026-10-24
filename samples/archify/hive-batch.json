@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Hive 적재 5단계",
+    "locale": "ko",
+    "output": "samples/archify/hive-batch.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": { "label": "적재 단계" },
+        "security": { "label": "_orc 조회가 비는 단계" }
+      }
+    }
+  },
+  "lanes": [
+    { "id": "raw", "label": "{테이블}_raw · TEXTFILE" },
+    { "id": "temp", "label": "{테이블}_temp · ORC" },
+    { "id": "orc", "label": "{테이블}_orc · ORC" }
+  ],
+  "phases": [
+    { "id": "always", "label": "항상", "fromCol": 0, "toCol": 0 },
+    { "id": "batch", "label": "배치 주기마다", "fromCol": 1, "toCol": 4, "variant": "emphasis" }
+  ],
+  "mainPath": ["insert", "clear-temp", "select", "clear-orc", "move"],
+  "nodes": [
+    { "id": "insert", "lane": "raw", "col": 0, "type": "backend", "label": "1 새 데이터 Insert", "sublabel": "계속 쌓는다", "tag": "최근 데이터 조회" },
+    { "id": "clear-temp", "lane": "temp", "col": 1, "type": "backend", "label": "2 _temp 비우기", "sublabel": "전부 비운다" },
+    { "id": "select", "lane": "temp", "col": 2, "type": "backend", "label": "3 대상 날짜 select", "sublabel": "_raw → ORC로 쌓기" },
+    { "id": "clear-orc", "lane": "orc", "col": 3, "type": "security", "label": "4 _orc 비우기", "sublabel": "[사용자 작성: 범위]", "tag": "조회가 비는 구간 시작" },
+    { "id": "move", "lane": "orc", "col": 4, "type": "backend", "label": "5 hdfs mv", "sublabel": "_temp 파일을 _orc로", "tag": "예전 데이터 조회" }
+  ],
+  "edges": [
+    { "id": "e-batch-start", "from": "insert", "to": "clear-temp", "label": "배치 주기", "variant": "dashed" },
+    { "id": "e-fill-temp", "from": "clear-temp", "to": "select", "variant": "emphasis" },
+    { "id": "e-temp-ready", "from": "select", "to": "clear-orc", "variant": "emphasis" },
+    { "id": "e-gap", "from": "clear-orc", "to": "move", "label": "비어 있는 구간", "variant": "security" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "조회하는 곳", "items": [
+      "최근 데이터 — _raw (비우지 않는다. retention 때만 과거를 지운다)",
+      "예전 데이터 — _orc"
+    ] },
+    { "dot": "rose", "title": "4 → 5 사이", "items": [
+      "_orc를 비운 뒤 hdfs mv가 끝날 때까지 _orc를 조회하면 결과가 비거나 모자란다",
+      "hdfs mv는 복사가 아니라 이동이다 — 파일 이름표만 바꿔 달아 빠르다"
+    ] },
+    { "dot": "slate", "title": "아직 채우지 않은 것", "items": [
+      "[사용자 작성: 4에서 _orc를 비우는 범위 — dt 파티션만인지 _orc 전체인지]",
+      "[사용자 작성: 배치 주기]"
+    ] }
+  ]
+}

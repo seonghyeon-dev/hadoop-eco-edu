@@ -12,3 +12,8 @@ qa/
 
 # MkDocs 빌드 결과
 site/
+
+# archify 렌더링 검사 기록
+samples/archify/*.delivery.json
+samples/archify/*.finalize*.json
+samples/archify/*.browser-check.json
