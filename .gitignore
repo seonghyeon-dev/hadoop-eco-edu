@@ -22,3 +22,8 @@ samples/archify/*.browser-check.json
 deck/diagrams/*.delivery.json
 deck/diagrams/*.finalize*.json
 deck/diagrams/*.browser-check.json
+
+# 제한된 작업공간에서만 쓰는 파일 — DAG별 기능 장(deck/DAG-작업안내.md). 공개 저장소에 올리지 않는다
+deck/src/*-local*
+deck/diagrams/*-local*
+deck/captures/*-local*

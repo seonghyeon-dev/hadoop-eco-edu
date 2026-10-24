@@ -151,6 +151,11 @@ drafted-by: Claude
 - **슬라이드 표현**: "장애가 나면 이 한 장만 보면 된다" 같은 구어 표현을 쓰지 않는다. 교육생 · 비개발자 같은 대상 지칭과 교육자만 알면 되는 내용은 슬라이드에 두지 않는다
 - **redis-sentinel도 재시작하지 않고 전달한다** (redis와 같다)
 - **발표 개요 79장 확정** — spec 5절 (102장에서 정리)
+- **발표 순서 변경** — HDFS · Hive · Iceberg를 Spark · Tez · YARN보다 먼저
+- **Airflow 다음에 "DAG별 기능" 장**을 따로 둔다. 이 장은 외부 접속이 제한된 작업공간에서 내부 LLM(GLM 5.3, VS Code Continue · Claude CLI)으로 만든다. 그 작업공간은 이 저장소를 받을 수 있지만 올릴 수 없다. DAG 내용 일부는 이 저장소에서 만들 수도 있다(미정). 현재 작업과 진행이 엇갈릴 수 있다
+- **화면 장 번호는 01~08**, 'M' 표기는 제작용 ID로만
+- **비유와 실제가 어긋나는 곳은 "단, …"** ("다른 점", "실제로는" 대신)
+- **Tez 공식 아이콘**: https://tez.apache.org/images/ApacheTezIcon.png
 - **추가할 내용**: 프로세스별 역할 설명 / Hive vs Iceberg 비교와 Hive → Iceberg 전환 이점 / Tez vs Spark 비교와 Tez → Spark 전환 이점
 - **시각화 도구**: archify, dashmotion 등 상황에 맞는 도구를 적극 쓴다
 - **전체 리팩토링**: 불필요하거나 겹치는 슬라이드를 정리한다

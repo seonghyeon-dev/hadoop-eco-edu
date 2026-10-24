@@ -123,7 +123,7 @@
   function openPop(h) {
     var s = h.closest('.slide'), key = h.dataset.info;
     var t = s.querySelector('template[data-info="' + key + '"]');
-    var box = h.closest('.ovw, .dia') || s.querySelector('.content');
+    var box = h.closest('.ovw') || s.querySelector('.content');
     if (!t || !box) return;
     closePop();
     pop = document.createElement('div');

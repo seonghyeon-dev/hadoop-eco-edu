@@ -25,8 +25,8 @@ SRC = DECK / 'src'
 
 # 발표 파일 → (상단 막대에 보이는 이름, 이어 붙일 모듈 순서)
 PARTS = {
-    'hadoop-eco-ops-1.html': ('개념편', ['M0', 'M1', 'M2', 'M3', 'M4']),
-    'hadoop-eco-ops-2.html': ('실무편', ['M5', 'M6', 'M7']),
+    'hadoop-eco-ops-1.html': ('개념편', ['M0', 'M1', 'M2', 'M3', 'M4', 'M5']),
+    'hadoop-eco-ops-2.html': ('실무편', ['M6', 'M7', 'M8']),
 }
 
 MOD_STYLE = re.compile(r'<style data-module>.*?</style>\n?', re.S)
@@ -87,14 +87,17 @@ def build(name, part, modules):
     shell = (SRC / 'shell.html').read_text(encoding='utf-8')
     slides, styles, scripts, missing = [], [], [], []
     for mod in modules:
-        path = SRC / f'{mod}.html'
-        if not path.exists():
+        # 모듈 하나가 여러 파일일 수 있다 — M3.html 다음에 M3-*.html(이름순). 제한된 작업공간의
+        # *-local* 파일은 .gitignore라 커밋되지 않고, 그쪽에서 빌드할 때만 들어간다(deck/DAG-작업안내.md)
+        paths = [p for p in [SRC / f'{mod}.html'] if p.exists()] + sorted(SRC.glob(f'{mod}-*.html'))
+        if not paths:
             missing.append(mod)
             continue
-        text = path.read_text(encoding='utf-8')
-        styles += MOD_STYLE.findall(text)
-        scripts += MOD_SCRIPT.findall(text)
-        slides.append(MOD_SCRIPT.sub('', MOD_STYLE.sub('', text)).strip())
+        for path in paths:
+            text = path.read_text(encoding='utf-8')
+            styles += MOD_STYLE.findall(text)
+            scripts += MOD_SCRIPT.findall(text)
+            slides.append(MOD_SCRIPT.sub('', MOD_STYLE.sub('', text)).strip())
     if not slides:
         return print(f'{name}: 만든 모듈이 없어 건너뛴다')
     body = '\n\n'.join(slides)

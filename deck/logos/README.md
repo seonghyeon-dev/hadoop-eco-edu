@@ -7,7 +7,7 @@
 | `airflow.svg` | Apache Airflow | `apache/airflow-site` `landing-pages/site/assets/icons/airflow-logo.svg` — 글자 부분을 빼고 바람개비만 남김(viewBox 0 0 60 60) |
 | `spark.png` | Apache Spark | `apache/spark-website` `images/spark-logo.png` |
 | `hive.svg` | Apache Hive | `apache/hive-site` `themes/hive/static/images/hive.svg` |
-| `tez.jpg` | Apache Tez | `apache/tez` `docs/src/site/resources/images/ApacheTezLogo_lowres.png`(실제 형식 JPEG, 긴 변 320px로 줄임) |
+| `tez.png` | Apache Tez | `tez.apache.org/images/ApacheTezIcon.png` (= `apache/tez` `docs/src/site/resources/images/ApacheTezIcon.png`), 160px로 줄임 |
 | `iceberg.png` | Apache Iceberg | `apache/iceberg` `site/docs/assets/images/iceberg-logo-icon.png` |
 | `hadoop.png` | Apache Hadoop (YARN · HDFS) | `hadoop.apache.org/elephant.png` |
 

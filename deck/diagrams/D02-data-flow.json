@@ -53,7 +53,7 @@
       "id": "spark",
       "type": "backend",
       "label": "Spark",
-      "sublabel": "3.5.2 · YARN",
+      "sublabel": "Spark 작업 · YARN",
       "stage": 1,
       "row": 0,
       "brand": {
@@ -74,13 +74,13 @@
     {
       "id": "hive",
       "type": "backend",
-      "label": "Hive SQL",
-      "sublabel": "Tez · YARN",
+      "label": "Tez",
+      "sublabel": "Hive SQL 실행 · YARN",
       "stage": 1,
       "row": 2,
       "brand": {
-        "url": "https://hive.apache.org/",
-        "sha256": "2cfd509c8ae98469b89e25f85f510b4b2712810bf87c5896faefc57cdff0a900"
+        "url": "https://tez.apache.org/images/ApacheTezIcon.png",
+        "sha256": "2a2adc2b5811b29a278540cc82b817e808682b40053e788bf92931f25f5a0895"
       }
     },
     {
@@ -195,7 +195,7 @@
       "title": "두 갈래 적재",
       "items": [
         "Iceberg — Spark가 새 데이터를 테이블에 append한다",
-        "Hive — Hive SQL(Tez)이 _raw에 새 데이터를 계속 Insert하고, 배치 주기마다 ORC로 바꿔 _orc로 옮긴다",
+        "Hive — Tez가 Hive SQL을 실행해 _raw에 새 데이터를 계속 Insert하고, 배치 주기마다 ORC로 바꿔 _orc의 파일과 교체한다",
         "최근 Iceberg로 전환한 테이블은 Hive에도 동시에 적재한다 (전환 과도기)",
         "테이블은 모두 HDFS에 있고, Iceberg 카탈로그는 Hive Metastore다"
       ]

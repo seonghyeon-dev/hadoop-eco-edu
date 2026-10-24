@@ -96,3 +96,4 @@ nav:
       - 교육 과정 intent: intent/course/hadoop-eco-ops/intent.md
       - 커리큘럼 spec: intent/course/hadoop-eco-ops/spec.md
       - 제작 plan: intent/course/hadoop-eco-ops/plan.md
+      - DAG별 기능 장 작업 안내: deck/DAG-작업안내.md
