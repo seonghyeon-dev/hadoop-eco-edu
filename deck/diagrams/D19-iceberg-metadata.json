@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "diagram_type": "tree",
+  "meta": {
+    "title": "Iceberg 테이블의 메타데이터 구조",
+    "locale": "ko",
+    "output": "deck/diagrams/D19-iceberg-metadata.html",
+    "quality_profile": "showcase"
+  },
+  "nodes": [
+    {
+      "id": "hms",
+      "label": "Hive Metastore",
+      "sublabel": "카탈로그 — 현재 metadata 파일 위치"
+    },
+    {
+      "id": "meta",
+      "label": "metadata 파일",
+      "parent": "hms",
+      "sublabel": "스키마 · snapshot 목록"
+    },
+    {
+      "id": "s2",
+      "label": "snapshot 2 (현재)",
+      "parent": "meta",
+      "sublabel": "manifest list"
+    },
+    {
+      "id": "s1",
+      "label": "snapshot 1 (이전)",
+      "parent": "meta",
+      "sublabel": "manifest list"
+    },
+    {
+      "id": "m_old",
+      "label": "manifest (기존)",
+      "parent": "s2",
+      "sublabel": "snapshot 1 때의 목록을 그대로 가리킨다"
+    },
+    {
+      "id": "m_new",
+      "label": "manifest (새)",
+      "parent": "s2",
+      "sublabel": "이번 적재에서 붙은 파일 목록"
+    },
+    {
+      "id": "s1m",
+      "label": "manifest (기존)",
+      "parent": "s1",
+      "sublabel": "data file 1을 가리킨다"
+    },
+    {
+      "id": "d1",
+      "label": "data file 1",
+      "parent": "m_old",
+      "sublabel": "Parquet · 복사하지 않는다"
+    },
+    {
+      "id": "d2",
+      "label": "data file 2",
+      "parent": "m_new",
+      "sublabel": "Parquet · 새로 붙은 파일"
+    }
+  ]
+}

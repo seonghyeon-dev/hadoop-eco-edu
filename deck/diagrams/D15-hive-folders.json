@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "diagram_type": "tree",
+  "meta": {
+    "title": "Hive 테이블 폴더 구조",
+    "locale": "ko",
+    "output": "deck/diagrams/D15-hive-folders.html",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "direction": "right"
+  },
+  "nodes": [
+    {
+      "id": "root",
+      "label": "HDFS 테이블 폴더",
+      "sublabel": "[확인 필요: 실제 경로]"
+    },
+    {
+      "id": "raw",
+      "label": "{테이블}_raw",
+      "parent": "root",
+      "sublabel": "TEXTFILE · dt 파티션"
+    },
+    {
+      "id": "raw1",
+      "label": "dt=20261022",
+      "parent": "raw",
+      "sublabel": "그날 데이터 파일"
+    },
+    {
+      "id": "raw2",
+      "label": "dt=20261023",
+      "parent": "raw",
+      "sublabel": "그날 데이터 파일"
+    },
+    {
+      "id": "raw3",
+      "label": "dt=20261024",
+      "parent": "raw",
+      "sublabel": "그날 데이터 파일"
+    },
+    {
+      "id": "temp",
+      "label": "{테이블}_temp",
+      "parent": "root",
+      "sublabel": "ORC · 파티션 없음"
+    },
+    {
+      "id": "temp1",
+      "label": "ORC 파일",
+      "parent": "temp",
+      "sublabel": "하위 폴더 없이 바로"
+    },
+    {
+      "id": "orc",
+      "label": "{테이블}_orc",
+      "parent": "root",
+      "sublabel": "ORC · dt 파티션"
+    },
+    {
+      "id": "orc1",
+      "label": "dt=20261020",
+      "parent": "orc",
+      "sublabel": "그날 데이터 파일"
+    },
+    {
+      "id": "orc2",
+      "label": "dt=20261021",
+      "parent": "orc",
+      "sublabel": "그날 데이터 파일"
+    }
+  ]
+}

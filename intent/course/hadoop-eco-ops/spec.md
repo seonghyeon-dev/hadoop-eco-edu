@@ -158,7 +158,7 @@ drafted-by: Claude
 | M4-07 | 제목만 | Iceberg 메타데이터 | 핵심: Iceberg 테이블은 파일 목록을 별도의 메타데이터 파일로 관리한다. D03 · D19. 카탈로그 = Hive Metastore(목록이 메타데이터 파일 위치를 가리킨다), HDFS, Parquet, Iceberg 1.6.1 |
 | M4-08 | 제목만 | Iceberg 적재와 snapshot | 핵심: Iceberg 적재는 새 데이터를 덧붙이고(append), 적재마다 snapshot이 하나 생긴다. D19 · D20. snapshot 비유 + 어긋나는 지점 |
 | M4-09 | 제목 및 내용 | Iceberg의 commit — 한 번에 반영 | 핵심: Iceberg는 commit 한 번으로 새 데이터가 한꺼번에 보인다. **HTML 시연**(조회 시각 비교) + D18. Hive `_orc`는 ⑤ · ⑥ 두 번의 파일 작업으로 바뀐다. 원자적 commit은 Iceberg 1.6 문서 기준 |
-| M4-10 | 제목 및 내용 | Iceberg 유지보수 — Compaction · snapshot 정리 | 핵심: Iceberg 테이블은 작은 파일 정리(Compaction)와 오래된 snapshot 정리가 필요하다. `[사용자 작성: as-is에서 유지보수 작업을 하는지, DAG로 돌리는지]` — DAG라면 M6 · M6에서 다룸 |
+| M4-10 | 제목 및 내용 | Iceberg 유지보수 — Compaction · snapshot 정리 | 핵심: Iceberg 테이블은 작은 파일 정리(Compaction)와 오래된 snapshot 정리가 필요하다. `[사용자 작성: as-is에서 유지보수 작업을 하는지, DAG로 돌리는지]` — DAG라면 M6 · M7에서 다룸 |
 | M4-11 | 제목 및 내용 | Hive와 Iceberg 비교 | 핵심: Hive와 Iceberg는 테이블 구성과 적재 방식이 다르다. 비교 표: 엔진(Tez / Spark) · 테이블 수(`_raw` · `_temp` · `_orc` / 1개) · 파일 형식(TEXTFILE · ORC / Parquet) · 조회 대상(최근 · 예전이 나뉨 / 하나) · 적재 방식(주기적 교체 / append) · 바뀌는 방식(파일 작업 두 번 / commit 한 번) · 이력(없음 / snapshot) · 유지보수 |
 | M4-12 | 제목 및 내용 | Hive → Iceberg 전환으로 얻는 것 | 핵심: Iceberg로 옮기면 테이블 하나로 조회하고, 변환 · 교체 단계 없이 바로 반영된다. 전환으로 얻는 것: 조회 대상 하나 · ORC 변환 배치 없음 · commit 단위 반영 · snapshot 이력. Iceberg 1.6 문서 기준 |
 | M4-13 | 제목 및 내용 | 전환 비용 | 핵심: 대신 유지보수 작업과 새로 익힐 운영 방법이 생긴다. 전환 비용 |

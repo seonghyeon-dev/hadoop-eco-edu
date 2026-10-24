@@ -87,6 +87,8 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent
 [data-at]:not(.vis), [data-only]:not(.vis) { opacity: 0; visibility: hidden; transform: translateY(.35em); }
 svg [data-at]:not(.vis), svg [data-only]:not(.vis) { transform: none; }
 [data-dim] { transition: opacity .45s ease; }
+[data-until] { transition: opacity .45s ease, visibility .45s; }
+[data-until].gone { opacity: 0; visibility: hidden; }
 [data-dim].dimmed { opacity: .22; }
 
 /* 자리표시자 칩 */

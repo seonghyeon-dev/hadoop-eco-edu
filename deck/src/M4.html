@@ -1,0 +1,917 @@
+<!-- ===================================================== M4. HDFS · Hive · Iceberg -->
+<style data-module>
+/* M4-03 폴더 트리 */
+.ftree { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: .9em; display: flex; flex-direction: column; gap: .35em; }
+.ftree ul { list-style: none; margin: .3em 0 0 1.6em; padding: 0; display: flex; flex-direction: column; gap: .3em; }
+.ftree .fd { display: inline-flex; align-items: center; gap: .45em; border: 1.5px solid var(--line); border-radius: 6px; padding: .2em .6em; background: var(--surface); transition: border-color .4s, background .4s; }
+.ftree .fd .ico-svg { color: var(--mark); }
+.ftree .fd.file .ico-svg { color: var(--muted); }
+.ftree .fd small { font-family: var(--sans); color: var(--muted); font-size: .85em; }
+.ftree .fd.hit { border-color: var(--accent); background: var(--accent-bg); }
+.slide[data-cur="3"] .ftree .fd.pick, .slide[data-cur="4"] .ftree .fd.pick { border-color: var(--accent); background: var(--accent-bg); }
+/* M4-04 · M4-10 두 단 카드 */
+.col.fmt { display: flex; flex-direction: column; gap: .5em; }
+.col.fmt li b { display: inline; }
+.col.fmt .dia svg { max-height: 8.5em; }
+.col.fmt ul { gap: .3em; font-size: .92em; }
+/* M4-06 단계 목록 6칸 */
+.steplist.s6 { grid-template-columns: repeat(6, 1fr); }
+/* M4-11 비교 표 */
+.cmp { width: 100%; border-collapse: collapse; font-size: .86em; }
+.cmp th, .cmp td { border-bottom: 1px solid var(--line); padding: .45em .7em; text-align: left; vertical-align: top; }
+.cmp thead th { font-size: 1.05em; }
+.cmp thead th .logo { margin-right: .4em; vertical-align: middle; }
+.cmp tbody th { color: var(--muted); font-weight: 700; white-space: nowrap; width: 9em; }
+.cmp td.ice { color: var(--ink); background: var(--accent-bg); }
+/* 카드 3 · 4개 */
+.cards.c3 { grid-template-columns: repeat(3, 1fr); }
+.cards.c4 { grid-template-columns: repeat(4, 1fr); }
+.cards.c2 { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; align-content: stretch; font-size: 1.12em; gap: .9em; }
+.cards.c2 .card { justify-content: center; padding: .9em 1.1em; gap: .45em; }
+.card .sum { color: var(--muted); font-size: .95em; }
+.card .big-ico .ico-svg { width: 2.2em; height: 2.2em; color: var(--accent); }
+.mini { flex: none; }
+.mini svg { display: block; width: 100%; height: auto; max-height: 11em; }
+/* M4-09 조회 시각 비교 */
+.seg-ok { fill: var(--accent-bg); stroke: var(--accent); stroke-width: 1.2; }
+.seg-ok2 { fill: var(--alt-bg); stroke: var(--alt); stroke-width: 1.2; }
+.ph { stroke: var(--ink); stroke-width: 2; }
+.ph-h { fill: var(--ink); }
+.probe { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: .4em .8em; align-items: center; font-size: .82em; }
+.probe .lab { color: var(--muted); font-weight: 700; }
+.probe .val { border-radius: 6px; padding: .25em .7em; font-weight: 700; transition: background .2s, color .2s; }
+.val.good { background: var(--accent-bg); color: var(--accent); }
+.val.good2 { background: var(--alt-bg); color: var(--alt); }
+.val.mkv { background: var(--mark-bg); color: var(--mark); }
+.scrub { display: flex; align-items: center; gap: .8em; font-size: .76em; color: var(--muted); }
+.scrub input { flex: 1; accent-color: var(--accent); }
+@media (max-width: 760px) {
+  .cards.c3, .cards.c4, .cards.c2, .steplist.s6 { grid-template-columns: 1fr; }
+  .probe { grid-template-columns: auto 1fr; }
+}
+@media print { .scrub { display: none !important; } }
+</style>
+
+<!-- M4-01 구역 머리글 -->
+<section class="slide" data-id="M4-01" aria-label="M4-01 HDFS · Hive · Iceberg">
+  <div class="in section">
+    <div class="content">
+      <div class="num">04</div>
+      <h2>HDFS · Hive · Iceberg</h2>
+      <p class="sub">데이터가 쌓이는 곳 — 파일, 목록, 그리고 두 가지 테이블</p>
+      <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="hadoop" alt="Apache Hadoop (HDFS)"></span><span class="logo"><img data-logo="hive" alt="Apache Hive"></span><span class="logo"><img data-logo="iceberg" alt="Apache Iceberg"></span></div>
+      <div class="map" aria-label="과정 지도">
+        <div class="round"><span>개념</span>
+          <div class="m"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m cur"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>YARN · Spark · Tez</div>
+        </div>
+        <div class="round"><span>실무</span>
+          <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-01</b> · 구역 머리글</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>순서: 테이블 = 파일 + 목록 → Hive 테이블 · 파티션 · 파일 형식 → as-is Hive 적재 → Iceberg → 비교와 전환 → 과도기.</li>
+      <li>HDFS 3.2.3, Hive 3.1.2, Iceberg 1.6.1.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-02 테이블 = 파일 + 목록 -->
+<section class="slide" data-id="M4-02" aria-label="M4-02 테이블 = 파일 + 목록">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>테이블 = 파일 + 목록</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 360" role="img" aria-label="테이블을 조회하면 Hive Metastore의 목록에서 위치를 찾고, HDFS의 여러 서버에 조각과 복사본으로 나뉘어 있는 파일을 읽는다">
+            <defs><marker id="m42" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- HDFS -->
+            <g data-at="1">
+              <rect class="grp" x="248" y="12" width="384" height="338" rx="12"/>
+              <rect class="logo-bg" x="262" y="22" width="28" height="28" rx="5"/><image data-logo="hadoop" x="264" y="24" width="24" height="24"/>
+              <text x="298" y="42" font-size="15"><tspan class="t-b">HDFS</tspan><tspan class="t-m"> 여러 서버에 나눠 보관</tspan></text>
+              <g font-size="12">
+                <rect class="n" x="262" y="66" width="84" height="270" rx="8"/><svg data-icon="server" x="292" y="74" width="24" height="24"></svg><text class="t-m" x="304" y="114" text-anchor="middle">서버 1</text>
+                <rect class="n" x="354" y="66" width="84" height="270" rx="8"/><svg data-icon="server" x="384" y="74" width="24" height="24"></svg><text class="t-m" x="396" y="114" text-anchor="middle">서버 2</text>
+                <rect class="n" x="446" y="66" width="84" height="270" rx="8"/><svg data-icon="server" x="476" y="74" width="24" height="24"></svg><text class="t-m" x="488" y="114" text-anchor="middle">서버 3</text>
+                <rect class="n" x="538" y="66" width="84" height="270" rx="8"/><svg data-icon="server" x="568" y="74" width="24" height="24"></svg><text class="t-m" x="580" y="114" text-anchor="middle">서버 4</text>
+                <!-- 파일 하나 = 조각 A1 · A2, 조각마다 복사본 3개 -->
+                <rect class="n-accent" x="276" y="132" width="56" height="34" rx="5"/><text class="t-a" x="304" y="154" text-anchor="middle">A1</text>
+                <rect class="n-alt" x="276" y="176" width="56" height="34" rx="5"/><text class="t-alt" x="304" y="198" text-anchor="middle">A2</text>
+                <rect class="n-accent" x="368" y="132" width="56" height="34" rx="5"/><text class="t-a" x="396" y="154" text-anchor="middle">A1</text>
+                <rect class="n-accent" x="460" y="132" width="56" height="34" rx="5"/><text class="t-a" x="488" y="154" text-anchor="middle">A1</text>
+                <rect class="n-alt" x="460" y="176" width="56" height="34" rx="5"/><text class="t-alt" x="488" y="198" text-anchor="middle">A2</text>
+                <rect class="n-alt" x="552" y="176" width="56" height="34" rx="5"/><text class="t-alt" x="580" y="198" text-anchor="middle">A2</text>
+              </g>
+              <text class="t-m" x="440" y="256" text-anchor="middle" font-size="12">파일 A = 조각(block) A1 + A2</text>
+              <text class="t-m" x="440" y="276" text-anchor="middle" font-size="12">조각마다 복사본을 여러 서버에</text>
+            </g>
+            <!-- Hive Metastore -->
+            <g data-at="2">
+              <rect class="n" x="10" y="110" width="220" height="118" rx="10"/>
+              <rect class="logo-bg" x="22" y="122" width="30" height="30" rx="5"/><image data-logo="hive" x="24" y="124" width="26" height="26"/>
+              <text class="t-b" x="60" y="136" font-size="15">Hive Metastore</text>
+              <text class="t-m" x="60" y="152" font-size="11">목록 카드</text>
+              <line x1="22" y1="164" x2="218" y2="164" stroke="var(--line)"/>
+              <text class="t t-mono" x="22" y="184" font-size="11">{테이블}</text>
+              <text class="t-m" x="22" y="202" font-size="11">→ HDFS의 어느 폴더 · 파일인지</text>
+              <text class="t-m" x="22" y="218" font-size="11">→ 열 이름 · 형식</text>
+            </g>
+            <!-- 조회 흐름 -->
+            <g data-at="3">
+              <rect class="n-accent" x="10" y="20" width="160" height="50" rx="8"/>
+              <svg data-icon="search" x="22" y="33" width="24" height="24" style="color: var(--accent)"></svg>
+              <text class="t-a" x="54" y="51" font-size="14">테이블 조회</text>
+              <path class="flow c-acc" d="M90 70 V106" marker-end="url(#m42)"/>
+              <text class="t-a" x="100" y="94" font-size="12">어디 있지?</text>
+              <path class="flow c-acc" d="M230 170 H272 V128" marker-end="url(#m42)"/>
+              <text class="t-a" x="236" y="190" font-size="12">위치</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.4s" repeatCount="indefinite" path="M90 70 V106"/></circle><circle r="5" class="dot"><animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite" path="M230 170 H272 V128"/></circle></g>
+            </g>
+            <g data-at="4">
+              <rect class="n-mk" x="10" y="244" width="220" height="42" rx="6"/>
+              <svg data-icon="database" x="20" y="253" width="22" height="22" style="color: var(--mark)"></svg>
+              <text class="t-mk" x="50" y="270" font-size="12">목록은 Oracle DB에 저장된다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><span class="logo sm"><img data-logo="hadoop" alt=""></span>HDFS — 파일을 보관한다</b><p>파일을 조각(block)으로 나눠 여러 서버에 <strong>복사본과 함께</strong> 둔다. 비유: 창고 시스템 — 단, 파일 하나도 조각으로 흩어진다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b><span class="logo sm"><img data-logo="hive" alt=""></span>Hive Metastore — 목록을 관리한다</b><p>어느 테이블이 HDFS의 어느 폴더 · 파일인지, 열은 무엇인지 적어 둔 <strong>목록 카드</strong>.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>테이블 = 목록 + 파일</b><p>조회하면 목록에서 위치를 찾고 HDFS의 파일을 읽는다. 목록이 없으면 <strong>파일이 있어도 찾지 못한다</strong>.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>목록은 Oracle DB에</b><p>Hive Metastore의 목록은 Oracle DB에 저장된다.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-02</b> · 콘텐츠 2개(도식 + 설명)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① HDFS → ② Metastore → ③ 조회 흐름 → ④ Oracle DB. Hive 테이블과 Iceberg 테이블 모두 이 구조 위에 있다.</li>
+      <li>그림의 서버 4대 · 조각 2개 · 복사본 3개는 설명용이다. 복사본 수는 HDFS 설정값(기본 3)이다. <span class="mk">[확인 필요: as-is HDFS 서버 수 · 복사본 수 — 보여 줄지]</span></li>
+      <li>Oracle DB는 이름만 말한다. DB 전환은 교육 전에 끝나 있다.</li>
+      <li><span class="pp">pptx 대응</span> HDFS · Metastore · 조회 흐름 · Oracle 메모에 '나타내기' 4개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-03 Hive 테이블과 파티션 — D15 -->
+<section class="slide" data-id="M4-03" data-arch="D15" aria-label="M4-03 Hive 테이블과 파티션">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Hive 테이블과 파티션</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <ul class="ftree" aria-label="Hive 테이블 폴더 예시">
+          <li data-at="1"><span class="fd"><svg data-icon="folder-open"></svg>…/{테이블}_raw <small>TEXTFILE</small></span>
+            <ul data-at="2">
+              <li><span class="fd"><svg data-icon="folder"></svg>dt=20261022</span></li>
+              <li><span class="fd"><svg data-icon="folder"></svg>dt=20261023</span></li>
+              <li><span class="fd pick"><svg data-icon="folder-open"></svg>dt=20261024</span>
+                <ul><li><span class="fd file"><svg data-icon="file"></svg>그날 데이터 파일 …</span></li></ul></li>
+            </ul>
+          </li>
+          <li data-at="2"><span class="fd"><svg data-icon="folder-open"></svg>…/{테이블}_orc <small>ORC</small></span>
+            <ul>
+              <li><span class="fd"><svg data-icon="folder"></svg>dt=20261020</span></li>
+              <li><span class="fd"><svg data-icon="folder"></svg>dt=20261021</span></li>
+            </ul>
+          </li>
+          <li data-at="4"><span class="fd"><svg data-icon="folder-open"></svg>…/{테이블}_temp <small>ORC · 파티션 없음</small></span>
+            <ul><li><span class="fd file"><svg data-icon="file"></svg>ORC 파일 …</span></li></ul>
+          </li>
+        </ul>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="folder"></svg> 테이블 = HDFS 폴더 하나</b><p>Hive 테이블의 데이터는 HDFS 폴더 하나에 파일로 모여 있다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>파티션 = 날짜별 하위 폴더</b><p><code>_raw</code> · <code>_orc</code>는 <code>dt=YYYYMMDD</code> 폴더로 날짜마다 나뉜다(<code>dt</code>는 8자리 날짜 문자열).</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>날짜로 조회하면 그 폴더만 읽는다</b><p>조회할 날짜(<code>dt</code>)를 주면 그 날짜 폴더만 읽어 <strong>빠르다</strong>.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b><code>_temp</code>는 파티션이 없다</b><p>하위 폴더 없이 파일만 있다 — 적재 중간에 잠깐 쓰는 테이블이다.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">폴더 이름 · 날짜는 예시</span>
+        <button class="more" type="button" data-arch="D15">자세히 — 폴더 구조 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-03</b> · 콘텐츠 2개(폴더 트리 + 설명) · 도식 D15</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 테이블 = 폴더 → ② 파티션 → ③ 날짜로 조회하면 그 폴더만(3단계에서 dt=20261024 폴더가 칠해진다) → ④ _temp.</li>
+      <li>as-is: <code>_raw</code>(TEXTFILE) · <code>_orc</code>(ORC)는 <code>dt</code> 파티션(varchar(8), YYYYMMDD), <code>_temp</code>(ORC)는 파티션 없음.</li>
+      <li><span class="mk">[확인 필요: 실제 HDFS 경로를 보여 줄지 — 보여 준다면 마스킹 여부]</span></li>
+      <li><span class="pp">pptx 대응</span> 폴더 트리 묶음에 '나타내기' 3개, 3단계 강조는 색이 바뀐 같은 슬라이드로 '모핑'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-04 파일 형식 — TEXT와 ORC -->
+<section class="slide" data-id="M4-04" aria-label="M4-04 파일 형식 — TEXT와 ORC">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>파일 형식 — TEXT와 ORC</h2>
+    </div>
+    <div class="content">
+      <div class="two">
+        <div class="col fmt" data-at="1" style="border: 1.5px solid var(--line)">
+          <h3><svg data-icon="rows-3"></svg> TEXT (TEXTFILE) <span class="tagk store" style="margin-left:auto">_raw</span></h3>
+          <div class="dia"><svg viewBox="0 0 420 190" role="img" aria-label="TEXT 파일은 한 줄에 한 건씩 글자 그대로 저장한다">
+            <rect class="n" x="10" y="10" width="400" height="170" rx="8"/>
+            <g class="t t-mono" font-size="15">
+              <text x="28" y="44">2026-10-24 , A01 , 1200</text>
+              <text x="28" y="76">2026-10-24 , B07 , 830</text>
+              <text x="28" y="108">2026-10-24 , A03 , 1544</text>
+              <text x="28" y="140">2026-10-24 , C11 , 97</text>
+            </g>
+            <text class="t-m" x="28" y="168" font-size="12">한 줄 = 한 건 (예시)</text>
+          </svg></div>
+          <ul><li><b>글자 그대로</b> 한 줄에 한 건씩 저장한다</li><li>사람이 읽기 쉽지만, 조회할 때 <b>전부</b> 읽어야 한다</li></ul>
+        </div>
+        <div class="col fmt" data-at="2" style="border: 1.5px solid var(--accent)">
+          <h3><svg data-icon="columns-3"></svg> ORC <span class="tagk calc" style="margin-left:auto">_temp · _orc</span></h3>
+          <div class="dia"><svg viewBox="0 0 420 190" role="img" aria-label="ORC 파일은 열 단위로 모아 압축해 저장하고, 필요한 열만 읽는다">
+            <rect class="n" x="10" y="10" width="400" height="170" rx="8"/>
+            <rect class="n" x="28" y="26" width="104" height="120" rx="6"/><text class="t-m" x="80" y="48" text-anchor="middle" font-size="12">날짜 열</text>
+            <rect class="n" x="146" y="26" width="104" height="120" rx="6"/><text class="t-m" x="198" y="48" text-anchor="middle" font-size="12">코드 열</text>
+            <rect class="n-accent" x="264" y="26" width="128" height="120" rx="6"/><text class="t-a" x="328" y="48" text-anchor="middle" font-size="12">값 열</text>
+            <g fill="var(--faint)"><rect x="44" y="60" width="72" height="10" rx="2"/><rect x="44" y="78" width="72" height="10" rx="2"/><rect x="44" y="96" width="72" height="10" rx="2"/><rect x="162" y="60" width="72" height="10" rx="2"/><rect x="162" y="78" width="72" height="10" rx="2"/><rect x="162" y="96" width="72" height="10" rx="2"/></g>
+            <g fill="var(--accent)"><rect x="282" y="60" width="92" height="10" rx="2"/><rect x="282" y="78" width="92" height="10" rx="2"/><rect x="282" y="96" width="92" height="10" rx="2"/></g>
+            <g data-at="3"><svg data-icon="search" x="316" y="114" width="24" height="24" style="color: var(--accent)"></svg><text class="t-a" x="210" y="168" text-anchor="middle" font-size="12">필요한 열(값 열)만 읽는다</text></g>
+            <svg data-icon="archive" x="368" y="150" width="22" height="22"></svg>
+          </svg></div>
+          <ul><li><b>열 단위로 모아 압축</b>해 저장한다</li><li data-at="3">조회할 때 <b>필요한 열만</b> 읽어 빠르고 공간도 덜 쓴다</li></ul>
+        </div>
+      </div>
+      <p class="foot" data-at="3">Iceberg 테이블의 Parquet도 ORC처럼 열 단위 형식이다.</p>
+    </div>
+    <div class="meta"><span class="id"><b>M4-04</b> · 콘텐츠 2개</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① TEXT → ② ORC → ③ 필요한 열만 읽는다. 테이블 이름 끝(_raw, _orc)이 형식을 알려 준다는 점을 짚는다.</li>
+      <li>그림의 데이터는 예시다. as-is: <code>_raw</code> = TEXTFILE, <code>_temp</code> · <code>_orc</code> = ORC, Iceberg = Parquet.</li>
+      <li><span class="pp">pptx 대응</span> 왼쪽 단 → 오른쪽 단 → 아래 줄 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-05 Hive 데이터의 두 테이블 -->
+<section class="slide" data-id="M4-05" aria-label="M4-05 Hive 데이터의 두 테이블 — _raw와 _orc">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Hive 데이터의 두 테이블 — _raw와 _orc</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 330" role="img" aria-label="데이터 날짜를 기준으로 예전 데이터는 _orc, 최근 데이터는 _raw에서 조회한다. 배치 주기마다 _raw의 데이터가 ORC로 바뀌어 _orc로 옮겨진다">
+            <defs><marker id="m45" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <path class="e" d="M20 290 H620" marker-end="url(#m45)"/>
+            <text class="t-m" x="20" y="314" font-size="12">예전</text><text class="t-m" x="620" y="314" text-anchor="end" font-size="12">최근 · 데이터 날짜</text>
+            <g data-at="1">
+              <rect x="330" y="110" width="290" height="46" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.5"/>
+              <text class="t-a t-mono" x="346" y="139" font-size="15">_raw</text><text class="t-m" x="400" y="139" font-size="13">최근 데이터 · TEXT</text>
+            </g>
+            <g data-at="2">
+              <rect x="20" y="200" width="420" height="46" rx="6" fill="var(--alt-bg)" stroke="var(--alt)" stroke-width="1.5"/>
+              <text class="t-alt t-mono" x="36" y="229" font-size="15">_orc</text><text class="t-m" x="90" y="229" font-size="13">예전 데이터 · ORC</text>
+            </g>
+            <g data-at="3">
+              <rect class="n" x="20" y="16" width="180" height="50" rx="8"/>
+              <svg data-icon="user" x="32" y="29" width="24" height="24"></svg>
+              <text class="t-b" x="64" y="47" font-size="14">조회하는 사람</text>
+              <path class="flow c-alt" d="M110 66 V196" marker-end="url(#m45)"/>
+              <text class="t-alt" x="120" y="140" font-size="12">예전 날짜</text>
+              <path class="flow c-acc" d="M200 41 H470 V106" marker-end="url(#m45)"/>
+              <text class="t-a" x="330" y="33" text-anchor="middle" font-size="12">최근 날짜</text>
+            </g>
+            <g data-at="4">
+              <path class="flow async c-mut" d="M400 156 V196" marker-end="url(#m45)"/>
+              <text class="t-m" x="392" y="182" text-anchor="end" font-size="12">배치 주기마다 ORC로</text>
+              <text class="t-mk" x="620" y="178" text-anchor="end" font-size="11">비우지 않는다 · retention 때만 과거 삭제</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li class="acc" data-at="1"><span class="no">1</span><b><code>_raw</code> — 최근 데이터</b><p>새 데이터가 계속 쌓이는 TEXT 테이블.</p></li>
+          <li class="alt" data-at="2"><span class="no">2</span><b><code>_orc</code> — 예전 데이터</b><p>배치 주기마다 ORC로 바꿔 옮겨 둔 테이블.</p></li>
+          <li data-at="3"><span class="no">3</span><b><svg data-icon="user"></svg> 날짜에 따라 테이블을 골라 조회한다</b><p>예전 데이터는 <code>_orc</code>, 최근 데이터는 <code>_raw</code>에서 본다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b><code>_raw</code>는 비우지 않는다</b><p>retention 처리 때만 오래된 데이터를 지운다. 옮기는 과정은 다음 장.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-05</b> · 콘텐츠 2개(도식 + 설명) · 도식 D16 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① _raw → ② _orc → ③ 조회하는 쪽 → ④ _raw는 비우지 않음. 두 막대가 겹치는 구간은 _raw에 아직 남아 있는 데이터다(retention 전).</li>
+      <li><span class="mk">[사용자 작성: retention 기간, 조회하는 쪽이 _raw와 _orc를 나누는 기준 날짜]</span></li>
+      <li><span class="pp">pptx 대응</span> 막대 2개 · 조회 화살표 · 옮김 화살표에 '나타내기' 4개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-06 Hive 적재 6단계 — D17 -->
+<section class="slide" data-id="M4-06" data-arch="D17" aria-label="M4-06 Hive 적재 6단계">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Hive 적재 6단계</h2>
+    </div>
+    <div class="content">
+      <div class="dia fit">
+        <svg viewBox="0 0 960 300" role="img" aria-label="1 _raw에 새 데이터 Insert, 2 _temp 비움, 3 대상 날짜를 select해 _temp에 ORC로, 4 _orc의 기존 파일 목록 기록, 5 hdfs mv로 _temp 파일을 _orc로, 6 기록한 기존 파일 hdfs rm">
+          <defs><marker id="m46" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <!-- 상자 3개 -->
+          <rect class="n" x="30" y="70" width="260" height="170" rx="10"/>
+          <text class="t-b t-mono" x="160" y="98" text-anchor="middle" font-size="17">{테이블}_raw</text><text class="t-m" x="160" y="118" text-anchor="middle" font-size="12">TEXTFILE · dt 파티션</text>
+          <rect class="n" x="350" y="70" width="260" height="170" rx="10"/>
+          <text class="t-b t-mono" x="480" y="98" text-anchor="middle" font-size="17">{테이블}_temp</text><text class="t-m" x="480" y="118" text-anchor="middle" font-size="12">ORC · 파티션 없음</text>
+          <rect class="n" x="670" y="70" width="260" height="170" rx="10"/>
+          <text class="t-b t-mono" x="800" y="98" text-anchor="middle" font-size="17">{테이블}_orc</text><text class="t-m" x="800" y="118" text-anchor="middle" font-size="12">ORC · dt 파티션</text>
+          <text class="t-m" x="160" y="264" text-anchor="middle" font-size="12">최근 데이터 조회</text>
+          <text class="t-m" x="480" y="264" text-anchor="middle" font-size="12">중간 테이블</text>
+          <text class="t-m" x="800" y="264" text-anchor="middle" font-size="12">예전 데이터 조회</text>
+          <!-- _raw 파일 (TEXT) -->
+          <g><rect class="grp" x="62" y="140" width="34" height="44" rx="4"/><rect class="grp" x="106" y="140" width="34" height="44" rx="4"/><rect class="grp" x="150" y="140" width="34" height="44" rx="4"/></g>
+          <!-- ① 새 데이터 -->
+          <text class="t-b" x="216" y="26" text-anchor="middle" font-size="14">새 데이터</text>
+          <g data-at="1">
+            <path class="flow c-mut" d="M216 34 V136" marker-end="url(#m46)"/>
+            <g class="dot-mut"><circle r="5" class="dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M216 34 V136"/></circle></g>
+            <rect class="n-accent" x="194" y="140" width="34" height="44" rx="4"/>
+            <circle class="step" cx="250" cy="56" r="12"/><text class="step-t" x="250" y="61" text-anchor="middle" font-size="14">1</text>
+          </g>
+          <!-- _temp: 이전 내용(②에서 비움) -->
+          <g data-until="2"><rect class="grp" x="390" y="140" width="34" height="44" rx="4"/><rect class="grp" x="434" y="140" width="34" height="44" rx="4"/><text class="t-m" x="480" y="210" text-anchor="middle" font-size="11">이전 내용</text></g>
+          <g data-only="2"><circle class="step" cx="380" cy="56" r="12"/><text class="step-t" x="380" y="61" text-anchor="middle" font-size="14">2</text><text class="t" x="400" y="61" font-size="14">전부 비운다</text></g>
+          <!-- ③ select → _temp (ORC) -->
+          <g data-only="3">
+            <path class="flow c-acc" d="M290 162 H346" marker-end="url(#m46)"/>
+            <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="1.2s" repeatCount="indefinite" path="M240 162 H400"/></circle></g>
+            <circle class="step" cx="318" cy="138" r="12"/><text class="step-t" x="318" y="143" text-anchor="middle" font-size="14">3</text>
+            <text class="t" x="318" y="198" text-anchor="middle" font-size="12">대상 날짜</text><text class="t t-mono" x="318" y="214" text-anchor="middle" font-size="12">select</text>
+          </g>
+          <g data-at="3" data-until="5"><rect class="n-accent" x="390" y="140" width="34" height="44" rx="4"/><rect class="n-accent" x="434" y="140" width="34" height="44" rx="4"/><text class="t-a" x="480" y="210" text-anchor="middle" font-size="11">새 ORC 파일</text></g>
+          <!-- _orc: 기존 파일(⑥에서 지움) -->
+          <g data-until="6"><rect class="grp" x="702" y="140" width="34" height="44" rx="4"/><rect class="grp" x="746" y="140" width="34" height="44" rx="4"/><rect class="grp" x="790" y="140" width="34" height="44" rx="4"/></g>
+          <!-- ④ 기존 파일 목록 기록 -->
+          <g data-at="4" data-until="6">
+            <g stroke="var(--mark)" stroke-width="2.5" fill="none"><path d="M710 162 l6 6 l12 -12"/><path d="M754 162 l6 6 l12 -12"/><path d="M798 162 l6 6 l12 -12"/></g>
+            <rect class="n-mk" x="700" y="196" width="126" height="24" rx="4"/><svg data-icon="list-checks" x="706" y="198" width="20" height="20" style="color: var(--mark)"></svg><text class="t-mk" x="730" y="213" font-size="12">기존 파일 목록</text>
+          </g>
+          <g data-only="4"><circle class="step" cx="700" cy="56" r="12"/><text class="step-t" x="700" y="61" text-anchor="middle" font-size="14">4</text><text class="t" x="720" y="61" font-size="14">목록부터 적어 둔다</text></g>
+          <!-- ⑤ hdfs mv -->
+          <g data-only="5">
+            <path class="flow c-acc" d="M610 162 H666" marker-end="url(#m46)"/>
+            <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur=".9s" repeatCount="indefinite" path="M560 162 H860"/></circle></g>
+            <circle class="step" cx="638" cy="138" r="12"/><text class="step-t" x="638" y="143" text-anchor="middle" font-size="14">5</text>
+            <text class="t t-mono" x="638" y="198" text-anchor="middle" font-size="12">hdfs mv</text>
+            <rect class="n-mk" x="844" y="196" width="80" height="24" rx="4"/><text class="t-mk" x="884" y="213" text-anchor="middle" font-size="10">사용자 작성</text>
+          </g>
+          <g data-at="5"><rect class="n-accent" x="834" y="140" width="34" height="44" rx="4"/><rect class="n-accent" x="878" y="140" width="34" height="44" rx="4"/></g>
+          <!-- ⑥ 기존 파일 hdfs rm -->
+          <g data-only="6">
+            <svg data-icon="trash-2" x="748" y="146" width="30" height="30" style="color: var(--muted)"></svg>
+            <circle class="step" cx="700" cy="56" r="12"/><text class="step-t" x="700" y="61" text-anchor="middle" font-size="14">6</text><text class="t" x="720" y="61" font-size="14">적어 둔 기존 파일만 지운다</text>
+            <text class="t t-mono" x="764" y="210" text-anchor="middle" font-size="12">hdfs rm</text>
+          </g>
+        </svg>
+      </div>
+      <ol class="steplist s6">
+        <li data-goto="1"><b>1</b>새 데이터를 <code>_raw</code>에 계속 Insert</li>
+        <li data-goto="2"><b>2</b><code>_temp</code>를 전부 비운다</li>
+        <li data-goto="3"><b>3</b>대상 날짜를 select해 <code>_temp</code>(ORC)에</li>
+        <li data-goto="4"><b>4</b><code>_orc</code>의 기존 파일 목록을 적어 둔다</li>
+        <li data-goto="5"><b>5</b><code>hdfs mv</code>로 새 파일을 <code>_orc</code>에</li>
+        <li data-goto="6"><b>6</b>적어 둔 기존 파일만 <code>hdfs rm</code></li>
+      </ol>
+      <div class="morebar">
+        <span class="hint">1은 항상, 2 ~ 6은 배치 주기마다 · <code>_orc</code>는 비지 않는다 — 새 파일을 먼저 넣고 기존 파일을 나중에 지운다</span>
+        <button class="more" type="button" data-arch="D17">자세히 — 적재 6단계 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-06</b> · 제목만 + 단계 도식 · 도식 D17</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>→ 키로 한 단계씩 진행한다. 아래 단계 칸을 눌러 바로 가도 된다. 회색 칸 = 이전 · 기존 파일, 초록 칸 = 새 파일.</li>
+      <li>③에서 select하면서 TEXT가 ORC로 바뀐다. ⑤ <code>hdfs mv</code>는 복사가 아니라 이동이라 빠르다 — 비유: 서류를 옮기지 않고 캐비닛 이름표만 바꿔 단다.</li>
+      <li>⑤와 ⑥ 사이에는 <code>_orc</code>에 기존 파일과 새 파일이 함께 있다. <span class="mk">[사용자 작성: ⑤와 ⑥ 사이 조회 결과]</span> <span class="mk">[사용자 작성: ④에서 기록하는 범위 — dt 파티션만인지 _orc 전체인지]</span> <span class="mk">[사용자 작성: 배치 주기]</span></li>
+      <li><span class="pp">pptx 대응</span> 단계마다 1장씩 6장 + '모핑' 전환.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-07 Iceberg 메타데이터 — D19 -->
+<section class="slide" data-id="M4-07" data-arch="D19" aria-label="M4-07 Iceberg 메타데이터">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Iceberg 메타데이터</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 372" role="img" aria-label="Hive Metastore는 현재 metadata 파일의 위치를 가리키고, metadata 파일은 snapshot의 manifest list를, manifest list는 manifest를, manifest는 Parquet 데이터 파일을 가리킨다">
+            <defs><marker id="m47" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <path class="e" d="M150 66 V92"/><path class="e" d="M150 148 V174"/><path class="e" d="M150 230 V256"/><path class="e" d="M150 312 V322 H260 V326"/><path class="e" d="M150 312 V322 H380 V326"/><path class="e" d="M150 312 V326"/>
+            <g data-at="1"><rect class="n" x="20" y="10" width="260" height="56" rx="8"/><rect class="logo-bg" x="32" y="22" width="32" height="32" rx="5"/><image data-logo="hive" x="35" y="25" width="26" height="26"/><text class="t-b" x="74" y="36" font-size="15">Hive Metastore</text><text class="t-m" x="74" y="54" font-size="12">카탈로그 — 현재 metadata 파일 위치</text></g>
+            <g data-at="1"><path class="flow c-acc" d="M150 66 V92" marker-end="url(#m47)"/></g>
+            <g data-at="2"><rect class="n-accent" x="20" y="94" width="260" height="54" rx="8"/><rect class="logo-bg" x="32" y="105" width="32" height="32" rx="5"/><image data-logo="iceberg" x="35" y="108" width="26" height="26"/><text class="t-b" x="74" y="118" font-size="15">metadata 파일</text><text class="t-m" x="74" y="137" font-size="12">장부 — 스키마 · snapshot 목록</text>
+              <path class="flow c-acc" d="M150 148 V174" marker-end="url(#m47)"/></g>
+            <g data-at="3"><rect class="n" x="20" y="176" width="260" height="54" rx="8"/><svg data-icon="list" x="34" y="190" width="24" height="24"></svg><text class="t-b" x="66" y="200" font-size="15">manifest list</text><text class="t-m" x="66" y="219" font-size="12">snapshot 하나의 목록 묶음</text>
+              <path class="flow c-acc" d="M150 230 V256" marker-end="url(#m47)"/>
+              <rect class="n" x="20" y="258" width="260" height="54" rx="8"/><svg data-icon="list-checks" x="34" y="272" width="24" height="24"></svg><text class="t-b" x="66" y="282" font-size="15">manifest</text><text class="t-m" x="66" y="301" font-size="12">데이터 파일 목록</text></g>
+            <g data-at="4">
+              <path class="flow c-acc" d="M150 312 V326" marker-end="url(#m47)"/><path class="flow c-acc" d="M150 312 V322 H260 V326" marker-end="url(#m47)"/><path class="flow c-acc" d="M150 312 V322 H380 V326" marker-end="url(#m47)"/>
+              <rect class="n" x="110" y="328" width="80" height="36" rx="6"/><text class="t" x="150" y="351" text-anchor="middle" font-size="12">Parquet</text>
+              <rect class="n" x="220" y="328" width="80" height="36" rx="6"/><text class="t" x="260" y="351" text-anchor="middle" font-size="12">Parquet</text>
+              <rect class="n" x="340" y="328" width="80" height="36" rx="6"/><text class="t" x="380" y="351" text-anchor="middle" font-size="12">Parquet</text>
+              <rect class="logo-bg" x="440" y="330" width="32" height="32" rx="5"/><image data-logo="hadoop" x="443" y="333" width="26" height="26"/><text class="t-m" x="480" y="351" font-size="12">HDFS에 저장</text>
+              <g class="dot-acc"><circle r="4.5" class="dot"><animateMotion dur="2.8s" repeatCount="indefinite" path="M150 66 V326"/></circle></g>
+            </g>
+            <g data-at="2"><rect class="grp" x="320" y="94" width="300" height="136" rx="10"/>
+              <text class="t-m" x="336" y="120" font-size="13">Hive 테이블과 다른 점</text>
+              <text class="t" x="336" y="148" font-size="13">Hive: 목록 = 폴더 위치</text>
+              <text class="t-a" x="336" y="174" font-size="13">Iceberg: 목록 = 파일 하나하나</text>
+              <text class="t-m" x="336" y="200" font-size="12">어떤 파일이 테이블에 속하는지</text>
+              <text class="t-m" x="336" y="218" font-size="12">메타데이터 파일이 정확히 적어 둔다</text></g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><span class="logo sm"><img data-logo="hive" alt=""></span>Hive Metastore가 시작점</b><p>Iceberg 테이블도 Hive 테이블과 같은 목록(카탈로그)에 등록된다. 목록에는 <strong>현재 metadata 파일의 위치</strong>가 있다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b><span class="logo sm"><img data-logo="iceberg" alt=""></span>metadata 파일 — 테이블의 장부</b><p>스키마와 snapshot 목록이 들어 있다. 폴더가 아니라 <strong>파일 하나하나</strong>를 기록한다.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>manifest list · manifest</b><p>snapshot마다 어떤 데이터 파일이 있는지 목록으로 이어진다.</p></li>
+          <li class="acc" data-at="4"><span class="no">4</span><b>데이터 파일 — Parquet, HDFS</b><p>실제 데이터는 HDFS의 Parquet 파일이다.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">이름은 Iceberg 1.6 문서의 용어</span>
+        <button class="more" type="button" data-arch="D19">자세히 — 메타데이터 구조 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-07</b> · 콘텐츠 2개(도식 + 설명) · 도식 D19</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 카탈로그 → ② metadata 파일 → ③ manifest list · manifest → ④ 데이터 파일. 화면에서 이 이름을 볼 일은 많지 않다 — "목록이 파일 단위로 정확하다"는 점만 기억하게 한다.</li>
+      <li>as-is: 카탈로그 = Hive Metastore, 저장 = HDFS, 데이터 파일 = Parquet, Iceberg 1.6.1.</li>
+      <li><span class="pp">pptx 대응</span> 사슬 4칸에 '나타내기' 4개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-08 Iceberg 적재와 snapshot -->
+<section class="slide" data-id="M4-08" aria-label="M4-08 Iceberg 적재와 snapshot">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Iceberg 적재와 snapshot</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 372" role="img" aria-label="적재할 때마다 새 데이터 파일이 덧붙고 snapshot이 하나씩 생긴다. snapshot은 파일을 복사하지 않고 그 시점의 파일 목록만 가리킨다">
+            <defs><marker id="m48" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- snapshot 상자 -->
+            <g data-at="1"><rect class="n" x="20" y="20" width="180" height="70" rx="8"/><svg data-icon="camera" x="32" y="32" width="22" height="22"></svg><text class="t-b" x="62" y="48" font-size="15">snapshot 1</text><text class="t-m" x="32" y="76" font-size="12">파일 1 · 2</text></g>
+            <g data-at="2"><rect class="n" x="230" y="20" width="180" height="70" rx="8"/><svg data-icon="camera" x="242" y="32" width="22" height="22"></svg><text class="t-b" x="272" y="48" font-size="15">snapshot 2</text><text class="t-m" x="242" y="76" font-size="12">파일 1 · 2 · 3</text></g>
+            <g data-at="3"><rect class="n-accent" x="440" y="20" width="180" height="70" rx="8"/><svg data-icon="camera" x="452" y="32" width="22" height="22" style="color: var(--accent)"></svg><text class="t-b" x="482" y="48" font-size="15">snapshot 3</text><text class="t-a" x="452" y="76" font-size="12">파일 1 · 2 · 3 · 4 — 현재</text></g>
+            <g data-at="2"><path class="flow c-acc" d="M200 55 H226" marker-end="url(#m48)"/><text class="t-a" x="213" y="112" text-anchor="middle" font-size="12">append</text></g>
+            <g data-at="3"><path class="flow c-acc" d="M410 55 H436" marker-end="url(#m48)"/><text class="t-a" x="423" y="112" text-anchor="middle" font-size="12">append</text></g>
+            <!-- HDFS의 데이터 파일 -->
+            <rect class="grp" x="20" y="236" width="600" height="124" rx="10"/>
+            <g data-at="1"><rect class="n" x="60" y="260" width="96" height="44" rx="6"/><text class="t" x="108" y="287" text-anchor="middle" font-size="13">파일 1</text>
+              <rect class="n" x="190" y="260" width="96" height="44" rx="6"/><text class="t" x="238" y="287" text-anchor="middle" font-size="13">파일 2</text></g>
+            <g data-at="2"><rect class="n-accent" x="320" y="260" width="96" height="44" rx="6"/><text class="t-a" x="368" y="287" text-anchor="middle" font-size="13">파일 3</text></g>
+            <g data-at="3"><rect class="n-accent" x="450" y="260" width="96" height="44" rx="6"/><text class="t-a" x="498" y="287" text-anchor="middle" font-size="13">파일 4</text></g>
+            <rect class="logo-bg" x="32" y="322" width="26" height="26" rx="4"/><image data-logo="hadoop" x="34" y="324" width="22" height="22"/>
+            <text x="66" y="341" font-size="13"><tspan class="t-b">HDFS</tspan><tspan class="t-m"> 데이터 파일 (Parquet) — 한 벌만 있다</tspan></text>
+            <!-- 4. snapshot은 같은 파일을 가리킨다 -->
+            <g data-at="4" fill="none" stroke-width="1.5" stroke-dasharray="4 4">
+              <path class="c-mut" d="M110 90 L108 256"/><path class="c-mut" d="M110 90 L238 256"/>
+              <path class="c-acc" d="M530 90 L108 256"/><path class="c-acc" d="M530 90 L238 256"/><path class="c-acc" d="M530 90 L368 256"/><path class="c-acc" d="M530 90 L498 256"/>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="camera"></svg> snapshot — 그 시점의 테이블 모습</b><p>적재가 끝날 때마다 하나씩 생긴다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>적재 = 새 파일을 덧붙인다(append)</b><p>기존 파일은 그대로 두고 새 데이터 파일만 추가한다.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>조회는 현재 snapshot을 읽는다</b><p>마지막으로 끝난 적재까지가 보인다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>비유: 테이블 전체 사진</b><p>단, 내용을 복사하지 않고 <strong>그 시점의 파일 목록</strong>만 기록한다. 그래서 예전 모습도 남는다.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-08</b> · 콘텐츠 2개(도식 + 설명) · 도식 D20 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① snapshot 1 → ② append와 snapshot 2 → ③ snapshot 3 = 현재 → ④ 같은 파일을 가리킨다(점선).</li>
+      <li>snapshot · append의 일반 동작은 Iceberg 1.6 문서 기준이다. as-is Iceberg 적재는 Spark가 새 데이터를 append한다.</li>
+      <li><span class="pp">pptx 대응</span> snapshot과 파일을 단계별 '나타내기', 점선 묶음은 마지막에.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-09 Iceberg의 commit — HTML 시연 + D18 -->
+<section class="slide" data-id="M4-09" data-arch="D18" id="tlSlide" aria-label="M4-09 Iceberg의 commit — 한 번에 반영">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Iceberg의 commit — 한 번에 반영</h2>
+    </div>
+    <div class="content">
+      <div class="dia fit">
+        <svg viewBox="0 0 960 268" role="img" aria-label="시간에 따른 조회 결과. Hive _orc는 새 파일을 옮겨 넣은 뒤 기존 파일을 지우는 두 번의 파일 작업으로 바뀌고, Iceberg는 commit 순간에 snapshot 1에서 snapshot 2로 한 번에 바뀐다">
+          <g data-at="1">
+            <rect class="logo-bg" x="20" y="72" width="26" height="26" rx="4"/><image data-logo="hive" x="22" y="74" width="22" height="22"/>
+            <text class="t-b" x="54" y="92" font-size="16">Hive</text>
+            <text class="t-m t-mono" x="20" y="116" font-size="14">_orc 조회</text>
+            <rect class="seg-ok" x="200" y="70" width="320" height="46" rx="4"/>
+            <rect class="n-mk" x="520" y="70" width="160" height="46" rx="4"/>
+            <rect class="seg-ok2" x="680" y="70" width="240" height="46" rx="4"/>
+            <text class="t-a" x="360" y="99" text-anchor="middle" font-size="15">기존 파일</text>
+            <text class="t-mk" x="600" y="99" text-anchor="middle" font-size="14">기존 + 새 파일</text>
+            <text class="t-alt" x="800" y="99" text-anchor="middle" font-size="15">새 파일</text>
+            <text class="t-m" x="520" y="58" text-anchor="middle" font-size="13">⑤ hdfs mv</text>
+            <text class="t-m" x="680" y="58" text-anchor="middle" font-size="13">⑥ 기존 파일 hdfs rm</text>
+          </g>
+          <g data-at="2">
+            <rect class="logo-bg" x="20" y="182" width="26" height="26" rx="4"/><image data-logo="iceberg" x="22" y="184" width="22" height="22"/>
+            <text class="t-b" x="54" y="202" font-size="16">Iceberg</text>
+            <text class="t-m" x="20" y="226" font-size="14">테이블 조회</text>
+            <path class="flow async c-mut" d="M400 152 H636"/>
+            <text class="t-m" x="518" y="144" text-anchor="middle" font-size="13">새 파일을 쓰는 중 — 아직 안 보인다</text>
+            <rect class="seg-ok" x="200" y="180" width="440" height="46" rx="4"/>
+            <rect class="seg-ok2" x="640" y="180" width="280" height="46" rx="4"/>
+            <text class="t-a" x="420" y="209" text-anchor="middle" font-size="15">snapshot 1을 읽는다</text>
+            <text class="t-alt" x="780" y="209" text-anchor="middle" font-size="15">snapshot 2를 읽는다</text>
+            <text class="t-alt" x="640" y="172" text-anchor="middle" font-size="13">commit</text>
+          </g>
+          <path class="e" d="M200 248 H920"/>
+          <text class="t-m" x="920" y="264" text-anchor="end" font-size="13">시간 →</text>
+          <g data-at="3"><line class="ph" id="phLine" x1="200" y1="40" x2="200" y2="244"/><circle class="ph-h" id="phDot" cx="200" cy="248" r="6"/></g>
+        </svg>
+      </div>
+      <div class="probe" data-at="3">
+        <span class="lab">이 시각에 조회하면 · Hive</span><span class="val good" id="pvHive">기존 파일</span>
+        <span class="lab">Iceberg</span><span class="val good" id="pvIce">snapshot 1</span>
+      </div>
+      <div class="scrub" data-at="3">
+        <span>조회 시각</span><input type="range" id="scrub" min="0" max="1000" value="0" aria-label="조회 시각 옮기기"><span>끌어서 옮긴다</span>
+      </div>
+      <div class="morebar">
+        <span class="hint">두 줄의 시각은 설명용이다</span>
+        <button class="more" type="button" data-arch="D18">자세히 — 시간 비교 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-09</b> · 제목만 + 시연 · 도식 D18</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Hive 줄 → ② Iceberg 줄 → ③ 조회 시각을 움직여 "같은 시각에 조회하면 무엇이 보이나"를 비교한다. 막대를 끌어 멈춰 세울 수 있다.</li>
+      <li>Iceberg는 새 파일을 다 쓴 뒤 commit 한 번에 snapshot을 바꾼다. 그 전까지는 이전 snapshot을 그대로 읽는다(Iceberg 1.6 문서의 원자적 commit).</li>
+      <li>Hive <code>_orc</code>는 ⑤ <code>hdfs mv</code>와 ⑥ <code>hdfs rm</code> 두 번에 나눠 바뀐다. <span class="mk">[사용자 작성: ⑤와 ⑥ 사이 조회 결과]</span></li>
+      <li><span class="pp">pptx 대응</span> 두 줄을 차례로 '나타내기', 조회 시각 막대는 '이동 경로' 애니메이션 1개. 끌어서 옮기는 기능은 HTML 전용.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-10 Iceberg 유지보수 -->
+<section class="slide" data-id="M4-10" aria-label="M4-10 Iceberg 유지보수 — Compaction · snapshot 정리">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Iceberg 유지보수 — Compaction · snapshot 정리</h2>
+    </div>
+    <div class="content">
+      <div class="two">
+        <div class="col fmt" data-at="1" style="border: 1.5px solid var(--line)">
+          <h3><svg data-icon="combine"></svg> Compaction — 작은 파일 합치기</h3>
+          <div class="dia"><svg viewBox="0 0 420 170" role="img" aria-label="작은 파일 여러 개를 큰 파일 몇 개로 합친다">
+            <defs><marker id="m410" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <g fill="var(--grp)" stroke="var(--muted)"><rect x="20" y="24" width="30" height="30" rx="3"/><rect x="58" y="24" width="30" height="30" rx="3"/><rect x="96" y="24" width="30" height="30" rx="3"/><rect x="134" y="24" width="30" height="30" rx="3"/><rect x="20" y="62" width="30" height="30" rx="3"/><rect x="58" y="62" width="30" height="30" rx="3"/><rect x="96" y="62" width="30" height="30" rx="3"/><rect x="134" y="62" width="30" height="30" rx="3"/><rect x="20" y="100" width="30" height="30" rx="3"/><rect x="58" y="100" width="30" height="30" rx="3"/><rect x="96" y="100" width="30" height="30" rx="3"/></g>
+            <path class="flow c-acc" d="M182 78 H238" marker-end="url(#m410)"/>
+            <rect class="n-accent" x="252" y="24" width="148" height="50" rx="5"/><rect class="n-accent" x="252" y="84" width="148" height="46" rx="5"/>
+            <text class="t-m" x="92" y="156" text-anchor="middle" font-size="12">append마다 쌓인 작은 파일</text><text class="t-a" x="326" y="156" text-anchor="middle" font-size="12">큰 파일 몇 개</text>
+          </svg></div>
+          <ul><li>append를 반복하면 <b>작은 파일</b>이 많이 쌓여 조회가 느려진다</li><li>비유: 흩어진 서류를 큰 묶음으로 다시 철하기</li></ul>
+        </div>
+        <div class="col fmt" data-at="2" style="border: 1.5px solid var(--line)">
+          <h3><svg data-icon="history"></svg> 오래된 snapshot 정리</h3>
+          <div class="dia"><svg viewBox="0 0 420 170" role="img" aria-label="오래된 snapshot은 지우고 최근 snapshot만 남긴다">
+            <g font-size="12">
+              <g opacity=".35"><rect class="n" x="16" y="40" width="64" height="56" rx="6"/><text class="t" x="48" y="73" text-anchor="middle">S1</text><rect class="n" x="96" y="40" width="64" height="56" rx="6"/><text class="t" x="128" y="73" text-anchor="middle">S2</text><rect class="n" x="176" y="40" width="64" height="56" rx="6"/><text class="t" x="208" y="73" text-anchor="middle">S3</text></g>
+              <rect class="n" x="256" y="40" width="64" height="56" rx="6"/><text class="t" x="288" y="73" text-anchor="middle">S4</text>
+              <rect class="n-accent" x="336" y="40" width="64" height="56" rx="6"/><text class="t-a" x="368" y="73" text-anchor="middle">S5</text>
+            </g>
+            <svg data-icon="trash-2" x="110" y="104" width="26" height="26" style="color: var(--muted)"></svg>
+            <text class="t-m" x="128" y="152" text-anchor="middle" font-size="12">오래된 snapshot · 안 쓰는 파일</text><text class="t-a" x="328" y="152" text-anchor="middle" font-size="12">최근 것만 남긴다</text>
+          </svg></div>
+          <ul><li>snapshot이 쌓이면 메타데이터와 <b>지워진 줄 알았던 옛 파일</b>이 남는다</li><li>오래된 것을 정리해 공간을 되찾는다</li></ul>
+        </div>
+      </div>
+      <p class="foot" data-at="3">Hive 방식에는 없던 작업이다 — 누가, 언제 돌리는지 <span class="mk">[사용자 작성: as-is에서 유지보수 작업을 하는지, DAG로 돌리는지]</span></p>
+    </div>
+    <div class="meta"><span class="id"><b>M4-10</b> · 콘텐츠 2개</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Compaction → ② snapshot 정리 → ③ as-is에서의 운영. 유지보수가 DAG라면 06 모니터링 · 07 장애 대응에서 다시 다룬다.</li>
+      <li>일반 동작은 Iceberg 1.6 문서 기준(rewrite data files, expire snapshots).</li>
+      <li><span class="pp">pptx 대응</span> 왼쪽 단 → 오른쪽 단 → 아래 줄 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-11 Hive와 Iceberg 비교 -->
+<section class="slide" data-id="M4-11" aria-label="M4-11 Hive와 Iceberg 비교">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Hive와 Iceberg 비교</h2>
+    </div>
+    <div class="content">
+      <table class="cmp">
+        <thead><tr><th></th><th><span class="logo sm"><img data-logo="hive" alt=""></span>Hive (as-is)</th><th><span class="logo sm"><img data-logo="iceberg" alt=""></span>Iceberg (as-is)</th></tr></thead>
+        <tbody>
+          <tr data-at="1"><th>적재 엔진</th><td><span class="logo sm"><img data-logo="tez" alt=""></span>Tez (Hive SQL)</td><td class="ice"><span class="logo sm"><img data-logo="spark" alt=""></span>Spark</td></tr>
+          <tr data-at="1"><th>테이블 수</th><td><code>_raw</code> · <code>_temp</code> · <code>_orc</code> 3개</td><td class="ice">1개</td></tr>
+          <tr data-at="1"><th>파일 형식</th><td>TEXTFILE · ORC</td><td class="ice">Parquet</td></tr>
+          <tr data-at="1"><th>조회하는 곳</th><td>최근은 <code>_raw</code>, 예전은 <code>_orc</code></td><td class="ice">테이블 하나</td></tr>
+          <tr data-at="2"><th>적재 방식</th><td>배치 주기마다 ORC로 바꿔 파일 교체</td><td class="ice">새 데이터 append</td></tr>
+          <tr data-at="2"><th>바뀌는 방식</th><td>파일 작업 두 번(<code>hdfs mv</code> → <code>hdfs rm</code>)</td><td class="ice">commit 한 번</td></tr>
+          <tr data-at="2"><th>이력</th><td>없음</td><td class="ice">snapshot</td></tr>
+          <tr data-at="2"><th>유지보수</th><td>ORC 변환 배치</td><td class="ice">Compaction · snapshot 정리</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="meta"><span class="id"><b>M4-11</b> · 제목 및 내용(표)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 구성(엔진 · 테이블 · 형식 · 조회) → ② 동작(적재 · 바뀌는 방식 · 이력 · 유지보수).</li>
+      <li>앞 장들의 정리다. 새 내용은 없다.</li>
+      <li><span class="pp">pptx 대응</span> 표 위 4줄 → 아래 4줄 '나타내기' 2개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-12 Hive → Iceberg 전환으로 얻는 것 -->
+<section class="slide" data-id="M4-12" aria-label="M4-12 Hive → Iceberg 전환으로 얻는 것">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>Hive → Iceberg 전환으로 얻는 것</h2>
+    </div>
+    <div class="content">
+      <div class="mini dia" data-at="1">
+        <svg viewBox="0 0 960 150" role="img" aria-label="지금 Hive는 _raw, 변환 배치, _temp, _orc를 거치고 조회는 두 곳에서 한다. 전환 후 Iceberg는 테이블 하나에 append하고 조회도 한 곳에서 한다">
+          <defs><marker id="m412" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <rect class="grp" x="10" y="10" width="560" height="130" rx="10"/>
+          <rect class="logo-bg" x="22" y="20" width="26" height="26" rx="4"/><image data-logo="hive" x="24" y="22" width="22" height="22"/><text class="t-b" x="56" y="39" font-size="14">지금 — Hive</text>
+          <rect class="n" x="30" y="62" width="100" height="44" rx="6"/><text class="t t-mono" x="80" y="89" text-anchor="middle" font-size="13">_raw</text>
+          <path class="flow c-mut" d="M130 84 H160" marker-end="url(#m412)"/>
+          <rect class="n-mk" x="164" y="62" width="120" height="44" rx="6"/><text class="t-mk" x="224" y="89" text-anchor="middle" font-size="12">ORC 변환 배치</text>
+          <path class="flow c-mut" d="M284 84 H314" marker-end="url(#m412)"/>
+          <rect class="n" x="318" y="62" width="100" height="44" rx="6"/><text class="t t-mono" x="368" y="89" text-anchor="middle" font-size="13">_temp</text>
+          <path class="flow c-mut" d="M418 84 H448" marker-end="url(#m412)"/>
+          <rect class="n" x="452" y="62" width="100" height="44" rx="6"/><text class="t t-mono" x="502" y="89" text-anchor="middle" font-size="13">_orc</text>
+          <text class="t-m" x="290" y="128" text-anchor="middle" font-size="12">조회는 _raw · _orc 두 곳</text>
+          <path class="flow c-acc" d="M580 75 H630" marker-end="url(#m412)"/>
+          <rect class="n-accent" x="640" y="10" width="310" height="130" rx="10"/>
+          <rect class="logo-bg" x="652" y="20" width="26" height="26" rx="4"/><image data-logo="iceberg" x="654" y="22" width="22" height="22"/><text class="t-b" x="686" y="39" font-size="14">전환 후 — Iceberg</text>
+          <rect class="n" x="700" y="62" width="190" height="44" rx="6"/><text class="t" x="795" y="89" text-anchor="middle" font-size="13">테이블 하나에 append</text>
+          <text class="t-a" x="795" y="128" text-anchor="middle" font-size="12">조회도 한 곳</text>
+        </svg>
+      </div>
+      <div class="cards c4" style="font-size: 1.25em; flex: 1; align-content: center">
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="table-2"></svg><h4>조회 대상이 하나</h4></div><div class="role">최근 · 예전을 나눠 볼 필요 없이 테이블 하나로 조회한다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="skip-forward"></svg><h4>변환 · 교체 단계가 없다</h4></div><div class="role">ORC 변환 배치와 <code>_temp</code> · <code>hdfs mv</code> · <code>hdfs rm</code> 단계가 사라진다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="circle-check"></svg><h4>commit 단위로 반영</h4></div><div class="role">적재가 끝나는 순간 한 번에 보이고, 그 전에는 이전 모습이 그대로 보인다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="history"></svg><h4>snapshot 이력</h4></div><div class="role">적재마다 테이블 모습이 snapshot으로 남는다</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-12</b> · 제목 및 내용(전후 비교 + 카드)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 지금과 전환 후 → ② 얻는 것 4가지. 일반 동작은 Iceberg 1.6 문서 기준이다.</li>
+      <li>snapshot 이력으로 예전 모습을 조회하는 기능(time travel)은 운영에서 쓰는지 확인 전이라 이름만 말한다. <span class="mk">[확인 필요: snapshot 이력을 조회에 쓰는지]</span></li>
+      <li><span class="pp">pptx 대응</span> 전후 도형 1묶음 → 카드 4개 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-13 전환 비용 -->
+<section class="slide" data-id="M4-13" aria-label="M4-13 전환 비용">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>전환 비용</h2>
+    </div>
+    <div class="content">
+      <div class="mini dia">
+        <svg viewBox="0 0 960 150" role="img" aria-label="전환으로 얻는 것과 대신 생기는 일을 저울에 놓고 비교한다">
+          <path d="M200 50 H760" stroke="var(--muted)" stroke-width="3"/>
+          <path d="M480 50 V128" stroke="var(--muted)" stroke-width="3"/><path d="M440 132 H520" stroke="var(--muted)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="480" cy="50" r="7" fill="var(--muted)"/>
+          <path d="M200 50 V62" stroke="var(--muted)" stroke-width="2"/><path d="M760 50 V62" stroke="var(--muted)" stroke-width="2"/>
+          <rect class="n-accent" x="40" y="66" width="320" height="70" rx="10"/>
+          <text class="t-a" x="200" y="92" text-anchor="middle" font-size="15">얻는 것 (앞 장)</text>
+          <text class="t" x="200" y="118" text-anchor="middle" font-size="13">조회 하나 · 교체 단계 없음 · commit · snapshot</text>
+          <rect class="n-mk" x="600" y="66" width="320" height="70" rx="10"/>
+          <text class="t-mk" x="760" y="92" text-anchor="middle" font-size="15">대신 생기는 일</text>
+          <text class="t" x="760" y="118" text-anchor="middle" font-size="13">유지보수 · 새 개념 · 과도기 이중 운영</text>
+          <svg data-icon="scale" x="456" y="8" width="48" height="36" style="color: var(--muted)"></svg>
+        </svg>
+      </div>
+      <div class="cards c3" style="align-content: center; flex: 1; font-size: 1.15em">
+        <div class="card" data-at="1"><div class="big-ico"><svg data-icon="combine"></svg></div><h4>유지보수 작업</h4><div class="role">Compaction과 오래된 snapshot 정리를 정해진 때마다 돌려야 한다</div><div class="sum"><span class="mk">[사용자 작성: 유지보수를 누가 · 언제 돌리는지]</span></div></div>
+        <div class="card" data-at="2"><div class="big-ico"><svg data-icon="layers"></svg></div><h4>새로 익힐 개념</h4><div class="role">snapshot · commit · metadata 파일처럼 Hive에 없던 개념을 알아야 상태를 읽을 수 있다</div></div>
+        <div class="card" data-at="3"><div class="big-ico"><svg data-icon="arrow-left-right"></svg></div><h4>과도기의 이중 운영</h4><div class="role">옮기는 동안은 같은 테이블을 Hive와 Iceberg 두 곳에 적재하므로 확인할 곳이 늘어난다</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-13</b> · 제목 및 내용(카드)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 유지보수 → ② 새 개념 → ③ 과도기 이중 운영. 얻는 것과 함께 "대신 생기는 일"로 균형을 잡는다.</li>
+      <li><span class="pp">pptx 대응</span> 카드 3개 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-14 전환 과도기 — 동시 적재 -->
+<section class="slide" data-id="M4-14" aria-label="M4-14 전환 과도기 — 동시 적재">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>전환 과도기 — 동시 적재</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 320" role="img" aria-label="최근 전환한 테이블은 같은 원천 데이터를 Spark로 Iceberg 테이블에, Tez로 Hive 테이블에 함께 적재한다">
+            <defs><marker id="m414" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <rect class="n" x="10" y="130" width="150" height="60" rx="8"/><svg data-icon="database" x="22" y="146" width="24" height="24"></svg><text class="t-b" x="54" y="164" font-size="14">원천 데이터</text>
+            <g data-at="1">
+              <path class="flow c-acc" d="M160 150 H200 V80 H236" marker-end="url(#m414)"/>
+              <path class="flow c-alt" d="M160 170 H200 V240 H236" marker-end="url(#m414)"/>
+              <path class="flow c-acc" d="M396 80 H446" marker-end="url(#m414)"/>
+              <path class="flow c-alt" d="M396 240 H446" marker-end="url(#m414)"/>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.6s" repeatCount="indefinite" path="M160 150 H200 V80 H450"/></circle></g>
+              <g class="dot-alt"><circle r="5" class="dot"><animateMotion dur="2.6s" begin="-1.3s" repeatCount="indefinite" path="M160 170 H200 V240 H450"/></circle></g>
+              <rect class="n" x="240" y="52" width="156" height="56" rx="8"/><rect class="logo-bg" x="250" y="62" width="40" height="36" rx="5"/><image data-logo="spark" x="253" y="66" width="34" height="28"/><text class="t-b" x="300" y="86" font-size="15">Spark</text>
+              <rect class="n" x="240" y="212" width="156" height="56" rx="8"/><rect class="logo-bg" x="250" y="222" width="36" height="36" rx="5"/><image data-logo="tez" x="253" y="225" width="30" height="30"/><text class="t-b" x="296" y="246" font-size="15">Tez</text>
+              <rect class="n-accent" x="450" y="52" width="180" height="56" rx="8"/><rect class="logo-bg" x="460" y="62" width="36" height="36" rx="5"/><image data-logo="iceberg" x="463" y="65" width="30" height="30"/><text class="t-b" x="504" y="86" font-size="15">Iceberg 테이블</text>
+              <rect class="n-alt" x="450" y="212" width="180" height="56" rx="8"/><rect class="logo-bg" x="460" y="222" width="36" height="36" rx="5"/><image data-logo="hive" x="463" y="225" width="30" height="30"/><text class="t-b" x="504" y="246" font-size="15">Hive 테이블</text>
+              <rect class="n-mk" x="200" y="140" width="250" height="40" rx="6"/><text class="t-mk" x="325" y="165" text-anchor="middle" font-size="13">같은 테이블을 두 곳에</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="arrow-left-right"></svg> 최근 전환한 테이블은 두 곳에 함께 쌓는다</b><p>같은 데이터를 Spark로 Iceberg 테이블에, Tez로 Hive 테이블에 적재한다.</p></li>
+          <li class="mark" data-at="2"><span class="no">2</span><b>대상 테이블과 이유</b><p><span class="mk">[확인 필요: 동시 적재 대상 테이블, 동시 적재 이유]</span></p></li>
+          <li class="mark" data-at="3"><span class="no">3</span><b>언제까지</b><p><span class="mk">[확인 필요: Hive 적재를 끝내는 시점]</span></p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-14</b> · 콘텐츠 2개(도식 + 설명) · 도식 D21 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 두 갈래 동시 적재 → ② 대상과 이유 → ③ 언제까지. 01 전체 구조의 "갈래가 둘인 이유"를 다시 꺼낸다.</li>
+      <li>대부분의 테이블은 아직 Hive만, 일부는 Iceberg만, 최근 전환한 일부는 두 곳 모두다(as-is).</li>
+      <li><span class="pp">pptx 대응</span> 도형 1묶음과 설명 3줄 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-15 동시 적재 테이블의 재실행 -->
+<section class="slide" data-id="M4-15" aria-label="M4-15 동시 적재 테이블의 재실행">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>동시 적재 테이블의 재실행</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 330" role="img" aria-label="Hive 쪽만 실패했을 때 같은 날짜로 Trigger하면 get_jobs가 job_history를 보고 이미 끝난 데이터는 다시 쌓지 않는다">
+            <defs><marker id="m415" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <g data-at="1">
+              <rect class="n-accent" x="400" y="20" width="230" height="56" rx="8"/><rect class="logo-bg" x="410" y="30" width="36" height="36" rx="5"/><image data-logo="iceberg" x="413" y="33" width="30" height="30"/><text class="t-b" x="454" y="46" font-size="14">Iceberg 쪽</text><text class="t-a" x="454" y="66" font-size="12">적재 완료</text>
+              <svg data-icon="circle-check" x="596" y="34" width="26" height="26" style="color: var(--ok)"></svg>
+              <rect class="n" x="400" y="98" width="230" height="56" rx="8" stroke="var(--stop)"/><rect class="logo-bg" x="410" y="108" width="36" height="36" rx="5"/><image data-logo="hive" x="413" y="111" width="30" height="30"/><text class="t-b" x="454" y="124" font-size="14">Hive 쪽</text><text class="t-stop" x="454" y="144" font-size="12">실패</text>
+              <svg data-icon="circle-x" x="596" y="112" width="26" height="26" style="color: var(--stop)"></svg>
+            </g>
+            <g data-at="2">
+              <rect class="n" x="10" y="190" width="170" height="60" rx="8"/><svg data-icon="repeat" x="22" y="206" width="24" height="24" style="color: var(--accent)"></svg><text class="t-b" x="54" y="214" font-size="14">Trigger DAG</text><text class="t t-mono" x="54" y="236" font-size="12">"2026-10-24"</text>
+              <path class="flow c-acc" d="M180 220 H226" marker-end="url(#m415)"/>
+              <rect class="n" x="230" y="190" width="150" height="60" rx="8"/><rect class="logo-bg" x="240" y="204" width="30" height="30" rx="5"/><image data-logo="airflow" x="243" y="207" width="24" height="24"/><text class="t-b t-mono" x="278" y="225" font-size="14">get_jobs</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M180 220 H228"/></circle></g>
+            </g>
+            <g data-at="3">
+              <rect class="n" x="230" y="270" width="150" height="50" rx="8"/><svg data-icon="notebook-text" x="240" y="283" width="22" height="22"></svg><text class="t-b t-mono" x="268" y="300" font-size="13">job_history</text>
+              <path class="flow async c-mut" d="M305 250 V266" marker-end="url(#m415)"/>
+              <path class="flow c-mut" d="M380 206 H386 V48 H396" marker-end="url(#m415)" stroke-dasharray="2 5"/>
+              <text class="t-m" x="388" y="182" text-anchor="end" font-size="11">이미 끝남 → 다시 쌓지 않음</text>
+              <path class="flow c-alt" d="M380 232 H394 V126 H396" marker-end="url(#m415)"/>
+              <text class="t-alt" x="452" y="178" font-size="12">처리할 데이터만 다시</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b>한쪽만 실패할 수 있다</b><p>예: Iceberg 쪽은 끝났고 Hive 쪽이 실패했다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>같은 날짜로 Trigger한다</b><p>PARAM에 그 날짜(<code>"2026-10-24"</code>)를 넣어 다시 실행한다 — 07 장애 대응.</p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b>job_history 덕분에 중복 적재되지 않는다</b><p>get_jobs가 job_history를 보고 이미 끝난 데이터는 다시 쌓지 않는다. Hive 변환 배치도 job_history를 쓴다.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-15</b> · 콘텐츠 2개(도식 + 설명)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 한쪽 실패 → ② 같은 날짜로 Trigger → ③ job_history로 중복 없음. 02 Airflow의 get_jobs · job_history를 다시 쓴다.</li>
+      <li><span class="mk">[확인 필요: 동시 적재 테이블의 DAG 구성 — Hive · Iceberg가 한 DAG인지 따로인지]</span> 따로라면 실패한 쪽 DAG만 Trigger한다고 바꾼다.</li>
+      <li><span class="pp">pptx 대응</span> 실패 상태 → Trigger → job_history 순으로 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M4-16 정리 -->
+<section class="slide" data-id="M4-16" aria-label="M4-16 정리">
+  <div class="in">
+    <div class="head">
+      <div class="eb">04 HDFS · Hive · Iceberg</div>
+      <h2>정리</h2>
+    </div>
+    <div class="content">
+      <div class="cards c2">
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="hadoop" alt=""></span><h4>테이블 = 파일 + 목록</h4></div><div class="role">HDFS가 파일을, Hive Metastore가 목록을 맡는다</div><div class="sum">목록이 없으면 파일이 있어도 찾지 못한다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="hive" alt=""></span><h4>as-is Hive</h4></div><div class="role">최근은 <code>_raw</code>(TEXT), 예전은 <code>_orc</code>(ORC)</div><div class="sum">배치 주기마다 6단계로 옮기고, 새 파일을 먼저 넣은 뒤 기존 파일을 지운다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="iceberg" alt=""></span><h4>Iceberg</h4></div><div class="role">테이블 하나에 append, commit 한 번에 반영, snapshot 이력</div><div class="sum">대신 Compaction · snapshot 정리가 필요하다</div></div>
+        <div class="card"><div class="ch"><svg data-icon="arrow-left-right"></svg><h4>전환 과도기</h4></div><div class="role">최근 전환한 테이블은 Hive와 Iceberg에 함께 적재한다</div><div class="sum">한쪽만 실패해도 같은 날짜로 Trigger — job_history 덕분에 중복 없음</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M4-16</b> · 제목 및 내용</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>다음 장(05 YARN · Spark · Tez)에서 이 테이블에 데이터를 쌓는 엔진을 본다.</li>
+    </ul>
+  </template>
+</section>
+
+<script data-module>
+// ---------- M4-09 조회 시각 비교 ----------
+(function () {
+  var s = document.getElementById('tlSlide');
+  if (!s) return;
+  var D = window.Deck, $ = function (id) { return document.getElementById(id); };
+  var tl = { t: 0, last: 0, raf: 0 }, X0 = 200, X1 = 920;
+  function set(t) {
+    tl.t = t;
+    var x = X0 + (X1 - X0) * t;
+    $('phLine').setAttribute('x1', x); $('phLine').setAttribute('x2', x);
+    $('phDot').setAttribute('cx', x);
+    $('scrub').value = Math.round(t * 1000);
+    var hv = $('pvHive'), iv = $('pvIce');
+    var both = x >= 520 && x < 680, moved = x >= 680;
+    hv.textContent = both ? '기존 + 새 파일 [사용자 작성: 조회 결과]' : moved ? '새 파일' : '기존 파일';
+    hv.className = 'val ' + (both ? 'mkv' : moved ? 'good2' : 'good');
+    var s2 = x >= 640;
+    iv.textContent = s2 ? 'snapshot 2' : 'snapshot 1';
+    iv.className = 'val ' + (s2 ? 'good2' : 'good');
+  }
+  function loop(ts) {
+    if (!D.isCurrent(s)) { stop(); return; }  // 다른 슬라이드로 넘어가면 멈춘다
+    if (!tl.last) tl.last = ts;
+    var dt = ts - tl.last; tl.last = ts;
+    set((tl.t + dt / 9000) % 1);
+    tl.raf = requestAnimationFrame(loop);
+  }
+  function stop() { cancelAnimationFrame(tl.raf); tl.raf = 0; tl.last = 0; }
+  function state(c, active) {
+    var run = active && c >= 3 && !D.isPaused() && !D.reduce;
+    if (run && !tl.raf) tl.raf = requestAnimationFrame(loop);
+    if (!run) stop();
+    if (!tl.raf) set(tl.t || (c >= 3 ? .62 : 0));
+  }
+  s.addEventListener('deck:step', function (e) { state(e.detail.step, e.detail.active); });
+  document.addEventListener('deck:pause', function () { state(+(s.dataset.cur || 0), D.isCurrent(s) && !D.isOverview() && !D.isNarrow()); });
+  $('scrub').addEventListener('input', function (e) { stop(); set(+e.target.value / 1000); });
+})();
+</script>

@@ -1,0 +1,167 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Hive 적재 6단계",
+    "locale": "ko",
+    "output": "deck/diagrams/D17-hive-batch.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "적재 단계"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "raw",
+      "label": "{테이블}_raw · TEXTFILE"
+    },
+    {
+      "id": "temp",
+      "label": "{테이블}_temp · ORC"
+    },
+    {
+      "id": "orc",
+      "label": "{테이블}_orc · ORC"
+    }
+  ],
+  "phases": [
+    {
+      "id": "always",
+      "label": "항상",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "batch",
+      "label": "배치 주기마다",
+      "fromCol": 1,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "insert",
+    "clear-temp",
+    "select",
+    "list-old",
+    "move",
+    "remove-old"
+  ],
+  "nodes": [
+    {
+      "id": "insert",
+      "lane": "raw",
+      "col": 0,
+      "type": "backend",
+      "label": "1 새 데이터 Insert",
+      "sublabel": "계속 쌓는다",
+      "tag": "최근 데이터 조회"
+    },
+    {
+      "id": "clear-temp",
+      "lane": "temp",
+      "col": 1,
+      "type": "backend",
+      "label": "2 _temp 비우기",
+      "sublabel": "전부 비운다"
+    },
+    {
+      "id": "select",
+      "lane": "temp",
+      "col": 2,
+      "type": "backend",
+      "label": "3 대상 날짜 select",
+      "sublabel": "_raw → ORC로 쌓기"
+    },
+    {
+      "id": "list-old",
+      "lane": "orc",
+      "col": 3,
+      "type": "backend",
+      "label": "4 기존 파일 목록 기록",
+      "sublabel": "[사용자 작성: 범위]"
+    },
+    {
+      "id": "move",
+      "lane": "orc",
+      "col": 4,
+      "type": "backend",
+      "label": "5 hdfs mv",
+      "sublabel": "_temp 파일을 _orc로"
+    },
+    {
+      "id": "remove-old",
+      "lane": "orc",
+      "col": 5,
+      "type": "backend",
+      "label": "6 기존 파일 hdfs rm",
+      "sublabel": "4에서 기록한 파일만",
+      "tag": "예전 데이터 조회"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-batch-start",
+      "from": "insert",
+      "to": "clear-temp",
+      "label": "배치 주기",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-fill-temp",
+      "from": "clear-temp",
+      "to": "select",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-temp-ready",
+      "from": "select",
+      "to": "list-old",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-move",
+      "from": "list-old",
+      "to": "move",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-remove",
+      "from": "move",
+      "to": "remove-old",
+      "label": "새 파일이 들어간 뒤",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "조회하는 곳",
+      "items": [
+        "최근 데이터 — _raw (비우지 않는다. retention 때만 과거를 지운다)",
+        "예전 데이터 — _orc"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "_orc는 비지 않는다",
+      "items": [
+        "새 파일을 먼저 hdfs mv로 넣고, 그 뒤에 기존 파일을 hdfs rm으로 지운다",
+        "hdfs mv는 복사가 아니라 이동이다 — 파일 이름표만 바꿔 달아 빠르다"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "아직 채우지 않은 것",
+      "items": [
+        "[사용자 작성: 4에서 기록하는 기존 파일의 범위 — dt 파티션만인지 _orc 전체인지]",
+        "[사용자 작성: 5와 6 사이, 기존 파일과 새 파일이 함께 있는 동안의 조회 결과]",
+        "[사용자 작성: 배치 주기]"
+      ]
+    }
+  ]
+}

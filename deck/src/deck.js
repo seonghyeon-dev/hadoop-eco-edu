@@ -35,6 +35,7 @@
   } catch (e) {}
 
   // 슬라이드별 단계 수 = 안에 있는 data-at / data-only / data-dim / data-goto 의 최댓값 (data-steps로 직접 줄 수도 있다)
+  // data-until="k"는 k단계부터 사라진다(비우기 · 지우기 같은 장면)
   slides.forEach(function (s) {
     var n = +(s.dataset.steps || 0);
     s.querySelectorAll('[data-at],[data-only],[data-dim],[data-goto]').forEach(function (e) {
@@ -52,6 +53,7 @@
     s.querySelectorAll('[data-at]').forEach(function (e) { e.classList.toggle('vis', c >= +e.dataset.at); });
     s.querySelectorAll('[data-only]').forEach(function (e) { e.classList.toggle('vis', c === +e.dataset.only); });
     s.querySelectorAll('[data-dim]').forEach(function (e) { e.classList.toggle('dimmed', c < +e.dataset.dim); });
+    s.querySelectorAll('[data-until]').forEach(function (e) { e.classList.toggle('gone', c >= +e.dataset.until); });
     s.querySelectorAll('[data-goto]').forEach(function (e) {
       var g = +e.dataset.goto;
       e.classList.toggle('now', c === g);
