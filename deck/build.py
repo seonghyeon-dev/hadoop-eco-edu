@@ -14,6 +14,7 @@ deck/captures/파일), 아이콘(<svg data-icon="이름" …></svg> → deck/ico
         deck/diagrams/D02-data-flow.html --quality showcase
 """
 import base64
+import datetime
 import gzip
 import json
 import pathlib
@@ -112,6 +113,7 @@ def build(name, part, modules):
     out = (shell
            .replace('{{TITLE}}', f'Hadoop eco 운영 교육 — {part}')
            .replace('{{PART}}', part)
+           .replace('{{BUILD}}', datetime.datetime.now().strftime('%Y-%m-%d %H:%M'))
            .replace('{{BASE_CSS}}', (SRC / 'base.css').read_text(encoding='utf-8').strip())
            .replace('{{MODULE_STYLES}}', ''.join(styles).strip())
            .replace('{{SLIDES}}', body)
