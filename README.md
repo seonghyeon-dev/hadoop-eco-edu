@@ -39,7 +39,8 @@ archify 도식(과 그것을 넣은 발표 샘플)에는 archify 렌더러 코�
 |------|------|
 | [작업 규칙](CLAUDE.md) | 교육 범위, 독자와 대응 범위, 작성·사실 출처·산출물 규칙 |
 | [교육 과정 intent](intent/course/hadoop-eco-ops/intent.md) | 배경, 제약, 미결 사항 |
-| [커리큘럼 spec](intent/course/hadoop-eco-ops/spec.md) | 학습 목표, 모듈 구성, 슬라이드 목차 |
+| [커리큘럼 spec](intent/course/hadoop-eco-ops/spec.md) | 학습 목표, 모듈 구성, 슬라이드 목차 (79장) |
+| [제작 plan](intent/course/hadoop-eco-ops/plan.md) | 산출물 위치, 제작 순서, 검수 방법 |
 | [intent · spec · plan 작성 규칙](intent/README.md) | 문서 단계와 front matter |
 
 ## 사이트 빌드

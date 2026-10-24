@@ -95,3 +95,4 @@ nav:
       - intent · spec · plan 작성 규칙: intent/README.md
       - 교육 과정 intent: intent/course/hadoop-eco-ops/intent.md
       - 커리큘럼 spec: intent/course/hadoop-eco-ops/spec.md
+      - 제작 plan: intent/course/hadoop-eco-ops/plan.md

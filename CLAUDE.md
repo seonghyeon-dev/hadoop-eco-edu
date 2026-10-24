@@ -101,7 +101,8 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 │   └── course/
 │       └── hadoop-eco-ops/
 │           ├── intent.md             # 교육 과정 전체의 intent
-│           └── spec.md               # 커리큘럼 spec 초안
+│           ├── spec.md               # 커리큘럼 spec (79장, 2026-10-24 승인)
+│           └── plan.md               # 제작 계획 — 산출물 위치, 제작 순서, 검수
 └── samples/
     ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 8장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다
     └── archify/                      # archify 도식 — <이름>.json(입력)을 고쳐 <이름>.html로 렌더링

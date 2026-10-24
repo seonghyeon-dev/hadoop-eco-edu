@@ -1,10 +1,10 @@
 ---
 title: Hadoop eco 운영 교육자료 — 커리큘럼
-status: draft
+status: approved
 category: course
 originated: 2026-10-04
 written: 2026-10-24
-approved:
+approved: 2026-10-24
 author: Seonghyeon Lee
 drafted-by: Claude
 ---
