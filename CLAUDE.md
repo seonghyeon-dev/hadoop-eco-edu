@@ -103,9 +103,9 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 │           ├── intent.md             # 교육 과정 전체의 intent
 │           └── spec.md               # 커리큘럼 spec 초안
 └── samples/
-    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다
+    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 8장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다
     └── archify/                      # archify 도식 — <이름>.json(입력)을 고쳐 <이름>.html로 렌더링
-        ├── airflow-processes.*       # Airflow 프로세스 구성과 재시작 범위 (architecture)
+        ├── airflow-processes.*       # Airflow 프로세스 구성과 서버 배치 (architecture)
         ├── data-flow.*               # 데이터가 테이블에 쌓이는 길 (dataflow)
         ├── hive-batch.*              # Hive 적재 6단계 (workflow)
         ├── hive-iceberg-timeline.*   # 적재 중 조회 — Hive와 Iceberg (timeline, 예시 시각)

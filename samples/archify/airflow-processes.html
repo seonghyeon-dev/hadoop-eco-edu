@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 3.2.0">
   <meta name="archify-reader-contract" content="declared-wide-v1">
-  <title>Airflow 프로세스 구성과 재시작 범위 다이어그램</title>
+  <title>Airflow 프로세스 구성과 서버 배치 다이어그램</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -5193,7 +5193,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="블루프린트 / 개정 01"
            data-preset-badge-editorial="에디토리얼 / 현장 노트">
         <div class="pulse-dot"></div>
-        <h1>Airflow 프로세스 구성과 재시작 범위</h1>
+        <h1>Airflow 프로세스 구성과 서버 배치</h1>
       </div>
     </div>
 
@@ -5203,7 +5203,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / 도판 04">
       <svg viewBox="0 0 1280 670" role="img" lang="ko" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
-        <title id="archify-diagram-title">Airflow 프로세스 구성과 재시작 범위</title>
+        <title id="archify-diagram-title">Airflow 프로세스 구성과 서버 배치</title>
         <desc id="archify-diagram-description">Archify로 생성한 아키텍처 다이어그램입니다.</desc>
         <!-- Definitions -->
         <defs>
@@ -5253,12 +5253,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
         <!-- Connection paths (before components for correct z-order) -->
         <g data-graph-role="automatic-crossover" style="--step:0">
-          <path data-graph-role="automatic-crossover-underlay" d="M 460 230 L 560 230" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="scheduler" data-edge-to="redis" data-edge-label="Task 넣기" data-edge-key="0" data-edge-id="sched-enqueue" data-composition-points="460,230;560,230" data-composition-crossover="halo" data-composition-independent="true" d="M 460 230 L 560 230" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 460 230 L 555 230" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="scheduler" data-edge-to="redis" data-edge-label="Task 넣기" data-edge-key="0" data-edge-id="sched-enqueue" data-composition-points="460,230;555,230" data-composition-crossover="halo" data-composition-independent="true" d="M 460 230 L 555 230" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:1">
-          <path data-graph-role="automatic-crossover-underlay" d="M 720 230 L 820 230" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="redis" data-edge-to="worker" data-edge-label="Task 꺼내기" data-edge-key="1" data-edge-id="worker-dequeue" data-composition-points="720,230;820,230" data-composition-crossover="halo" data-composition-independent="true" d="M 720 230 L 820 230" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 725 230 L 820 230" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="redis" data-edge-to="worker" data-edge-label="Task 꺼내기" data-edge-key="1" data-edge-id="worker-dequeue" data-composition-points="725,230;820,230" data-composition-crossover="halo" data-composition-independent="true" d="M 725 230 L 820 230" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:2">
           <path data-graph-role="automatic-crossover-underlay" d="M 980 232 L 1080 232" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -5305,8 +5305,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="120" y="244" class="t-muted" font-size="9" text-anchor="middle">브라우저</text>
         </g>
 
-        <g id="node-flower" data-node-id="flower" data-node-label="flower ×1" tabindex="0" role="button" aria-label="flower ×1 포커스, airflow-flower.service, 아키텍처 구성요소" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="airflow-flower.service" data-node-context="아키텍처 구성요소">
-          <title>flower ×1 · airflow-flower.service · 아키텍처 구성요소</title>
+        <g id="node-flower" data-node-id="flower" data-node-label="flower ×1" tabindex="0" role="button" aria-label="flower ×1 포커스, worker.1, 아키텍처 구성요소" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="worker.1" data-node-context="아키텍처 구성요소">
+          <title>flower ×1 · worker.1 · 아키텍처 구성요소</title>
           <rect x="560" y="40" width="160" height="60" rx="8" class="c-mask"/>
           <rect x="560" y="40" width="160" height="60" rx="8" class="c-frontend" data-animate="node" style="--step:7" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(566 46) scale(0.6875)">
@@ -5316,44 +5316,44 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="640" y="68" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">flower ×1</text>
-        <text data-detail="context" x="640" y="84" class="t-muted" font-size="9" text-anchor="middle">airflow-flower.service</text>
+        <text data-detail="context" x="640" y="84" class="t-muted" font-size="9" text-anchor="middle">worker.1</text>
         </g>
 
-        <g id="node-scheduler" data-node-id="scheduler" data-node-label="scheduler ×2" tabindex="0" role="button" aria-label="scheduler ×2 포커스, airflow-scheduler.service, 아키텍처 구성요소" aria-pressed="false" data-node-kind="backend" data-node-sublabel="airflow-scheduler.service" data-node-context="아키텍처 구성요소">
-          <title>scheduler ×2 · airflow-scheduler.service · 아키텍처 구성요소</title>
+        <g id="node-scheduler" data-node-id="scheduler" data-node-label="scheduler ×2" tabindex="0" role="button" aria-label="scheduler ×2 포커스, worker.1 · worker.2, 아키텍처 구성요소" aria-pressed="false" data-node-kind="backend" data-node-sublabel="worker.1 · worker.2" data-node-context="아키텍처 구성요소">
+          <title>scheduler ×2 · worker.1 · worker.2 · 아키텍처 구성요소</title>
           <rect x="300" y="200" width="160" height="60" rx="8" class="c-mask"/>
           <rect x="300" y="200" width="160" height="60" rx="8" class="c-backend" data-animate="node" style="--step:0" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(306 206) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="380" y="228" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">scheduler ×2</text>
-        <text data-detail="context" x="380" y="244" class="t-muted" font-size="9" text-anchor="middle">airflow-scheduler.service</text>
+        <text data-detail="context" x="380" y="244" class="t-muted" font-size="9" text-anchor="middle">worker.1 · worker.2</text>
         </g>
 
-        <g id="node-redis" data-node-id="redis" data-node-label="redis" tabindex="0" role="button" aria-label="redis 포커스, Celery broker, 아키텍처 구성요소" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="Celery broker" data-node-context="아키텍처 구성요소">
-          <title>redis · Celery broker · 아키텍처 구성요소</title>
-          <rect x="560" y="200" width="160" height="60" rx="8" class="c-mask"/>
-          <rect x="560" y="200" width="160" height="60" rx="8" class="c-messagebus" data-animate="node" style="--step:1" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(566 206) scale(0.6875)">
+        <g id="node-redis" data-node-id="redis" data-node-label="redis ×3" tabindex="0" role="button" aria-label="redis ×3 포커스, Celery broker · sentinel 감시, 아키텍처 구성요소" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="Celery broker · sentinel 감시" data-node-context="아키텍처 구성요소">
+          <title>redis ×3 · Celery broker · sentinel 감시 · 아키텍처 구성요소</title>
+          <rect x="555" y="200" width="170" height="60" rx="8" class="c-mask"/>
+          <rect x="555" y="200" width="170" height="60" rx="8" class="c-messagebus" data-animate="node" style="--step:1" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(561 206) scale(0.6875)">
             <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
             <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
             <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
             <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="640" y="228" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">redis</text>
-        <text data-detail="context" x="640" y="244" class="t-muted" font-size="9" text-anchor="middle">Celery broker</text>
+          <text data-node-label="" data-detail-anchor="" x="640" y="228" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">redis ×3</text>
+        <text data-detail="context" x="640" y="244" class="t-muted" font-size="9" text-anchor="middle">Celery broker · sentinel 감시</text>
         </g>
 
-        <g id="node-worker" data-node-id="worker" data-node-label="worker ×3" tabindex="0" role="button" aria-label="worker ×3 포커스, airflow-worker.service, 아키텍처 구성요소" aria-pressed="false" data-node-kind="backend" data-node-sublabel="airflow-worker.service" data-node-tag="Spark 실행 중 재시작 금지" data-node-context="아키텍처 구성요소">
-          <title>worker ×3 · airflow-worker.service · 아키텍처 구성요소 · Spark 실행 중 재시작 금지</title>
+        <g id="node-worker" data-node-id="worker" data-node-label="worker ×3" tabindex="0" role="button" aria-label="worker ×3 포커스, worker.1~3, 아키텍처 구성요소" aria-pressed="false" data-node-kind="backend" data-node-sublabel="worker.1~3" data-node-tag="실행 중인 Spark Task가 없을 때 재시작" data-node-context="아키텍처 구성요소">
+          <title>worker ×3 · worker.1~3 · 아키텍처 구성요소 · 실행 중인 Spark Task가 없을 때 재시작</title>
           <rect x="820" y="200" width="160" height="64" rx="8" class="c-mask"/>
           <rect x="820" y="200" width="160" height="64" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(826 206) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="900" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">worker ×3</text>
-        <text data-detail="context" x="900" y="246" class="t-muted" font-size="9" text-anchor="middle">airflow-worker.service</text>
-        <text data-detail="fine" x="900" y="256" class="t-backend" font-size="7" text-anchor="middle">Spark 실행 중 재시작 금지</text>
+        <text data-detail="context" x="900" y="246" class="t-muted" font-size="9" text-anchor="middle">worker.1~3</text>
+        <text data-detail="fine" x="900" y="256" class="t-backend" font-size="6.8" text-anchor="middle">실행 중인 Spark Task가 없을 때 재시작</text>
         </g>
 
         <g id="node-yarn" data-node-id="yarn" data-node-label="YARN" tabindex="0" role="button" aria-label="YARN 포커스, Spark · Hive SQL(Tez), 아키텍처 구성요소" aria-pressed="false" data-node-kind="external" data-node-sublabel="Spark · Hive SQL(Tez)" data-node-context="아키텍처 구성요소">
@@ -5368,32 +5368,32 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="1160" y="244" class="t-muted" font-size="9" text-anchor="middle">Spark · Hive SQL(Tez)</text>
         </g>
 
-        <g id="node-pgpool" data-node-id="pgpool" data-node-label="pgpool" tabindex="0" role="button" aria-label="pgpool 포커스, HA · 커넥션 풀, 아키텍처 구성요소" aria-pressed="false" data-node-kind="database" data-node-sublabel="HA · 커넥션 풀" data-node-context="아키텍처 구성요소">
-          <title>pgpool · HA · 커넥션 풀 · 아키텍처 구성요소</title>
+        <g id="node-pgpool" data-node-id="pgpool" data-node-label="pgpool ×3" tabindex="0" role="button" aria-label="pgpool ×3 포커스, HA · 커넥션 풀 · worker.1~3, 아키텍처 구성요소" aria-pressed="false" data-node-kind="database" data-node-sublabel="HA · 커넥션 풀 · worker.1~3" data-node-context="아키텍처 구성요소">
+          <title>pgpool ×3 · HA · 커넥션 풀 · worker.1~3 · 아키텍처 구성요소</title>
           <rect x="820" y="360" width="160" height="60" rx="8" class="c-mask"/>
           <rect x="820" y="360" width="160" height="60" rx="8" class="c-database" data-animate="node" style="--step:4" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(826 366) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="900" y="388" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">pgpool</text>
-        <text data-detail="context" x="900" y="404" class="t-muted" font-size="9" text-anchor="middle">HA · 커넥션 풀</text>
+          <text data-node-label="" data-detail-anchor="" x="900" y="388" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">pgpool ×3</text>
+        <text data-detail="context" x="900" y="404" class="t-muted" font-size="9" text-anchor="middle">HA · 커넥션 풀 · worker.1~3</text>
         </g>
 
-        <g id="node-postgres" data-node-id="postgres" data-node-label="PostgreSQL" tabindex="0" role="button" aria-label="PostgreSQL 포커스, metadata DB, 아키텍처 구성요소" aria-pressed="false" data-node-kind="database" data-node-sublabel="metadata DB" data-node-context="아키텍처 구성요소">
-          <title>PostgreSQL · metadata DB · 아키텍처 구성요소</title>
+        <g id="node-postgres" data-node-id="postgres" data-node-label="PostgreSQL ×3" tabindex="0" role="button" aria-label="PostgreSQL ×3 포커스, metadata DB · worker.1~3, 아키텍처 구성요소" aria-pressed="false" data-node-kind="database" data-node-sublabel="metadata DB · worker.1~3" data-node-context="아키텍처 구성요소">
+          <title>PostgreSQL ×3 · metadata DB · worker.1~3 · 아키텍처 구성요소</title>
           <rect x="1080" y="360" width="160" height="60" rx="8" class="c-mask"/>
           <rect x="1080" y="360" width="160" height="60" rx="8" class="c-database" data-animate="node" style="--step:7" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1086 366) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1160" y="388" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
-        <text data-detail="context" x="1160" y="404" class="t-muted" font-size="9" text-anchor="middle">metadata DB</text>
+          <text data-node-label="" data-detail-anchor="" x="1160" y="388" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL ×3</text>
+        <text data-detail="context" x="1160" y="404" class="t-muted" font-size="9" text-anchor="middle">metadata DB · worker.1~3</text>
         </g>
 
-        <g id="node-webserver" data-node-id="webserver" data-node-label="webserver ×2" tabindex="0" role="button" aria-label="webserver ×2 포커스, airflow-webserver.service, 아키텍처 구성요소" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="airflow-webserver.service" data-node-context="아키텍처 구성요소">
-          <title>webserver ×2 · airflow-webserver.service · 아키텍처 구성요소</title>
+        <g id="node-webserver" data-node-id="webserver" data-node-label="webserver ×2" tabindex="0" role="button" aria-label="webserver ×2 포커스, worker.1 · worker.2, 아키텍처 구성요소" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="worker.1 · worker.2" data-node-context="아키텍처 구성요소">
+          <title>webserver ×2 · worker.1 · worker.2 · 아키텍처 구성요소</title>
           <rect x="820" y="520" width="160" height="60" rx="8" class="c-mask"/>
           <rect x="820" y="520" width="160" height="60" rx="8" class="c-frontend" data-animate="node" style="--step:5" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(826 526) scale(0.6875)">
@@ -5403,17 +5403,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="900" y="548" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">webserver ×2</text>
-        <text data-detail="context" x="900" y="564" class="t-muted" font-size="9" text-anchor="middle">airflow-webserver.service</text>
+        <text data-detail="context" x="900" y="564" class="t-muted" font-size="9" text-anchor="middle">worker.1 · worker.2</text>
         </g>
 
         <!-- Connection labels -->
         <g data-detail="context" data-edge-from="scheduler" data-edge-to="redis" data-edge-label="Task 넣기" data-edge-key="0" data-edge-id="sched-enqueue">
-          <rect x="483.4" y="210" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
-          <text x="510" y="220" class="t-edge-emphasis" font-size="8" text-anchor="middle">Task 넣기</text>
+          <rect x="480.9" y="210" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="507.5" y="220" class="t-edge-emphasis" font-size="8" text-anchor="middle">Task 넣기</text>
         </g>
         <g data-detail="context" data-edge-from="redis" data-edge-to="worker" data-edge-label="Task 꺼내기" data-edge-key="1" data-edge-id="worker-dequeue">
-          <rect x="738.6" y="210" width="62.8" height="14" rx="3" class="c-mask"/>
-          <text x="770" y="220" class="t-edge-emphasis" font-size="8" text-anchor="middle">Task 꺼내기</text>
+          <rect x="741.1" y="210" width="62.8" height="14" rx="3" class="c-mask"/>
+          <text x="772.5" y="220" class="t-edge-emphasis" font-size="8" text-anchor="middle">Task 꺼내기</text>
         </g>
         <g data-detail="context" data-edge-from="worker" data-edge-to="yarn" data-edge-label="작업 제출" data-edge-key="2" data-edge-id="worker-submit">
           <rect x="1003.4" y="212" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
@@ -5454,21 +5454,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <!-- Legend -->
         <g data-legend="" data-legend-bridge="">
           <text x="40" y="612" class="t-primary" font-size="12" font-weight="650">범례</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Airflow 화면 프로세스 — 재시작 허용" data-legend-x="40" data-legend-baseline="632" data-legend-width="260">
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Airflow 화면 프로세스 — 재시작으로 복구" data-legend-x="40" data-legend-baseline="632" data-legend-width="285">
             <rect x="40" y="623" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
-            <text x="62" y="632" class="t-muted" font-size="10" font-weight="500">Airflow 화면 프로세스 — 재시작 허용</text>
+            <text x="62" y="632" class="t-muted" font-size="10" font-weight="500">Airflow 화면 프로세스 — 재시작으로 복구</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Airflow 프로세스 — 재시작 허용" data-legend-x="322" data-legend-baseline="632" data-legend-width="229">
-            <rect x="322" y="623" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
-            <text x="344" y="632" class="t-muted" font-size="10" font-weight="500">Airflow 프로세스 — 재시작 허용</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Airflow 프로세스 — 재시작으로 복구" data-legend-x="347" data-legend-baseline="632" data-legend-width="254">
+            <rect x="347" y="623" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="369" y="632" class="t-muted" font-size="10" font-weight="500">Airflow 프로세스 — 재시작으로 복구</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="metadata DB · pgpool — 재시작 금지" data-legend-x="573" data-legend-baseline="632" data-legend-width="254">
-            <rect x="573" y="623" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
-            <text x="595" y="632" class="t-muted" font-size="10" font-weight="500">metadata DB · pgpool — 재시작 금지</text>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="PostgreSQL · pgpool — 담당자에게 전달" data-legend-x="623" data-legend-baseline="632" data-legend-width="273">
+            <rect x="623" y="623" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
+            <text x="645" y="632" class="t-muted" font-size="10" font-weight="500">PostgreSQL · pgpool — 담당자에게 전달</text>
           </g>
-          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Celery broker — 재시작 금지" data-legend-x="849" data-legend-baseline="632" data-legend-width="211">
-            <rect x="849" y="623" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
-            <text x="871" y="632" class="t-muted" font-size="10" font-weight="500">Celery broker — 재시작 금지</text>
+          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="redis · redis-sentinel — 담당자에게 전달" data-legend-x="918" data-legend-baseline="632" data-legend-width="291">
+            <rect x="918" y="623" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
+            <text x="940" y="632" class="t-muted" font-size="10" font-weight="500">redis · redis-sentinel — 담당자에게 전달</text>
           </g>
           <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="사람 · Airflow 밖의 시스템" data-legend-x="40" data-legend-baseline="654" data-legend-width="205">
             <rect x="40" y="645" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
@@ -5655,23 +5655,34 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot emerald"></div>
-          <h3>재시작 허용 — 운영 담당자가 직접</h3>
+          <h3>재시작 — webserver · scheduler · worker · flower</h3>
         </div>
         <ul>
-          <li>scheduler · worker · webserver · flower</li>
-          <li>systemctl로 하나씩, 또는 ansible playbook에서 대상을 지정해 재시작</li>
-          <li>worker는 실행 중인 Spark Task가 없을 때만 재시작한다</li>
+          <li>systemctl로 하나씩, 또는 ansible playbook에서 대상을 지정해 재시작한다</li>
+          <li>worker는 실행 중인 Spark Task가 없을 때 재시작한다</li>
+          <li>systemd unit: airflow-webserver · airflow-scheduler · airflow-worker · airflow-flower.service</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot rose"></div>
-          <h3>재시작 금지 — 담당자에게 전달</h3>
+          <div class="card-dot amber"></div>
+          <h3>담당자에게 전달 — PostgreSQL · pgpool · redis · redis-sentinel</h3>
         </div>
         <ul>
-          <li>PostgreSQL · pgpool · redis — 위험도가 높다</li>
-          <li>Spark 작업이 실행 중일 때의 worker 재시작</li>
+          <li>이 프로세스에 이상이 보이면 전달 양식을 채워 담당자에게 전달한다</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot slate"></div>
+          <h3>서버 배치</h3>
+        </div>
+        <ul>
+          <li>worker.1 — webserver · scheduler · worker · flower · postgresql · pgpool · redis · redis-sentinel</li>
+          <li>worker.2 — webserver · scheduler · worker · postgresql · pgpool · redis · redis-sentinel</li>
+          <li>worker.3 — worker · postgresql · pgpool · redis · redis-sentinel</li>
         </ul>
       </div>
 
@@ -5683,6 +5694,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <ul>
           <li>scheduler — DAG 일정을 보고 지금 실행할 Task를 정한다</li>
           <li>redis(Celery broker) — 실행할 Task가 줄 서는 대기열</li>
+          <li>redis-sentinel — redis를 지켜보다 멈추면 다른 redis로 자동 전환한다</li>
           <li>worker — 대기열에서 Task를 꺼내 실제로 실행한다. Spark 작업은 YARN에 제출한다</li>
           <li>metadata DB — DAG Run · Task 상태를 적어 두는 DB. Airflow UI가 보여 주는 내용이 여기서 온다</li>
           <li>pgpool — PostgreSQL 연결을 모아 관리하고(커넥션 풀) 이중화(HA)를 맡는다</li>

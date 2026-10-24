@@ -2,23 +2,23 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Airflow 프로세스 구성과 재시작 범위",
+    "title": "Airflow 프로세스 구성과 서버 배치",
     "locale": "ko",
     "output": "samples/archify/airflow-processes.html",
     "quality_profile": "showcase",
     "legend": {
       "entries": {
         "backend": {
-          "label": "Airflow 프로세스 — 재시작 허용"
+          "label": "Airflow 프로세스 — 재시작으로 복구"
         },
         "frontend": {
-          "label": "Airflow 화면 프로세스 — 재시작 허용"
+          "label": "Airflow 화면 프로세스 — 재시작으로 복구"
         },
         "messagebus": {
-          "label": "Celery broker — 재시작 금지"
+          "label": "redis · redis-sentinel — 담당자에게 전달"
         },
         "database": {
-          "label": "metadata DB · pgpool — 재시작 금지"
+          "label": "PostgreSQL · pgpool — 담당자에게 전달"
         },
         "external": {
           "label": "사람 · Airflow 밖의 시스템"
@@ -46,7 +46,7 @@
       "id": "flower",
       "type": "frontend",
       "label": "flower ×1",
-      "sublabel": "airflow-flower.service",
+      "sublabel": "worker.1",
       "pos": [
         560,
         40
@@ -60,7 +60,7 @@
       "id": "scheduler",
       "type": "backend",
       "label": "scheduler ×2",
-      "sublabel": "airflow-scheduler.service",
+      "sublabel": "worker.1 · worker.2",
       "pos": [
         300,
         200
@@ -73,14 +73,14 @@
     {
       "id": "redis",
       "type": "messagebus",
-      "label": "redis",
-      "sublabel": "Celery broker",
+      "label": "redis ×3",
+      "sublabel": "Celery broker · sentinel 감시",
       "pos": [
-        560,
+        555,
         200
       ],
       "size": [
-        160,
+        170,
         60
       ]
     },
@@ -88,8 +88,8 @@
       "id": "worker",
       "type": "backend",
       "label": "worker ×3",
-      "sublabel": "airflow-worker.service",
-      "tag": "Spark 실행 중 재시작 금지",
+      "sublabel": "worker.1~3",
+      "tag": "실행 중인 Spark Task가 없을 때 재시작",
       "pos": [
         820,
         200
@@ -116,8 +116,8 @@
     {
       "id": "pgpool",
       "type": "database",
-      "label": "pgpool",
-      "sublabel": "HA · 커넥션 풀",
+      "label": "pgpool ×3",
+      "sublabel": "HA · 커넥션 풀 · worker.1~3",
       "pos": [
         820,
         360
@@ -130,8 +130,8 @@
     {
       "id": "postgres",
       "type": "database",
-      "label": "PostgreSQL",
-      "sublabel": "metadata DB",
+      "label": "PostgreSQL ×3",
+      "sublabel": "metadata DB · worker.1~3",
       "pos": [
         1080,
         360
@@ -145,7 +145,7 @@
       "id": "webserver",
       "type": "frontend",
       "label": "webserver ×2",
-      "sublabel": "airflow-webserver.service",
+      "sublabel": "worker.1 · worker.2",
       "pos": [
         820,
         520
@@ -230,19 +230,27 @@
   "cards": [
     {
       "dot": "emerald",
-      "title": "재시작 허용 — 운영 담당자가 직접",
+      "title": "재시작 — webserver · scheduler · worker · flower",
       "items": [
-        "scheduler · worker · webserver · flower",
-        "systemctl로 하나씩, 또는 ansible playbook에서 대상을 지정해 재시작",
-        "worker는 실행 중인 Spark Task가 없을 때만 재시작한다"
+        "systemctl로 하나씩, 또는 ansible playbook에서 대상을 지정해 재시작한다",
+        "worker는 실행 중인 Spark Task가 없을 때 재시작한다",
+        "systemd unit: airflow-webserver · airflow-scheduler · airflow-worker · airflow-flower.service"
       ]
     },
     {
-      "dot": "rose",
-      "title": "재시작 금지 — 담당자에게 전달",
+      "dot": "amber",
+      "title": "담당자에게 전달 — PostgreSQL · pgpool · redis · redis-sentinel",
       "items": [
-        "PostgreSQL · pgpool · redis — 위험도가 높다",
-        "Spark 작업이 실행 중일 때의 worker 재시작"
+        "이 프로세스에 이상이 보이면 전달 양식을 채워 담당자에게 전달한다"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "서버 배치",
+      "items": [
+        "worker.1 — webserver · scheduler · worker · flower · postgresql · pgpool · redis · redis-sentinel",
+        "worker.2 — webserver · scheduler · worker · postgresql · pgpool · redis · redis-sentinel",
+        "worker.3 — worker · postgresql · pgpool · redis · redis-sentinel"
       ]
     },
     {
@@ -251,6 +259,7 @@
       "items": [
         "scheduler — DAG 일정을 보고 지금 실행할 Task를 정한다",
         "redis(Celery broker) — 실행할 Task가 줄 서는 대기열",
+        "redis-sentinel — redis를 지켜보다 멈추면 다른 redis로 자동 전환한다",
         "worker — 대기열에서 Task를 꺼내 실제로 실행한다. Spark 작업은 YARN에 제출한다",
         "metadata DB — DAG Run · Task 상태를 적어 두는 DB. Airflow UI가 보여 주는 내용이 여기서 온다",
         "pgpool — PostgreSQL 연결을 모아 관리하고(커넥션 풀) 이중화(HA)를 맡는다"
