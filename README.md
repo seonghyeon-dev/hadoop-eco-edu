@@ -34,8 +34,8 @@
 |------|------|------|
 | [데이터가 테이블에 쌓이는 길](samples/archify/data-flow.html) | dataflow | M1-02 |
 | [Airflow 프로세스 구성과 서버 배치](samples/archify/airflow-processes.html) | architecture | M2-06 ~ M2-09 |
-| [Hive 적재 6단계](samples/archify/hive-batch.html) | workflow | M4-06 |
-| [적재 중 조회 — Hive와 Iceberg](samples/archify/hive-iceberg-timeline.html) | timeline (예시 시각) | M4-09 |
+| [Hive 적재 6단계](samples/archify/hive-batch.html) | workflow | M3-06 |
+| [적재 중 조회 — Hive와 Iceberg](samples/archify/hive-iceberg-timeline.html) | timeline (예시 시각) | M3-09 |
 
 HTML 발표 샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `D` 자세히(archify 도식) · `Esc` 돌아오기, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
 

@@ -133,13 +133,13 @@ code { font-family: var(--mono); font-size: .95em; }
 
 /* 카드 묶음 */
 .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7em; flex: 1; min-height: 0; align-content: start; }
-.card { border: 1px solid var(--line); border-radius: 8px; padding: .7em .85em; display: flex; flex-direction: column; gap: .35em; font-size: .8em; min-width: 0; background: var(--surface); }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: .7em .85em; display: flex; flex-direction: column; gap: .3em; font-size: .76em; min-width: 0; background: var(--surface); }
 .card h4 { margin: 0; font-size: 1.15em; color: var(--accent); }
 .card .role { font-weight: 700; }
 .card .an { color: var(--ink); background: var(--grp); border-radius: 4px; padding: .2em .45em; }
 .card .an::before { content: "비유 · "; color: var(--muted); font-weight: 700; }
 .card .df { color: var(--stop); font-size: .95em; }
-.card .df::before { content: "다른 점 · "; font-weight: 700; }
+.card .df::before { content: "실제로는 · "; font-weight: 700; }
 .card.legend-card { background: var(--grp); border-style: dashed; justify-content: center; color: var(--muted); }
 
 /* ---------- 도식 (SVG) ---------- */
@@ -283,6 +283,9 @@ body.notes-on .meta .id { visibility: visible; }
 .logo { display: inline-grid; place-items: center; flex: none; min-width: 2.6em; height: 2.6em; padding: .25em; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
 .logo img { height: 2.05em; width: auto; max-width: 5.2em; object-fit: contain; display: block; }
 .dia .logo-bg { fill: #fff; stroke: var(--line); }
+.logo.sm { min-width: 1.5em; height: 1.5em; padding: .12em; border-radius: 4px; margin-right: .35em; vertical-align: -.3em; }
+.logo.sm img { height: 1.2em; max-width: 3.2em; }
+.logos { display: flex; flex-wrap: wrap; gap: .5em; margin: 0 0 1.2em; font-size: 1.1em; }
 .steps5 { list-style: none; margin: .3em 0 0; padding: 0; display: flex; flex-direction: column; gap: .3em; font-size: .95em; }
 .steps5 li { display: flex; gap: .5em; align-items: baseline; }
 .steps5 b { color: var(--accent); min-width: 4.6em; }

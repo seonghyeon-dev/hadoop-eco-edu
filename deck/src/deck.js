@@ -25,6 +25,15 @@
     isCurrent: function (s) { return slides[i] === s; }
   };
 
+  // 공식 로고 — 파일에 한 번만 들어 있는 것을 <img data-logo> · <image data-logo>에 채운다(deck/build.py)
+  try {
+    var logos = JSON.parse(($('logos') || {}).textContent || '{}');
+    document.querySelectorAll('[data-logo]').forEach(function (e) {
+      var src = logos[e.dataset.logo];
+      if (src) e.setAttribute(e.tagName.toLowerCase() === 'img' ? 'src' : 'href', src);
+    });
+  } catch (e) {}
+
   // 슬라이드별 단계 수 = 안에 있는 data-at / data-only / data-dim / data-goto 의 최댓값 (data-steps로 직접 줄 수도 있다)
   slides.forEach(function (s) {
     var n = +(s.dataset.steps || 0);

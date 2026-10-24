@@ -69,14 +69,18 @@ def icon(m):
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"{m.group(2)}>{body}</svg>')
 
 
-def logo(m):
-    found = sorted(DECK.glob(f'logos/{m.group(3)}.*'))
-    found = [f for f in found if f.suffix in MIME]
+def logo_data(name):
+    found = [f for f in sorted(DECK.glob(f'logos/{name}.*')) if f.suffix in MIME]
     if not found:
-        sys.exit(f'로고가 없다: deck/logos/{m.group(3)}.* — deck/logos/README.md 참조')
-    data = base64.b64encode(found[0].read_bytes()).decode('ascii')
-    attr = 'src' if m.group(1) == 'img' else 'href'
-    return f'<{m.group(1)}{m.group(2)}{attr}="data:{MIME[found[0].suffix]};base64,{data}" data-logo="{m.group(3)}"'
+        sys.exit(f'로고가 없다: deck/logos/{name}.* — deck/logos/README.md 참조')
+    return f'data:{MIME[found[0].suffix]};base64,' + base64.b64encode(found[0].read_bytes()).decode('ascii')
+
+
+def logos_block(body):
+    # 같은 로고가 여러 번 나와도 파일에는 한 번만 넣는다. deck.js가 열 때 <img> · <image>에 채운다
+    names = sorted(set(m.group(3) for m in LOGO.finditer(body)))
+    data = {name: logo_data(name) for name in names}
+    return f'<script type="application/json" id="logos">{json.dumps(data)}</script>' if data else ''
 
 
 def build(name, part, modules):
@@ -96,7 +100,6 @@ def build(name, part, modules):
     body = '\n\n'.join(slides)
     body = CAPTURE.sub(capture, body)
     body = ICON.sub(icon, body)
-    body = LOGO.sub(logo, body)
     keys = sorted(set(ARCH.findall(body)))
     blocks, size = [], 0
     for key in keys:
@@ -109,7 +112,7 @@ def build(name, part, modules):
            .replace('{{BASE_CSS}}', (SRC / 'base.css').read_text(encoding='utf-8').strip())
            .replace('{{MODULE_STYLES}}', ''.join(styles).strip())
            .replace('{{SLIDES}}', body)
-           .replace('{{DIAGRAMS}}', '\n'.join(blocks))
+           .replace('{{DIAGRAMS}}', '\n'.join(blocks + [logos_block(body)]))
            .replace('{{DECK_JS}}', (SRC / 'deck.js').read_text(encoding='utf-8').strip())
            .replace('{{MODULE_SCRIPTS}}', ''.join(scripts).strip()))
     (DECK / name).write_text(out, encoding='utf-8')
