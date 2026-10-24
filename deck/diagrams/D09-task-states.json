@@ -1,0 +1,148 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Task 상태 변화",
+    "locale": "ko",
+    "output": "deck/diagrams/D09-task-states.html",
+    "quality_profile": "showcase"
+  },
+  "mainPath": [
+    "scheduled",
+    "queued",
+    "running",
+    "success"
+  ],
+  "states": [
+    {
+      "id": "scheduled",
+      "type": "start",
+      "label": "scheduled",
+      "sublabel": "실행 차례를 기다림",
+      "tag": "황갈색"
+    },
+    {
+      "id": "queued",
+      "type": "waiting",
+      "label": "queued",
+      "sublabel": "worker를 기다림",
+      "tag": "회색"
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "running",
+      "sublabel": "worker가 실행 중",
+      "tag": "연두색"
+    },
+    {
+      "id": "success",
+      "type": "success",
+      "label": "success",
+      "sublabel": "성공",
+      "tag": "초록색"
+    },
+    {
+      "id": "retry",
+      "type": "waiting",
+      "label": "up_for_retry",
+      "sublabel": "정해진 시간 뒤 다시 시도",
+      "tag": "금색"
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "failed",
+      "sublabel": "재시도까지 실패",
+      "tag": "빨간색"
+    },
+    {
+      "id": "upstream",
+      "type": "failure",
+      "label": "upstream_failed",
+      "sublabel": "앞 Task가 실패해 시작 못 함",
+      "tag": "주황색"
+    },
+    {
+      "id": "skipped",
+      "type": "neutral",
+      "label": "skipped",
+      "sublabel": "조건에 따라 건너뜀",
+      "tag": "분홍색"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "from": "scheduled",
+      "to": "queued",
+      "label": "실행 차례"
+    },
+    {
+      "id": "t2",
+      "from": "queued",
+      "to": "running",
+      "label": "worker가 시작"
+    },
+    {
+      "id": "t3",
+      "from": "running",
+      "to": "success",
+      "label": "성공",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t4",
+      "from": "running",
+      "to": "retry",
+      "label": "실패 · 재시도 남음",
+      "variant": "dashed"
+    },
+    {
+      "id": "t5",
+      "from": "retry",
+      "to": "queued",
+      "label": "다시 시도"
+    },
+    {
+      "id": "t6",
+      "from": "running",
+      "to": "failed",
+      "label": "실패 · 재시도 없음",
+      "variant": "security"
+    },
+    {
+      "id": "t7",
+      "from": "scheduled",
+      "to": "upstream",
+      "label": "앞 Task 실패",
+      "variant": "security"
+    },
+    {
+      "id": "t8",
+      "from": "scheduled",
+      "to": "skipped",
+      "label": "건너뜀"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "자동 재시도",
+      "items": [
+        "실패해도 재시도 횟수가 남아 있으면 up_for_retry가 된다",
+        "정해진 시간이 지나면 다시 queued → running으로 간다",
+        "up_for_retry 동안에는 손대지 않고 기다린다"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "실패로 끝난 경우",
+      "items": [
+        "failed — 재시도까지 모두 실패했다",
+        "upstream_failed — 이 Task가 아니라 앞 Task가 실패했다. 앞 Task의 log를 본다",
+        "처리 방법은 07 장애 대응"
+      ]
+    }
+  ]
+}

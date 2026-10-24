@@ -1,0 +1,760 @@
+<!-- ===================================================== M2. Airflow -->
+<style data-module>
+/* M2-06 서버 배치 */
+.srvs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; flex: 1; min-height: 0; align-content: center; }
+.srv { border: 1.5px solid var(--line); border-radius: 10px; padding: .8em .9em; background: var(--grp); display: flex; flex-direction: column; gap: .45em; }
+.srv h3 { margin: 0 0 .2em; font-size: 1.05em; display: flex; align-items: center; gap: .4em; font-family: var(--mono); }
+.srv h3 .ico-svg { color: var(--muted); }
+.srv .p { display: flex; align-items: center; gap: .5em; border: 1.5px solid var(--line); border-radius: 6px; padding: .3em .55em; background: var(--surface); font-size: .86em; transition: background .5s, border-color .5s; }
+.srv .p .logo.sm { margin-right: 0; }
+.srv .p .ico-svg { color: var(--muted); }
+.srv .p small { margin-left: auto; color: var(--muted); font-size: .85em; }
+.slide.painted .srv .p.run { background: var(--ok-bg); border-color: var(--ok); }
+.slide.painted .srv .p.keep { background: var(--alt-bg); border-color: var(--alt); }
+.sw.run { background: var(--ok-bg); border-color: var(--ok); }
+.sw.keep { background: var(--alt-bg); border-color: var(--alt); }
+/* M2-07 · 08 역할 카드 위 작은 흐름 */
+.mini { flex: none; }
+.mini svg { display: block; width: 100%; height: auto; max-height: 9.5em; }
+.cards.c4 { grid-template-columns: repeat(4, 1fr); }
+.card .cnt { font-family: var(--mono); font-size: .9em; color: var(--muted); }
+/* M2-11 정리 — 2 × 2 */
+.cards.c2 { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; align-content: stretch; font-size: 1.15em; gap: .9em; }
+.cards.c2 .card { justify-content: center; padding: .9em 1.1em; gap: .45em; }
+.cards.c2 .card .ch .ico-svg { width: 1.7em; height: 1.7em; }
+.card .sum { color: var(--muted); font-size: .95em; }
+/* M2-09 멈춘 프로세스 시연 */
+.sim { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.2em; flex: 1; min-height: 0; }
+.sim-l { display: flex; flex-direction: column; min-height: 0; }
+.picks { display: flex; flex-wrap: wrap; gap: .4em; font-size: .78em; margin-top: .6em; }
+.picks button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: .25em .8em; cursor: pointer; font-size: inherit; }
+.picks button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.symp { border: 1px solid var(--line); border-radius: 8px; padding: 1em 1.2em; display: flex; flex-direction: column; gap: .6em; font-size: .86em; background: var(--grp); }
+.symp h3 { margin: 0; font-size: 1.15em; }
+.symp .lab { font-size: .82em; font-weight: 700; color: var(--muted); }
+.symp p { margin: 0; }
+.symp .act { border-radius: 6px; padding: .5em .7em; font-weight: 700; }
+.symp .act.ok { background: var(--ok-bg); color: var(--ok); }
+.symp .act.stop { background: var(--alt-bg); color: var(--alt); }
+.symp .empty { color: var(--muted); }
+.proc rect.box { transition: fill .5s, stroke .5s; }
+.proc.down rect.box { fill: var(--grp) !important; stroke: var(--muted) !important; stroke-dasharray: 5 4; }
+.proc.down text, .proc.down image, .proc.down .logo-bg { opacity: .4; }
+.proc .badge { opacity: 0; transition: opacity .3s; }
+.proc.down .badge { opacity: 1; }
+.cut { opacity: .12; }
+.cut.flow { animation: none; }
+/* M2-10 상태 칩 — Airflow 2.7 기본 상태 색 */
+.st { display: inline-flex; align-items: center; gap: .35em; font-family: var(--mono); font-size: .92em; font-weight: 700; color: var(--ink); }
+.st::before { content: ""; width: .85em; height: .85em; border-radius: 3px; background: var(--c); border: 1px solid rgb(0 0 0 / .25); }
+.st.success { --c: green; } .st.running { --c: lime; } .st.queued { --c: gray; } .st.scheduled { --c: tan; }
+.st.failed { --c: red; } .st.retry { --c: gold; } .st.upstream { --c: orange; } .st.skipped { --c: hotpink; }
+@media (max-width: 760px) {
+  .srvs, .cards.c4, .cards.c2, .sim { grid-template-columns: 1fr; }
+}
+</style>
+
+<!-- M2-01 구역 머리글 -->
+<section class="slide" data-id="M2-01" aria-label="M2-01 Airflow">
+  <div class="in section">
+    <div class="content">
+      <div class="num">02</div>
+      <h2>Airflow</h2>
+      <p class="sub">언제 · 무엇을 · 어떤 순서로 실행할지 정하는 곳 — Airflow 2.7.1</p>
+      <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="airflow" alt="Apache Airflow"></span><span class="logo"><img data-logo="postgresql" alt="PostgreSQL"></span><span class="logo"><img data-logo="pgpool" alt="pgpool-II"></span><span class="logo"><img data-logo="redis" alt="Redis"></span></div>
+      <div class="map" aria-label="과정 지도">
+        <div class="round"><span>개념</span>
+          <div class="m"><b>01</b>전체 구조</div><div class="m cur"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>Spark · Tez · YARN</div>
+        </div>
+        <div class="round"><span>실무</span>
+          <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-01</b> · 구역 머리글</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>이 장은 Airflow 2.7.1 기준이다. 화면 이름 · 메뉴는 2.7 화면 그대로 쓴다.</li>
+      <li>순서: DAG와 Task → 처리 범위(PARAM) → get_jobs와 job_history → 화면 날짜와 처리 범위 → 프로세스와 서버 → 멈췄을 때 → Task 상태.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-02 DAG와 Task -->
+<section class="slide" data-id="M2-02" aria-label="M2-02 DAG와 Task">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>DAG와 Task</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 372" role="img" aria-label="DAG는 Task 1, Task 2, Task 3을 순서대로 이은 순서도다. 주기마다 DAG Run이 하나씩 생기고, Grid 화면에서는 DAG Run 하나가 열 하나로 보인다">
+            <defs><marker id="m22" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- DAG -->
+            <rect class="grp" x="6" y="6" width="628" height="150" rx="12"/>
+            <text x="22" y="32" font-size="15"><tspan class="t-b">DAG</tspan><tspan class="t-m"> 작업 순서도</tspan></text>
+            <g data-at="1">
+              <svg data-icon="clock" x="430" y="17" width="20" height="20" style="color: var(--accent)"></svg>
+              <text class="t-a" x="456" y="32" font-size="13">정해진 주기마다 실행</text>
+            </g>
+            <path class="e" d="M192 98 H240"/><path class="e" d="M398 98 H446"/>
+            <g data-at="2">
+              <path class="flow c-acc" d="M192 98 H240" marker-end="url(#m22)"/>
+              <path class="flow c-acc" d="M398 98 H446" marker-end="url(#m22)"/>
+              <text class="t-a" x="216" y="88" text-anchor="middle" font-size="12">성공하면</text>
+              <text class="t-a" x="422" y="88" text-anchor="middle" font-size="12">성공하면</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="3s" repeatCount="indefinite" path="M110 98 H530"/></circle></g>
+            </g>
+            <g data-at="1">
+              <rect class="n" x="40" y="70" width="152" height="56" rx="8"/><text class="t-b" x="116" y="104" text-anchor="middle" font-size="16">Task 1</text>
+              <rect class="n" x="244" y="70" width="152" height="56" rx="8"/><text class="t-b" x="320" y="104" text-anchor="middle" font-size="16">Task 2</text>
+              <rect class="n" x="450" y="70" width="152" height="56" rx="8"/><text class="t-b" x="526" y="104" text-anchor="middle" font-size="16">Task 3</text>
+            </g>
+            <!-- DAG Run — Grid 화면 모양 -->
+            <g data-at="3">
+              <rect class="grp" x="6" y="172" width="628" height="194" rx="12"/>
+              <text x="22" y="198" font-size="15"><tspan class="t-b">DAG Run</tspan><tspan class="t-m"> 한 번 실행한 기록 — Grid 화면에서는 열 하나</tspan></text>
+              <text class="t-m" x="40" y="242" font-size="13">Task 1</text>
+              <text class="t-m" x="40" y="280" font-size="13">Task 2</text>
+              <text class="t-m" x="40" y="318" font-size="13">Task 3</text>
+              <g>
+                <rect x="160" y="226" width="40" height="26" rx="4" fill="green"/><rect x="160" y="264" width="40" height="26" rx="4" fill="green"/><rect x="160" y="302" width="40" height="26" rx="4" fill="green"/>
+                <rect x="230" y="226" width="40" height="26" rx="4" fill="green"/><rect x="230" y="264" width="40" height="26" rx="4" fill="green"/><rect x="230" y="302" width="40" height="26" rx="4" fill="green"/>
+                <rect x="300" y="226" width="40" height="26" rx="4" fill="green"/><rect x="300" y="264" width="40" height="26" rx="4" fill="green"/><rect x="300" y="302" width="40" height="26" rx="4" fill="green"/>
+                <rect x="370" y="226" width="40" height="26" rx="4" fill="green"/><rect x="370" y="264" width="40" height="26" rx="4" fill="green"/><rect x="370" y="302" width="40" height="26" rx="4" fill="green"/>
+                <rect x="440" y="226" width="40" height="26" rx="4" fill="green"/><rect class="pulse" x="440" y="264" width="40" height="26" rx="4" fill="lime"/><rect class="n" x="440" y="302" width="40" height="26" rx="4"/>
+              </g>
+              <path class="e" d="M160 348 H500" marker-end="url(#m22)"/>
+              <text class="t-m" x="508" y="352" font-size="12">시간</text>
+              <text class="t-m" x="460" y="218" text-anchor="middle" font-size="11">지금</text>
+            </g>
+            <!-- catchup=False -->
+            <g data-at="4">
+              <rect class="n-mk" x="520" y="226" width="104" height="102" rx="6"/>
+              <text class="t-mk" x="572" y="252" text-anchor="middle" font-size="12">멈춘 동안의</text>
+              <text class="t-mk" x="572" y="270" text-anchor="middle" font-size="12">DAG Run은</text>
+              <text class="t-mk" x="572" y="288" text-anchor="middle" font-size="12">몰아서</text>
+              <text class="t-mk" x="572" y="306" text-anchor="middle" font-size="12">만들지 않는다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="workflow"></svg> DAG — 작업 순서도</b><p>할 일(Task)을 순서대로 이은 것. 비유: 레시피 — 단, <strong>정해진 주기마다 반복 실행</strong>된다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>Task — 순서도의 한 칸</b><p>앞 Task가 <strong>성공해야</strong> 다음 Task가 시작된다(기본 규칙).</p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b>DAG Run — 한 번 실행한 기록</b><p>주기마다 하나씩 생긴다. Grid 화면에서 <strong>열 하나가 DAG Run 하나</strong>, 칸 색이 Task 상태다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>멈췄다 켜도 몰아서 돌지 않는다</b><p>멈춰 있던 동안 지나간 주기를 한꺼번에 실행하지 않고, <strong>가장 최근 것 하나만</strong> 만든다(<code>catchup=False</code>).</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-02</b> · 콘텐츠 2개(도식 + 설명)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① DAG → ② 성공하면 다음 칸 → ③ DAG Run과 Grid 화면 → ④ catchup. Task 1 · 2 · 3은 예시 이름이다. 실제 DAG의 Task 구성은 03 DAG별 기능에서 다룬다. <span class="mk">[사용자 작성: 대표 DAG의 Task 구성]</span></li>
+      <li>"성공해야 다음 칸"은 trigger rule 기본값(all_success) 기준이다. 예외 규칙은 다루지 않는다.</li>
+      <li>Grid 화면 읽는 법은 06 모니터링에서 실제 화면으로 다시 본다. 오른쪽 맨 끝 열이 지금 돌고 있는 DAG Run이다(연두색 = running).</li>
+      <li><span class="pp">pptx 대응</span> 도식 묶음 4개와 설명 4줄에 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-03 처리 범위 — PARAM -->
+<section class="slide" data-id="M2-03" aria-label="M2-03 처리 범위 — PARAM">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>처리 범위 — PARAM</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 360" role="img" aria-label="작업 지시서의 처리할 기간 칸이 PARAM이다. DAG는 PARAM에 적힌 날짜 범위의 데이터만 처리한다">
+            <defs><marker id="m23" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- 작업 지시서 -->
+            <g data-at="1">
+              <rect class="n-accent" x="10" y="40" width="270" height="220" rx="10"/>
+              <svg data-icon="clipboard-list" x="28" y="56" width="26" height="26" style="color: var(--accent)"></svg>
+              <text class="t-b" x="62" y="76" font-size="17">작업 지시서</text>
+              <text class="t-m" x="30" y="114" font-size="13">DAG</text>
+              <rect class="n" x="30" y="122" width="230" height="30" rx="5"/>
+              <text class="t-m" x="44" y="142" font-size="13">적재 DAG</text>
+              <text class="t-a" x="30" y="180" font-size="13">처리할 기간 = PARAM</text>
+              <rect class="n" x="30" y="188" width="104" height="32" rx="5" stroke="var(--accent)"/>
+              <text class="t t-mono" x="82" y="209" text-anchor="middle" font-size="13">2026-10-20</text>
+              <text class="t-m" x="145" y="209" text-anchor="middle" font-size="13">~</text>
+              <rect class="n" x="156" y="188" width="104" height="32" rx="5" stroke="var(--accent)"/>
+              <text class="t t-mono" x="208" y="209" text-anchor="middle" font-size="13">2026-10-21</text>
+              <text class="t-m" x="30" y="246" font-size="11">날짜는 예시</text>
+            </g>
+            <!-- DAG가 범위의 데이터만 처리 -->
+            <path class="e" d="M280 150 H350"/>
+            <g data-at="2">
+              <path class="flow c-acc" d="M280 150 H350" marker-end="url(#m23)"/>
+              <rect class="n" x="354" y="96" width="276" height="108" rx="10"/>
+              <svg data-icon="workflow" x="370" y="112" width="24" height="24"></svg>
+              <text class="t-b" x="402" y="130" font-size="16">DAG</text>
+              <text class="t-m" x="372" y="160" font-size="13">PARAM의 날짜 범위에 해당하는</text>
+              <text class="t-m" x="372" y="180" font-size="13">데이터만 처리한다</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M280 150 H352"/></circle></g>
+            </g>
+            <!-- 정해지는 두 가지 경우 -->
+            <g data-at="3">
+              <rect class="grp" x="354" y="222" width="132" height="96" rx="8"/>
+              <svg data-icon="clock" x="368" y="234" width="20" height="20"></svg>
+              <text class="t-b" x="394" y="249" font-size="13">주기 실행</text>
+              <text class="t-m" x="368" y="274" font-size="12">범위가 정해지는</text>
+              <text class="t-m" x="368" y="292" font-size="12">방식은</text>
+              <text class="t-mk" x="368" y="310" font-size="11">[사용자 작성]</text>
+              <rect class="grp" x="498" y="222" width="132" height="96" rx="8"/>
+              <svg data-icon="repeat" x="512" y="234" width="20" height="20" style="color: var(--accent)"></svg>
+              <text class="t-b" x="538" y="249" font-size="13">다시 실행</text>
+              <text class="t-m" x="512" y="274" font-size="12">Trigger DAG에서</text>
+              <text class="t-m" x="512" y="292" font-size="12">범위를 직접</text>
+              <text class="t-m" x="512" y="310" font-size="12">넣는다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="clipboard-list"></svg> PARAM — 처리할 날짜 범위</b><p>DAG가 받는 입력값. 비유: 작업 지시서의 <strong>"처리할 기간" 칸</strong>.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>범위 안의 데이터만 처리한다</b><p>DAG는 PARAM에 적힌 날짜 범위에 해당하는 데이터만 골라 처리한다(다음 장의 get_jobs).</p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b>범위가 정해지는 두 가지 경우</b><p>정해진 주기로 돌 때는 <span class="mk">[사용자 작성: 범위가 정해지는 방식]</span>. 다시 돌릴 때는 <strong>Trigger DAG 화면에서 PARAM에 날짜 범위를 직접 넣는다</strong> — 07 장애 대응.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-03</b> · 콘텐츠 2개(도식 + 설명) · 도식 D06 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 지시서와 PARAM → ② DAG가 범위의 데이터만 처리 → ③ 범위가 정해지는 두 경우. 재실행 절차는 07 장애 대응에서 화면으로 다룬다.</li>
+      <li>그림의 DAG 이름과 날짜는 예시다. <span class="mk">[사용자 작성: PARAM 필드 이름 · 입력 형식, DAG마다 같은지]</span> <span class="mk">[사용자 작성: 스케줄 실행 때 범위가 정해지는 방식]</span></li>
+      <li>D 도식(D06: PARAM → get_jobs → job_history)은 DAG 동작 상세가 정해지면 만든다.</li>
+      <li><span class="pp">pptx 대응</span> 지시서 · DAG · 두 경우 묶음에 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-04 처리 대상 고르기 — get_jobs와 job_history -->
+<section class="slide" data-id="M2-04" aria-label="M2-04 처리 대상 고르기 — get_jobs와 job_history">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>처리 대상 고르기 — get_jobs와 job_history</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 660 360" role="img" aria-label="get_jobs Task가 PARAM의 범위로 job_history를 조회해 처리 대상을 고르고, Hive SQL · Spark Task가 처리한 뒤 결과를 job_history에 남긴다">
+            <defs><marker id="m24" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <path class="e" d="M140 68 H186"/><path class="e" d="M265 96 V146"/><path class="e" d="M340 68 H396"/><path class="e" d="M510 68 H536"/><path class="e" d="M595 106 V230 H344"/>
+            <g data-at="1">
+              <path class="flow c-acc" d="M140 68 H186" marker-end="url(#m24)"/>
+            </g>
+            <g data-at="2">
+              <path class="flow async c-mut" d="M265 96 V146" marker-end="url(#m24)"/>
+              <text class="t-m" x="275" y="126" font-size="12">범위로 조회</text>
+            </g>
+            <g data-at="3">
+              <path class="flow c-acc" d="M340 68 H396" marker-end="url(#m24)"/>
+              <path class="flow c-acc" d="M510 68 H536" marker-end="url(#m24)"/>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.8s" repeatCount="indefinite" path="M140 68 H596"/></circle></g>
+            </g>
+            <g data-at="4">
+              <path class="flow c-alt" d="M595 106 V230 H344" marker-end="url(#m24)"/>
+              <text class="t-alt" x="470" y="222" text-anchor="middle" font-size="12">처리 결과를 남긴다</text>
+              <g class="dot-alt"><circle r="4.5" class="dot"><animateMotion dur="2s" repeatCount="indefinite" path="M595 106 V230 H344"/></circle></g>
+            </g>
+            <!-- 상자 -->
+            <g data-dim="1"><rect class="n-accent" x="10" y="40" width="130" height="56" rx="8"/>
+              <svg data-icon="clipboard-list" x="22" y="50" width="20" height="20" style="color: var(--accent)"></svg>
+              <text class="t-b" x="48" y="65" font-size="15">PARAM</text><text class="t-m" x="22" y="86" font-size="12">처리할 날짜 범위</text></g>
+            <g data-dim="1"><rect class="n" x="190" y="40" width="150" height="56" rx="8"/>
+              <rect class="logo-bg" x="198" y="48" width="26" height="26" rx="4"/><image data-logo="airflow" x="200" y="50" width="22" height="22"/>
+              <text class="t-b t-mono" x="232" y="66" font-size="15">get_jobs</text><text class="t-m" x="200" y="88" font-size="12">처리 대상 고르기</text></g>
+            <g data-dim="2">
+              <rect class="n" x="190" y="150" width="154" height="170" rx="8"/>
+              <svg data-icon="database" x="202" y="160" width="20" height="20"></svg>
+              <text class="t-b t-mono" x="228" y="176" font-size="14">job_history</text>
+              <text class="t-m" x="202" y="198" font-size="11">적재 대장 · Oracle DB</text>
+              <line x1="202" y1="208" x2="332" y2="208" stroke="var(--line)"/>
+              <text class="t-m" x="202" y="226" font-size="11">데이터</text><text class="t-m" x="282" y="226" font-size="11">상태</text>
+              <text class="t" x="202" y="250" font-size="12">데이터 ①</text><rect class="n-mk" x="270" y="238" width="62" height="18" rx="3"/>
+              <text class="t" x="202" y="276" font-size="12">데이터 ②</text><rect class="n-mk" x="270" y="264" width="62" height="18" rx="3"/>
+              <text class="t" x="202" y="302" font-size="12">데이터 ③</text><rect class="n-mk" x="270" y="290" width="62" height="18" rx="3"/>
+              <text class="t-mk" x="301" y="251" text-anchor="middle" font-size="9">사용자 작성</text>
+              <text class="t-mk" x="301" y="277" text-anchor="middle" font-size="9">사용자 작성</text>
+              <text class="t-mk" x="301" y="303" text-anchor="middle" font-size="9">사용자 작성</text>
+            </g>
+            <g data-dim="3"><rect class="n" x="400" y="40" width="110" height="56" rx="8"/>
+              <svg data-icon="list-checks" x="412" y="50" width="20" height="20"></svg>
+              <text class="t-b" x="438" y="65" font-size="14">처리 대상</text><text class="t-m" x="412" y="86" font-size="12">고른 데이터</text></g>
+            <g data-dim="3"><rect class="n" x="540" y="30" width="112" height="76" rx="8"/>
+              <rect class="logo-bg" x="548" y="38" width="26" height="26" rx="4"/><image data-logo="tez" x="550" y="40" width="22" height="22"/>
+              <rect class="logo-bg" x="578" y="38" width="26" height="26" rx="4"/><image data-logo="spark" x="580" y="42" width="22" height="18"/>
+              <text class="t" x="552" y="82" font-size="12">Hive SQL Task</text><text class="t" x="552" y="98" font-size="12">Spark Task</text></g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b>get_jobs가 PARAM의 범위를 받는다</b><p>DAG의 첫 단계에서 처리할 날짜 범위를 넘겨받는다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b><svg data-icon="notebook-text"></svg> job_history에서 처리 대상을 고른다</b><p>job_history는 데이터 건마다 처리 상태를 적어 두는 <strong>적재 대장</strong>. 비유: 택배 배송 조회표 — 단, DAG가 직접 읽고 고쳐 쓴다. <span class="mk">[사용자 작성: 고르는 상태 값]</span></p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>Hive SQL · Spark Task가 처리한다</b><p>Hive 변환은 처리할 <strong>날짜</strong>를, Iceberg 적재는 처리할 <strong>파일 경로</strong>를 받는다.</p></li>
+          <li class="alt" data-at="4"><span class="no">4</span><b>그래서 다시 실행해도 중복 적재되지 않는다</b><p>처리 결과가 job_history에 남으므로, 같은 범위로 다시 실행해도 이미 적재한 데이터를 또 쌓지 않는다. <span class="mk">[사용자 작성: 상태 값과 기록 시점]</span></p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-04</b> · 콘텐츠 2개(도식 + 설명) · 도식 D06 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① get_jobs → ② job_history 조회 → ③ 처리 → ④ 결과 기록과 "중복 없음". 재실행이 안전한 이유가 여기 있다 — 07 장애 대응에서 다시 쓴다.</li>
+      <li>job_history는 Oracle DB에 있다. 이름만 말한다(DB 자체는 다루지 않는다).</li>
+      <li>"Hive 변환은 날짜, Iceberg 적재는 파일 경로"는 사용자 확인 사항(2026-10-04). 깊이 들어가지 않는다.</li>
+      <li><span class="mk">[사용자 작성: job_history 상태 값과 의미, get_jobs가 고르는 조건]</span> — 정해지면 그림의 "사용자 작성" 칸과 비유 문구를 바꾼다.</li>
+      <li><span class="pp">pptx 대응</span> 연결선 4묶음에 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-05 DAG Run 날짜와 처리 범위 -->
+<section class="slide" data-id="M2-05" aria-label="M2-05 DAG Run 날짜와 처리 범위">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>DAG Run 날짜와 처리 범위</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 340" role="img" aria-label="10월 24일 오전 9시 30분에 수동 Trigger한 DAG Run은 화면에 그 시각이 찍히지만, 실제로 처리한 범위는 PARAM에 넣은 10월 20일부터 21일까지다">
+            <defs><marker id="m25" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <rect class="n-mk" x="548" y="8" width="84" height="22" rx="4"/><text class="t-mk" x="590" y="24" text-anchor="middle" font-size="12">날짜는 예시</text>
+            <!-- 날짜 축 -->
+            <path class="e" d="M30 250 H620"/>
+            <g font-size="13" class="t-m">
+              <text class="t-m t-mono" x="70" y="276" text-anchor="middle">10/19</text>
+              <text class="t-m t-mono" x="170" y="276" text-anchor="middle">10/20</text>
+              <text class="t-m t-mono" x="270" y="276" text-anchor="middle">10/21</text>
+              <text class="t-m t-mono" x="370" y="276" text-anchor="middle">10/22</text>
+              <text class="t-m t-mono" x="470" y="276" text-anchor="middle">10/23</text>
+              <text class="t-m t-mono" x="570" y="276" text-anchor="middle">10/24</text>
+            </g>
+            <g stroke="var(--line)"><line x1="70" y1="244" x2="70" y2="256"/><line x1="170" y1="244" x2="170" y2="256"/><line x1="270" y1="244" x2="270" y2="256"/><line x1="370" y1="244" x2="370" y2="256"/><line x1="470" y1="244" x2="470" y2="256"/><line x1="570" y1="244" x2="570" y2="256"/></g>
+            <!-- 1. 화면의 날짜 -->
+            <g data-at="1">
+              <line x1="583" y1="70" x2="583" y2="244" stroke="var(--alt)" stroke-width="2"/>
+              <circle cx="583" cy="250" r="6" fill="var(--alt)"/>
+              <rect class="n-alt" x="430" y="40" width="200" height="56" rx="8"/>
+              <svg data-icon="monitor" x="442" y="52" width="20" height="20" style="color: var(--alt)"></svg>
+              <text class="t-alt" x="468" y="66" font-size="13">화면의 DAG Run 날짜</text>
+              <text class="t t-mono" x="442" y="86" font-size="13">2026-10-24 09:30</text>
+              <text class="t-m" x="590" y="304" text-anchor="middle" font-size="12">Trigger 누른 시각</text>
+            </g>
+            <!-- 2. 처리 범위 -->
+            <g data-at="2">
+              <rect x="150" y="196" width="140" height="40" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.5"/>
+              <text class="t-a" x="220" y="221" text-anchor="middle" font-size="14">처리 범위 (PARAM)</text>
+              <text class="t-m" x="220" y="304" text-anchor="middle" font-size="12">실제로 처리한 데이터의 날짜</text>
+            </g>
+            <!-- 3. 연결 -->
+            <g data-at="3">
+              <path class="flow c-acc" d="M577 150 H230 V192" marker-end="url(#m25)"/>
+              <text class="t-a" x="400" y="140" text-anchor="middle" font-size="13">이 DAG Run이 처리한 것</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.2s" repeatCount="indefinite" path="M577 150 H230 V192"/></circle></g>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li class="alt" data-at="1"><span class="no">1</span><b><svg data-icon="calendar-days"></svg> 화면의 날짜 = logical date</b><p>수동으로 Trigger한 DAG Run에는 <strong>버튼을 누른 시각</strong>이 찍힌다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>처리 범위 = PARAM</b><p>실제로 처리한 데이터의 날짜는 PARAM에 넣은 범위다.</p></li>
+          <li class="mark" data-at="3"><span class="no">3</span><b>둘은 다를 수 있다</b><p>화면 날짜만 보고 어느 날짜를 처리했는지 판단하지 않는다. 처리 범위는 <strong>get_jobs Task log</strong>에서 확인한다 — 07 장애 대응.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-05</b> · 콘텐츠 2개(도식 + 설명) · 도식 D07 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 화면 날짜 → ② 처리 범위 → ③ 둘의 관계. 재실행한 DAG Run을 찾을 때 화면 날짜로 처리 범위를 오해하기 쉽다는 점을 짚는다.</li>
+      <li>날짜는 예시다. logical date의 일반 동작은 Airflow 2.7 문서 기준이다.</li>
+      <li><span class="mk">[사용자 작성: get_jobs log에서 범위가 찍히는 줄]</span> — 07 장애 대응에서 캡처로 보여 준다.</li>
+      <li><span class="pp">pptx 대응</span> 화면 날짜 · 처리 범위 · 연결선에 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-06 Airflow 프로세스 구성과 서버 배치 — D08 -->
+<section class="slide" data-id="M2-06" data-arch="D08" data-paint-at="2" aria-label="M2-06 Airflow 프로세스 구성과 서버 배치">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>Airflow 프로세스 구성과 서버 배치</h2>
+    </div>
+    <div class="content">
+      <div class="srvs" data-at="1">
+        <div class="srv"><h3><svg data-icon="server"></svg>worker.1</h3>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>webserver</div>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>scheduler</div>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>worker</div>
+          <div class="p run"><svg data-icon="flower"></svg>flower</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="postgresql" alt=""></span>PostgreSQL</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="pgpool" alt=""></span>pgpool</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="redis" alt=""></span>redis</div>
+          <div class="p keep"><svg data-icon="eye"></svg>redis-sentinel</div>
+        </div>
+        <div class="srv"><h3><svg data-icon="server"></svg>worker.2</h3>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>webserver</div>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>scheduler</div>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>worker</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="postgresql" alt=""></span>PostgreSQL</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="pgpool" alt=""></span>pgpool</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="redis" alt=""></span>redis</div>
+          <div class="p keep"><svg data-icon="eye"></svg>redis-sentinel</div>
+        </div>
+        <div class="srv"><h3><svg data-icon="server"></svg>worker.3</h3>
+          <div class="p run"><span class="logo sm"><img data-logo="airflow" alt=""></span>worker</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="postgresql" alt=""></span>PostgreSQL</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="pgpool" alt=""></span>pgpool</div>
+          <div class="p keep"><span class="logo sm"><img data-logo="redis" alt=""></span>redis</div>
+          <div class="p keep"><svg data-icon="eye"></svg>redis-sentinel</div>
+        </div>
+      </div>
+      <div class="morebar">
+        <div class="legend" data-at="2">
+          <span><i class="sw run"></i>실행 — 이상이 있으면 재시작으로 복구</span>
+          <span><i class="sw keep"></i>기록 · 대기열 — 이상이 있으면 담당자에게 전달</span>
+        </div>
+        <button class="more" type="button" data-arch="D08">자세히 — 프로세스 연결도 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-06</b> · 제목만 + 서버 배치 · 도식 D08</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 서버 3대와 프로세스 → ② 색: 실행(초록) / 기록 · 대기열(보라). 서버 이름이 worker.1 ~ worker.3이지만 worker 프로세스만 있는 서버가 아니라는 점을 짚는다.</li>
+      <li>같은 프로세스를 여러 서버에 두어, 하나가 멈춰도 나머지가 이어받을 수 있다(webserver · scheduler 2개, worker 3개, PostgreSQL · pgpool · redis · redis-sentinel 3개).</li>
+      <li>각 프로세스의 역할은 다음 두 장, 서로 어떻게 연결되는지는 <b>D</b>(D08).</li>
+      <li>systemd service 이름 형식: <code>airflow-&lt;프로세스&gt;.service</code>. 재시작 명령은 07 장애 대응 — <span class="mk">[명령어: 사용자 기재]</span></li>
+      <li><span class="pp">pptx 대응</span> 서버 카드 3개, 색이 칠해진 같은 슬라이드로 '모핑'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-07 프로세스별 역할 ① 실행 -->
+<section class="slide" data-id="M2-07" data-arch="D08" aria-label="M2-07 프로세스별 역할 ① 실행">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>프로세스별 역할 ① 실행</h2>
+    </div>
+    <div class="content">
+      <div class="mini dia" data-at="1">
+        <svg viewBox="0 0 960 120" role="img" aria-label="scheduler가 Task를 redis 대기열에 넣고, worker가 꺼내 실행한다. Spark · Hive SQL 작업은 YARN에 제출하고 끝날 때까지 지켜본다">
+          <defs><marker id="m27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <path class="flow c-acc" d="M216 60 H302" marker-end="url(#m27)"/>
+          <path class="flow c-acc" d="M478 60 H564" marker-end="url(#m27)"/>
+          <path class="flow c-acc" d="M740 60 H826" marker-end="url(#m27)"/>
+          <text class="t-a" x="259" y="48" text-anchor="middle" font-size="13">Task 넣기</text>
+          <text class="t-a" x="521" y="48" text-anchor="middle" font-size="13">Task 꺼내기</text>
+          <text class="t-a" x="783" y="48" text-anchor="middle" font-size="13">작업 제출</text>
+          <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="3.2s" repeatCount="indefinite" path="M130 60 H900"/></circle></g>
+          <rect class="n-ok" x="40" y="30" width="176" height="60" rx="8"/><rect class="logo-bg" x="52" y="44" width="32" height="32" rx="5"/><image data-logo="airflow" x="55" y="47" width="26" height="26"/><text class="t-b" x="94" y="66" font-size="17">scheduler</text>
+          <rect class="n-alt" x="306" y="30" width="172" height="60" rx="8"/><rect class="logo-bg" x="318" y="44" width="32" height="32" rx="5"/><image data-logo="redis" x="321" y="47" width="26" height="26"/><text class="t-b" x="360" y="58" font-size="17">redis</text><text class="t-m" x="360" y="78" font-size="12">작업 대기열</text>
+          <rect class="n-ok" x="568" y="30" width="172" height="60" rx="8"/><rect class="logo-bg" x="580" y="44" width="32" height="32" rx="5"/><image data-logo="airflow" x="583" y="47" width="26" height="26"/><text class="t-b" x="622" y="66" font-size="17">worker</text>
+          <rect class="n" x="830" y="30" width="120" height="60" rx="8"/><rect class="logo-bg" x="840" y="44" width="32" height="32" rx="5"/><image data-logo="hadoop" x="843" y="47" width="26" height="26"/><text class="t-b" x="880" y="66" font-size="17">YARN</text>
+        </svg>
+      </div>
+      <div class="cards c4">
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="monitor"></svg><h4>webserver</h4><span class="cnt">×2</span></div><div class="role">Airflow UI 화면을 보여 준다</div><div class="an"><svg data-icon="monitor"></svg><span>현황판</span></div><div class="df">화면만 맡는다. 멈춰도 DAG 실행은 계속된다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="calendar-clock"></svg><h4>scheduler</h4><span class="cnt">×2</span></div><div class="role">언제 무엇을 실행할지 정하고, 실행할 Task를 대기열에 넣는다</div><div class="an"><svg data-icon="clipboard-list"></svg><span>작업 지시서를 꽂는 반장</span></div><div class="df">정해진 일정과 순서대로만 움직인다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="hard-hat"></svg><h4>worker</h4><span class="cnt">×3</span></div><div class="role">대기열에서 Task를 꺼내 실제로 실행한다 (CeleryExecutor)</div><div class="an"><svg data-icon="users"></svg><span>지시서를 가져가 처리하는 작업자</span></div><div class="df">Spark · Hive SQL 작업은 직접 계산하지 않고 YARN에 맡긴 뒤 끝날 때까지 지켜본다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="flower"></svg><h4>flower</h4><span class="cnt">×1</span></div><div class="role">worker 상태를 보여 주는 화면</div><div class="an"><svg data-icon="list-checks"></svg><span>작업자 출근부</span></div><div class="df">화면만 맡는다. 멈춰도 DAG 실행에는 영향이 없다</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-07</b> · 제목 및 내용(흐름 + 카드) · 도식 D08</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 위 흐름: scheduler → redis → worker → YARN → ② 프로세스 카드 4개. 이 네 가지는 이상이 있으면 재시작으로 복구한다(07 장애 대응).</li>
+      <li>worker의 "단, …"이 중요하다 — worker가 Spark · Hive SQL 작업을 지켜보는 도중에 재시작하면 그 작업이 끊긴다. 그래서 07에서 "실행 중인 Spark Task가 없을 때 재시작"을 절차로 다룬다.</li>
+      <li>flower 화면 자체는 모니터링에서 다루지 않는다(발표자만 아는 내용 — 슬라이드에는 쓰지 않는다).</li>
+      <li><span class="pp">pptx 대응</span> 흐름 도형 1묶음 → 카드 4개 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-08 프로세스별 역할 ② 기록 · 대기열 -->
+<section class="slide" data-id="M2-08" data-arch="D08" aria-label="M2-08 프로세스별 역할 ② 기록 · 대기열">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>프로세스별 역할 ② 기록 · 대기열</h2>
+    </div>
+    <div class="content">
+      <div class="mini dia" data-at="1">
+        <svg viewBox="0 0 960 120" role="img" aria-label="Airflow 프로세스는 pgpool을 거쳐 PostgreSQL에 실행 기록을 쓰고 읽는다. redis-sentinel은 redis를 지켜본다">
+          <defs><marker id="m28" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <path class="flow c-alt" d="M200 60 H252" marker-end="url(#m28)"/>
+          <path class="flow c-alt" d="M420 60 H472" marker-end="url(#m28)"/>
+          <path class="flow async c-mut" d="M842 60 H808" marker-end="url(#m28)"/>
+          <text class="t-alt" x="226" y="48" text-anchor="middle" font-size="12">기록</text>
+          <text class="t-alt" x="446" y="48" text-anchor="middle" font-size="12">전달</text>
+          <text class="t-m" x="825" y="48" text-anchor="middle" font-size="12">감시</text>
+          <g class="dot-alt"><circle r="4.5" class="dot"><animateMotion dur="2.4s" repeatCount="indefinite" path="M150 60 H560"/></circle></g>
+          <rect class="n-ok" x="20" y="30" width="180" height="60" rx="8"/><rect class="logo-bg" x="32" y="44" width="32" height="32" rx="5"/><image data-logo="airflow" x="35" y="47" width="26" height="26"/><text class="t-b" x="74" y="58" font-size="15">Airflow</text><text class="t-m" x="74" y="78" font-size="12">프로세스</text>
+          <rect class="n-alt" x="256" y="30" width="164" height="60" rx="8"/><rect class="logo-bg" x="268" y="44" width="32" height="32" rx="5"/><image data-logo="pgpool" x="271" y="47" width="26" height="26"/><text class="t-b" x="310" y="66" font-size="16">pgpool</text>
+          <rect class="n-alt" x="476" y="30" width="190" height="60" rx="8"/><rect class="logo-bg" x="488" y="44" width="32" height="32" rx="5"/><image data-logo="postgresql" x="491" y="47" width="26" height="26"/><text class="t-b" x="530" y="66" font-size="16">PostgreSQL</text>
+          <rect class="n-alt" x="690" y="30" width="114" height="60" rx="8"/><rect class="logo-bg" x="702" y="44" width="32" height="32" rx="5"/><image data-logo="redis" x="705" y="47" width="26" height="26"/><text class="t-b" x="744" y="66" font-size="16">redis</text>
+          <rect class="n-alt" x="846" y="30" width="108" height="60" rx="8"/><text class="t-b" x="900" y="57" text-anchor="middle" font-size="14">redis-</text><text class="t-b" x="900" y="76" text-anchor="middle" font-size="14">sentinel</text>
+        </svg>
+      </div>
+      <div class="cards c4">
+        <div class="card" data-at="2"><div class="ch"><span class="logo"><img data-logo="postgresql" alt="PostgreSQL 로고"></span><h4>PostgreSQL</h4><span class="cnt">×3</span></div><div class="role">metadata DB — DAG Run · Task의 실행 기록을 저장한다. Airflow UI가 보여 주는 내용이 여기서 온다</div><div class="an"><svg data-icon="notebook-text"></svg><span>작업 일지</span></div></div>
+        <div class="card" data-at="2"><div class="ch"><span class="logo"><img data-logo="pgpool" alt="pgpool-II 로고"></span><h4>pgpool</h4><span class="cnt">×3</span></div><div class="role">PostgreSQL 앞단 — 연결을 모아 관리하고(커넥션 풀) 이중화(HA)를 맡는다</div><div class="an"><svg data-icon="inbox"></svg><span>작업 일지 창구</span></div><div class="df">일지 하나가 망가지면 다른 일지로 넘긴다</div></div>
+        <div class="card" data-at="2"><div class="ch"><span class="logo"><img data-logo="redis" alt="Redis 로고"></span><h4>redis</h4><span class="cnt">×3</span></div><div class="role">작업 대기열(Celery broker) — scheduler가 넣은 Task를 worker가 꺼내 간다</div><div class="an"><svg data-icon="inbox"></svg><span>작업 지시서 꽂이</span></div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="eye"></svg><h4>redis-sentinel</h4><span class="cnt">×3</span></div><div class="role">redis를 지켜보다 멈추면 다른 redis로 자동으로 바꾼다</div><div class="an"><svg data-icon="eye"></svg><span>꽂이를 지켜보는 당번</span></div></div>
+      </div>
+      <div class="legend" data-at="2"><span><i class="sw alt"></i>이 네 가지는 이상이 있으면 담당자에게 전달한다</span></div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-08</b> · 제목 및 내용(흐름 + 카드) · 도식 D08</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 위 흐름: Airflow 프로세스 → pgpool → PostgreSQL, sentinel → redis 감시 → ② 카드 4개.</li>
+      <li>네 가지 모두 서버 3대에 하나씩 있다(×3). 이상이 있으면 직접 조치하지 않고 담당자에게 전달한다 — 위험도가 높다(발표자 참고).</li>
+      <li>redis-sentinel의 동작은 Redis Sentinel의 일반 역할(감시 · 자동 전환) 기준이다. <span class="mk">[확인 필요: as-is sentinel 구성이 자동 전환까지 하는지]</span></li>
+      <li><span class="pp">pptx 대응</span> 흐름 도형 1묶음 → 카드 4개 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-09 프로세스가 멈췄을 때의 증상 — HTML 시연 -->
+<section class="slide" data-id="M2-09" data-arch="D08" id="simSlide" aria-label="M2-09 프로세스가 멈췄을 때의 증상">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>프로세스가 멈췄을 때의 증상</h2>
+    </div>
+    <div class="content">
+      <div class="sim">
+        <div class="sim-l">
+          <div class="dia fit">
+            <svg viewBox="0 0 960 386" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Airflow 프로세스 구성도. 멈춘 프로세스를 고르면 끊기는 연결이 흐려진다">
+              <defs><marker id="m29" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+              <path class="flow c-acc" data-p="scheduler redis" d="M270 190 H351" marker-end="url(#m29)"/>
+              <path class="flow c-acc" data-p="redis worker" d="M605 190 H686" marker-end="url(#m29)"/>
+              <path class="flow async c-mut" data-p="flower worker" d="M815 90 V146" marker-end="url(#m29)"/>
+              <path class="flow async c-mut" data-p="sentinel" d="M480 90 V146" marker-end="url(#m29)"/>
+              <path class="flow c-alt" data-p="webserver db" d="M20 50 H6 V350 H351" marker-end="url(#m29)"/>
+              <path class="flow c-alt" data-p="scheduler db" d="M145 230 V330 H351" marker-end="url(#m29)"/>
+              <path class="flow c-alt" data-p="worker db" d="M815 230 V260 H480 V286" marker-end="url(#m29)"/>
+              <path class="flow c-alt" data-p="db" d="M605 330 H686" marker-end="url(#m29)"/>
+              <g class="dot-acc">
+                <circle r="5" class="dot" data-p="scheduler redis"><animateMotion dur="1.4s" repeatCount="indefinite" path="M270 190 H351"/></circle>
+                <circle r="5" class="dot" data-p="redis worker"><animateMotion dur="1.4s" begin="-.7s" repeatCount="indefinite" path="M605 190 H686"/></circle>
+              </g>
+              <g class="proc hot" data-node="webserver" tabindex="0" role="button" aria-label="webserver 멈춤 시연"><rect class="box n-ok" x="20" y="10" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="34" y="30" width="40" height="40" rx="6"/><image data-logo="airflow" x="38" y="34" width="32" height="32"/>
+                <text x="86" y="46" font-size="19"><tspan class="t-b">webserver</tspan><tspan class="t-m"> ×2</tspan></text>
+                <text class="t-m" x="86" y="70" font-size="14">Airflow UI 화면</text>
+                <text class="badge t-stop" x="258" y="30" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="sentinel" tabindex="0" role="button" aria-label="redis-sentinel 멈춤 시연"><rect class="box n-alt" x="355" y="10" width="250" height="80" rx="8"/>
+                <svg data-icon="eye" x="370" y="32" width="36" height="36" style="color: var(--alt)"></svg>
+                <text x="418" y="46" font-size="19"><tspan class="t-b">redis-sentinel</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="418" y="70" font-size="14">redis 감시 · 자동 전환</text>
+                <text class="badge t-stop" x="593" y="30" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="flower" tabindex="0" role="button" aria-label="flower 멈춤 시연"><rect class="box n-ok" x="690" y="10" width="250" height="80" rx="8"/>
+                <svg data-icon="flower" x="704" y="32" width="36" height="36" style="color: var(--ok)"></svg>
+                <text x="752" y="46" font-size="19"><tspan class="t-b">flower</tspan><tspan class="t-m"> ×1</tspan></text>
+                <text class="t-m" x="752" y="70" font-size="14">worker 상태 화면</text>
+                <text class="badge t-stop" x="928" y="30" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="scheduler" tabindex="0" role="button" aria-label="scheduler 멈춤 시연"><rect class="box n-ok" x="20" y="150" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="34" y="170" width="40" height="40" rx="6"/><image data-logo="airflow" x="38" y="174" width="32" height="32"/>
+                <text x="86" y="186" font-size="19"><tspan class="t-b">scheduler</tspan><tspan class="t-m"> ×2</tspan></text>
+                <text class="t-m" x="86" y="210" font-size="14">언제 무엇을 실행할지</text>
+                <text class="badge t-stop" x="258" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="redis" tabindex="0" role="button" aria-label="redis 멈춤 시연"><rect class="box n-alt" x="355" y="150" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="369" y="170" width="40" height="40" rx="6"/><image data-logo="redis" x="373" y="174" width="32" height="32"/>
+                <text x="421" y="186" font-size="19"><tspan class="t-b">redis</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="421" y="210" font-size="14">작업 대기열</text>
+                <text class="badge t-stop" x="593" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="worker" tabindex="0" role="button" aria-label="worker 멈춤 시연"><rect class="box n-ok" x="690" y="150" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="704" y="170" width="40" height="40" rx="6"/><image data-logo="airflow" x="708" y="174" width="32" height="32"/>
+                <text x="756" y="186" font-size="19"><tspan class="t-b">worker</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="756" y="210" font-size="14">Task를 실제로 실행</text>
+                <text class="badge t-stop" x="928" y="170" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="db" tabindex="0" role="button" aria-label="pgpool 멈춤 시연"><rect class="box n-alt" x="355" y="290" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="369" y="310" width="40" height="40" rx="6"/><image data-logo="pgpool" x="373" y="314" width="32" height="32"/>
+                <text x="421" y="326" font-size="19"><tspan class="t-b">pgpool</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="421" y="350" font-size="14">HA · 커넥션 풀</text>
+                <text class="badge t-stop" x="593" y="310" text-anchor="end" font-size="14">멈춤</text></g>
+              <g class="proc hot" data-node="db" tabindex="0" role="button" aria-label="PostgreSQL 멈춤 시연"><rect class="box n-alt" x="690" y="290" width="250" height="80" rx="8"/>
+                <rect class="logo-bg" x="704" y="310" width="40" height="40" rx="6"/><image data-logo="postgresql" x="708" y="314" width="32" height="32"/>
+                <text x="756" y="326" font-size="19"><tspan class="t-b">PostgreSQL</tspan><tspan class="t-m"> ×3</tspan></text>
+                <text class="t-m" x="756" y="350" font-size="14">metadata DB</text>
+                <text class="badge t-stop" x="928" y="310" text-anchor="end" font-size="14">멈춤</text></g>
+            </svg>
+          </div>
+          <div class="picks" role="group" aria-label="멈춘 프로세스 고르기">
+            <button type="button" data-pick="webserver">webserver</button>
+            <button type="button" data-pick="scheduler">scheduler</button>
+            <button type="button" data-pick="worker">worker</button>
+            <button type="button" data-pick="flower">flower</button>
+            <button type="button" data-pick="redis">redis</button>
+            <button type="button" data-pick="sentinel">redis-sentinel</button>
+            <button type="button" data-pick="db">PostgreSQL · pgpool</button>
+          </div>
+        </div>
+        <div class="symp" id="symp" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-09</b> · 콘텐츠 2개(시연) · 도식 D08</span><span class="morebar"><span class="hint">상자나 버튼을 누른다</span><button class="more" type="button" data-arch="D08">자세히 — 프로세스 연결도 <kbd>D</kbd></button></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>먼저 "worker가 멈추면 화면에서 무엇이 보일까?"를 묻고, 답을 들은 뒤 누른다.</li>
+      <li>증상은 Airflow 2.7 · Celery의 일반 동작 기준이고, 같은 종류가 <b>모두</b> 멈췄을 때를 가정했다(하나만 멈추면 나머지가 이어받을 수 있다). <span class="mk">[확인 필요: 운영에서 실제로 본 증상과 맞는지]</span></li>
+      <li><span class="mk">[확인 필요: redis-sentinel이 멈췄을 때의 증상]</span></li>
+      <li><span class="pp">pptx 대응</span> 프로세스별 증상 표 한 장. 이 시연 화면은 질문이 나올 때 HTML로 띄운다.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-10 Task 상태와 자동 재시도 — D09 -->
+<section class="slide" data-id="M2-10" data-arch="D09" aria-label="M2-10 Task 상태와 자동 재시도">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>Task 상태와 자동 재시도</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 360" role="img" aria-label="Task는 queued에서 running을 거쳐 success가 된다. 실패해도 재시도가 남으면 up_for_retry를 거쳐 다시 queued로 가고, 재시도까지 실패하면 failed가 된다. 앞 Task가 실패하면 upstream_failed, 조건에 따라 건너뛰면 skipped다">
+            <defs><marker id="m210" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- 정상 흐름 -->
+            <path class="e" d="M166 70 H232"/><path class="e" d="M392 70 H458"/>
+            <g data-at="1">
+              <path class="flow c-acc" d="M166 70 H232" marker-end="url(#m210)"/>
+              <path class="flow c-acc" d="M392 70 H458" marker-end="url(#m210)"/>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.6s" repeatCount="indefinite" path="M90 70 H540"/></circle></g>
+            </g>
+            <!-- 재시도 고리 -->
+            <g data-at="2">
+              <path class="flow async c-mut" d="M312 98 V150" marker-end="url(#m210)"/>
+              <text class="t-m" x="322" y="130" font-size="12">실패 · 재시도 남음</text>
+              <path class="flow c-mut" d="M232 182 H88 V102" marker-end="url(#m210)"/>
+              <text class="t-m" x="160" y="200" text-anchor="middle" font-size="12">잠시 뒤 다시</text>
+            </g>
+            <!-- 실패로 끝남 -->
+            <g data-at="3">
+              <path class="flow c-mut" d="M392 182 H458" marker-end="url(#m210)"/>
+              <text class="t-m" x="425" y="172" text-anchor="middle" font-size="11">재시도까지</text>
+            </g>
+            <!-- 상자: 색은 Airflow 2.7 기본 상태 색 -->
+            <g><rect class="n" x="10" y="42" width="156" height="56" rx="8"/><rect x="22" y="58" width="18" height="18" rx="3" fill="gray"/><text class="t-b t-mono" x="48" y="75" font-size="16">queued</text></g>
+            <g><rect class="n" x="236" y="42" width="156" height="56" rx="8"/><rect x="248" y="58" width="18" height="18" rx="3" fill="lime"/><text class="t-b t-mono" x="274" y="75" font-size="16">running</text></g>
+            <g><rect class="n" x="462" y="42" width="168" height="56" rx="8"/><rect x="474" y="58" width="18" height="18" rx="3" fill="green"/><text class="t-b t-mono" x="500" y="75" font-size="16">success</text></g>
+            <g data-at="2"><rect class="n" x="236" y="154" width="156" height="56" rx="8"/><rect x="248" y="170" width="18" height="18" rx="3" fill="gold"/><text class="t-b t-mono" x="274" y="187" font-size="15">up_for_retry</text></g>
+            <g data-at="3"><rect class="n" x="462" y="154" width="168" height="56" rx="8"/><rect x="474" y="170" width="18" height="18" rx="3" fill="red"/><text class="t-b t-mono" x="500" y="187" font-size="16">failed</text></g>
+            <g data-at="3">
+              <rect class="grp" x="10" y="246" width="620" height="104" rx="10"/>
+              <text class="t-m" x="26" y="270" font-size="13">시작하지 못한 Task</text>
+              <rect class="n" x="26" y="282" width="280" height="54" rx="8"/><rect x="38" y="300" width="18" height="18" rx="3" fill="orange"/><text class="t-b t-mono" x="64" y="314" font-size="15">upstream_failed</text><text class="t-m" x="64" y="330" font-size="11">앞 Task가 실패했다</text>
+              <rect class="n" x="334" y="282" width="280" height="54" rx="8"/><rect x="346" y="300" width="18" height="18" rx="3" fill="hotpink"/><text class="t-b t-mono" x="372" y="314" font-size="15">skipped</text><text class="t-m" x="372" y="330" font-size="11">조건에 따라 건너뛰었다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li class="acc" data-at="1"><span class="no">1</span><b><svg data-icon="circle-check"></svg> 정상 흐름</b><p><span class="st queued">queued</span> → <span class="st running">running</span> → <span class="st success">success</span>. 화면의 칸 색이 상태다.</p></li>
+          <li class="mark" data-at="2"><span class="no">2</span><b><svg data-icon="repeat"></svg> 자동 재시도</b><p>실패해도 재시도 횟수가 남아 있으면 <span class="st retry">up_for_retry</span>가 되고, 잠시 뒤 다시 실행된다. <strong>이때는 기다린다.</strong></p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b><svg data-icon="circle-x"></svg> 실패로 끝남</b><p><span class="st failed">failed</span> 재시도까지 실패 · <span class="st upstream">upstream_failed</span> 앞 Task가 실패해 시작 못 함 — 앞 Task의 log를 본다 · <span class="st skipped">skipped</span>는 오류가 아니다.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">색은 Airflow 2.7 화면의 기본 상태 색</span>
+        <button class="more" type="button" data-arch="D09">자세히 — 상태 변화 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-10</b> · 콘텐츠 2개(도식 + 설명) · 도식 D09</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 정상 → ② 재시도 → ③ 실패로 끝남. 운영에서 자주 보는 상태만 골랐다. 실패 처리 방법은 07 장애 대응.</li>
+      <li>재시도 횟수(retries)와 기다리는 시간은 DAG마다 다를 수 있다. <span class="mk">[사용자 작성: as-is DAG의 재시도 설정]</span></li>
+      <li>색은 Airflow 2.7 기본값(queued 회색, running 연두, success 초록, up_for_retry 금색, failed 빨강, upstream_failed 주황, skipped 분홍)이다.</li>
+      <li><span class="pp">pptx 대응</span> 정상 · 재시도 · 실패 묶음에 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M2-11 정리 -->
+<section class="slide" data-id="M2-11" aria-label="M2-11 정리">
+  <div class="in">
+    <div class="head">
+      <div class="eb">02 Airflow</div>
+      <h2>정리</h2>
+    </div>
+    <div class="content">
+      <div class="cards c2">
+        <div class="card"><div class="ch"><svg data-icon="workflow"></svg><h4>DAG · Task · DAG Run</h4></div><div class="role">DAG는 Task의 순서도, DAG Run은 한 번 실행한 기록</div><div class="sum">앞 Task가 성공해야 다음 Task가 시작된다</div></div>
+        <div class="card"><div class="ch"><svg data-icon="clipboard-list"></svg><h4>PARAM · job_history</h4></div><div class="role">PARAM의 날짜 범위로 get_jobs가 job_history에서 처리 대상을 고른다</div><div class="sum">그래서 다시 실행해도 중복 적재되지 않는다. 처리 범위는 화면 날짜가 아니라 get_jobs log로 본다</div></div>
+        <div class="card"><div class="ch"><svg data-icon="server"></svg><h4>프로세스 · 서버 3대</h4></div><div class="role">실행: webserver · scheduler · worker · flower</div><div class="role">기록 · 대기열: PostgreSQL · pgpool · redis · redis-sentinel</div><div class="sum">실행 쪽은 재시작으로 복구, 기록 · 대기열 쪽은 담당자에게 전달</div></div>
+        <div class="card"><div class="ch"><svg data-icon="circle-check"></svg><h4>Task 상태</h4></div><div class="role"><span class="st queued">queued</span> → <span class="st running">running</span> → <span class="st success">success</span></div><div class="sum"><span class="st retry">up_for_retry</span>는 기다리고, <span class="st failed">failed</span>는 07 장애 대응으로</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M2-11</b> · 제목 및 내용</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>다음 장(03 DAG별 기능)에서 운영 중인 DAG를 하나씩 본다.</li>
+    </ul>
+  </template>
+</section>
+
+<script data-module>
+// ---------- M2-09 멈춘 프로세스 시연 ----------
+(function () {
+  var sim = document.getElementById('simSlide');
+  if (!sim) return;
+  var esc = window.Deck.esc;
+  var MK_SEE = '[확인 필요: 운영에서 실제로 본 증상과 맞는지]';
+  var SYMP = {
+    webserver: { name: 'webserver', see: 'Airflow UI 화면이 열리지 않는다.', run: 'DAG 실행은 계속된다. 화면만 못 본다.', act: ['ok', '재시작 — webserver'] },
+    scheduler: { name: 'scheduler', see: '새 DAG Run · Task가 시작되지 않는다. 화면 위에 scheduler 경고 배너가 뜬다.', run: '이미 worker가 실행 중인 Task는 계속 돈다.', act: ['ok', '재시작 — scheduler'] },
+    worker: { name: 'worker', see: 'Task가 queued에 머문다.', run: '실행 중이던 Task는 실패 처리될 수 있다.', act: ['ok', '재시작 — 실행 중인 Spark Task가 없을 때'] },
+    flower: { name: 'flower', see: 'Flower 화면만 열리지 않는다.', run: 'DAG 실행에는 영향이 없다.', act: ['ok', '재시작 — flower'] },
+    redis: { name: 'redis', see: 'Task가 worker에 전달되지 않아 queued에 쌓인다.', run: '새 Task가 실행되지 않는다.', act: ['stop', '담당자에게 전달'] },
+    sentinel: { name: 'redis-sentinel', see: '[확인 필요: redis-sentinel이 멈췄을 때 보이는 증상]', run: '[확인 필요: 실행에 미치는 영향]', act: ['stop', '담당자에게 전달'] },
+    db: { name: 'PostgreSQL · pgpool', see: 'Airflow UI와 scheduler 모두 오류가 난다.', run: '실행 기록을 쓰고 읽지 못한다.', act: ['stop', '담당자에게 전달'] }
+  };
+  var symp = document.getElementById('symp'), picked = null;
+  function txt(t) { return /^\[확인 필요/.test(t) ? '<span class="mk">' + esc(t) + '</span>' : esc(t); }
+  function pick(key) {
+    picked = picked === key ? null : key;
+    sim.querySelectorAll('[data-pick]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.pick === picked)); });
+    sim.querySelectorAll('.proc').forEach(function (p) { p.classList.toggle('down', p.dataset.node === picked); });
+    sim.querySelectorAll('[data-p]').forEach(function (e) {
+      var on = picked && e.dataset.p.split(' ').indexOf(picked) >= 0;
+      e.classList.toggle('cut', !!on);
+    });
+    if (!picked) {
+      symp.innerHTML = '<h3>어느 프로세스가 멈췄을까?</h3><p class="empty">왼쪽 상자나 아래 버튼을 누르면, 그 프로세스가 <b>모두</b> 멈췄을 때 화면에서 보이는 증상과 할 일이 나온다.</p><p class="empty">끊기는 연결은 흐려진다.</p>';
+      return;
+    }
+    var d = SYMP[picked];
+    symp.innerHTML = '<h3>' + esc(d.name) + '가 멈추면</h3>' +
+      '<div><div class="lab">화면에서 보이는 것</div><p>' + txt(d.see) + '</p></div>' +
+      '<div><div class="lab">실행에 미치는 영향</div><p>' + txt(d.run) + '</p></div>' +
+      '<div class="act ' + d.act[0] + '">' + esc(d.act[1]) + '</div>' +
+      '<p><span class="mk">' + esc(MK_SEE) + '</span></p>';
+  }
+  sim.querySelectorAll('[data-pick]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); pick(b.dataset.pick); }); });
+  sim.querySelectorAll('.proc').forEach(function (p) {
+    p.addEventListener('click', function (e) { e.stopPropagation(); pick(p.dataset.node); });
+    p.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(p.dataset.node); } });
+  });
+  pick(null);
+})();
+</script>
