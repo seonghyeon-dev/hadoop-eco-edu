@@ -113,6 +113,7 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 │   ├── src/                          # base.css · deck.js · shell.html(공통 틀), M<n>.html(모듈 원본)
 │   ├── diagrams/                     # D<번호>-<이름>.json(도식 입력) · .html(렌더링 결과)
 │   ├── icons/                        # 슬라이드 아이콘 (Lucide, ISC — LICENSE 포함). 쓰는 것만 복사해 둔다
+│   ├── logos/                        # 프로젝트 공식 로고 (ASF 상표, 출처는 logos/README.md)
 │   └── captures/                     # 화면 캡처 (마스킹한 것만)
 └── samples/
     ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 8장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다

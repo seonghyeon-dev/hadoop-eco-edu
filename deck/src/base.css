@@ -280,6 +280,13 @@ body.notes-on .meta .id { visibility: visible; }
 .card .ch { display: flex; align-items: center; gap: .45em; }
 .card .ch .ico-svg { width: 1.5em; height: 1.5em; color: var(--accent); }
 .card .ch h4 { flex: 1; }
+.logo { display: inline-grid; place-items: center; flex: none; min-width: 2.6em; height: 2.6em; padding: .25em; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.logo img { height: 2.05em; width: auto; max-width: 5.2em; object-fit: contain; display: block; }
+.dia .logo-bg { fill: #fff; stroke: var(--line); }
+.steps5 { list-style: none; margin: .3em 0 0; padding: 0; display: flex; flex-direction: column; gap: .3em; font-size: .95em; }
+.steps5 li { display: flex; gap: .5em; align-items: baseline; }
+.steps5 b { color: var(--accent); min-width: 4.6em; }
+.steps5 span { color: var(--ink); }
 .tagk { font-size: .78em; font-weight: 700; border-radius: 999px; padding: .05em .6em; border: 1px solid currentColor; white-space: nowrap; }
 .tagk.cmd { color: var(--accent); } .tagk.res { color: var(--mark); } .tagk.calc { color: var(--ok); } .tagk.store { color: var(--alt); }
 .card .an { display: flex; gap: .45em; align-items: flex-start; }

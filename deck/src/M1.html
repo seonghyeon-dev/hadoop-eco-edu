@@ -80,9 +80,9 @@
             <!-- 상자 (흐름 위에 그려 점이 상자 아래로 지나가게 — 상자 안에서 처리되는 모습) -->
             <g class="hot" data-info="airflow" tabindex="0" role="button" aria-label="Airflow 설명 열기">
               <rect class="n-accent" x="225" y="8" width="210" height="56" rx="8"/>
-              <svg data-icon="calendar-clock" x="241" y="22" width="28" height="28" style="color: var(--accent)"></svg>
-              <text class="t-b" x="281" y="33" font-size="18">Airflow</text>
-              <text class="t-m" x="281" y="53" font-size="13">언제 · 무엇을 실행할지 지시</text>
+              <rect class="logo-bg" x="233" y="14" width="44" height="44" rx="6"/><image data-logo="airflow" x="237" y="18" width="36" height="36"/>
+              <text class="t-b" x="287" y="33" font-size="18">Airflow</text>
+              <text class="t-m" x="287" y="53" font-size="13">언제 · 무엇을 실행할지 지시</text>
             </g>
             <g class="hot" data-info="source" tabindex="0" role="button" aria-label="데이터 원천 설명 열기">
               <rect class="n" x="8" y="206" width="150" height="92" rx="8"/>
@@ -93,25 +93,27 @@
             </g>
             <g class="hot" data-info="spark" tabindex="0" role="button" aria-label="Spark 설명 열기" data-dim="2">
               <rect class="n" x="222" y="134" width="216" height="80" rx="8"/>
-              <svg data-icon="zap" x="238" y="160" width="28" height="28"></svg>
-              <text class="t-b" x="276" y="170" font-size="18">Spark</text>
-              <text class="t-m" x="276" y="194" font-size="13">Iceberg 테이블에 적재</text>
+              <rect class="logo-bg" x="232" y="150" width="62" height="48" rx="6"/><image data-logo="spark" x="236" y="154" width="54" height="40"/>
+              <text class="t-b" x="304" y="170" font-size="18">Spark</text>
+              <text class="t-m" x="304" y="194" font-size="13">Iceberg 테이블에 적재</text>
             </g>
             <g class="hot" data-info="tez" tabindex="0" role="button" aria-label="Tez 설명 열기" data-dim="3">
               <rect class="n" x="222" y="270" width="216" height="80" rx="8"/>
-              <svg data-icon="cog" x="238" y="296" width="28" height="28"></svg>
-              <text class="t-b" x="276" y="306" font-size="18">Tez</text>
-              <text class="t-m" x="276" y="330" font-size="13">Hive SQL 실행 · Hive 적재</text>
+              <rect class="logo-bg" x="232" y="286" width="62" height="48" rx="6"/><image data-logo="tez" x="236" y="290" width="54" height="40"/>
+              <text class="t-b" x="304" y="306" font-size="18">Tez</text>
+              <text class="t-m" x="304" y="330" font-size="12">Hive SQL 실행 · Hive 적재</text>
             </g>
             <g class="hot" data-info="iceberg" tabindex="0" role="button" aria-label="Iceberg 테이블 설명 열기" data-dim="2">
               <rect class="n" x="508" y="134" width="134" height="80" rx="8"/>
-              <text class="t-b" x="575" y="168" text-anchor="middle" font-size="16">Iceberg 테이블</text>
-              <text class="t-m" x="575" y="192" text-anchor="middle" font-size="12">Parquet</text>
+              <rect class="logo-bg" x="561" y="140" width="28" height="28" rx="5"/><image data-logo="iceberg" x="563" y="142" width="24" height="24"/>
+              <text class="t-b" x="575" y="188" text-anchor="middle" font-size="15">Iceberg 테이블</text>
+              <text class="t-m" x="575" y="206" text-anchor="middle" font-size="11">Parquet</text>
             </g>
             <g class="hot" data-info="hive" tabindex="0" role="button" aria-label="Hive 테이블 설명 열기" data-dim="3">
               <rect class="n" x="508" y="270" width="134" height="80" rx="8"/>
-              <text class="t-b" x="575" y="304" text-anchor="middle" font-size="16">Hive 테이블</text>
-              <text class="t-m t-mono" x="575" y="328" text-anchor="middle" font-size="12">_raw · _temp · _orc</text>
+              <rect class="logo-bg" x="561" y="276" width="28" height="28" rx="5"/><image data-logo="hive" x="563" y="278" width="24" height="24"/>
+              <text class="t-b" x="575" y="324" text-anchor="middle" font-size="15">Hive 테이블</text>
+              <text class="t-m t-mono" x="575" y="342" text-anchor="middle" font-size="11">_raw · _temp · _orc</text>
             </g>
           </svg>
         </div>
@@ -156,14 +158,14 @@
     </div>
     <div class="content">
       <div class="cards">
-        <div class="card"><div class="ch"><svg data-icon="calendar-clock"></svg><h4>Airflow</h4><span class="tagk cmd">지시</span></div><div class="role">언제, 무엇을, 어떤 순서로 실행할지 정한다</div><div class="an" data-at="1"><svg data-icon="clipboard-list"></svg><span>작업 일정표를 든 작업반장</span></div><div class="df" data-at="2">정해진 순서와 조건대로만 움직이고, 데이터는 직접 만지지 않는다</div></div>
-        <div class="card"><div class="ch"><svg data-icon="cpu"></svg><h4>YARN</h4><span class="tagk res">자원</span></div><div class="role">클러스터의 CPU · 메모리를 작업에 나눠 준다</div><div class="an" data-at="1"><svg data-icon="layout-grid"></svg><span>공용 작업장의 자리 배정 담당</span></div><div class="df" data-at="2">나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</div></div>
-        <div class="card"><div class="ch"><svg data-icon="zap"></svg><h4>Spark</h4><span class="tagk calc">계산</span></div><div class="role">큰 계산을 쪼개 여러 서버에서 동시에 처리한다 — Iceberg 적재</div><div class="an" data-at="1"><svg data-icon="users"></svg><span>계산팀 (driver = 팀장, executor = 팀원)</span></div><div class="df" data-at="2">팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</div></div>
-        <div class="card"><div class="ch"><svg data-icon="cog"></svg><h4>Tez</h4><span class="tagk calc">계산</span></div><div class="role">Hive SQL을 실제 작업으로 바꿔 실행한다 — Hive 적재</div><div class="an" data-at="1"><svg data-icon="file-text"></svg><span>Hive SQL 주문서를 받는 또 다른 계산팀</span></div></div>
-        <div class="card"><div class="ch"><svg data-icon="hard-drive"></svg><h4>HDFS</h4><span class="tagk store">저장</span></div><div class="role">파일을 조각내 여러 서버에 복사본과 함께 보관한다</div><div class="an" data-at="1"><svg data-icon="warehouse"></svg><span>여러 창고에 나눠 보관하는 창고 시스템</span></div><div class="df" data-at="2">파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</div></div>
-        <div class="card"><div class="ch"><svg data-icon="table-2"></svg><h4>Hive Metastore</h4><span class="tagk store">목록</span></div><div class="role">테이블이 어느 파일로 이루어졌는지 목록을 관리한다</div><div class="an" data-at="1"><svg data-icon="library"></svg><span>도서관 목록 카드</span></div><div class="df" data-at="2">목록 카드가 없으면 파일이 있어도 찾지 못한다. 목록은 Oracle DB에 저장된다</div></div>
-        <div class="card"><div class="ch"><svg data-icon="layers"></svg><h4>Iceberg</h4><span class="tagk store">목록</span></div><div class="role">파일 목록과 적재 이력을 메타데이터 파일로 관리한다</div><div class="an" data-at="1"><svg data-icon="notebook-pen"></svg><span>새 서류만 덧붙이는 장부</span></div><div class="df" data-at="2">장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</div></div>
-        <div class="card legend-card"><b>흐름으로 보면</b><span>지시(Airflow) → 자원 배정(YARN) → 계산(Spark · Tez) → 저장(HDFS) · 목록(Hive Metastore · Iceberg)</span></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="airflow" alt="Apache Airflow 로고"></span><h4>Airflow</h4><span class="tagk cmd">지시</span></div><div class="role">언제, 무엇을, 어떤 순서로 실행할지 정한다</div><div class="an" data-at="1"><svg data-icon="clipboard-list"></svg><span>작업 일정표를 든 작업반장</span></div><div class="df" data-at="2">정해진 순서와 조건대로만 움직이고, 데이터는 직접 만지지 않는다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="hadoop" alt="Apache Hadoop 로고"></span><h4>YARN</h4><span class="tagk res">자원</span></div><div class="role">클러스터의 CPU · 메모리를 작업에 나눠 준다</div><div class="an" data-at="1"><svg data-icon="layout-grid"></svg><span>공용 작업장의 자리 배정 담당</span></div><div class="df" data-at="2">나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="spark" alt="Apache Spark 로고"></span><h4>Spark</h4><span class="tagk calc">계산</span></div><div class="role">큰 계산을 쪼개 여러 서버에서 동시에 처리한다 — Iceberg 적재</div><div class="an" data-at="1"><svg data-icon="users"></svg><span>계산팀 (driver = 팀장, executor = 팀원)</span></div><div class="df" data-at="2">팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="tez" alt="Apache Tez 로고"></span><h4>Tez</h4><span class="tagk calc">계산</span></div><div class="role">Hive SQL을 실제 작업으로 바꿔 실행한다 — Hive 적재</div><div class="an" data-at="1"><svg data-icon="file-text"></svg><span>Hive SQL 주문서를 받는 또 다른 계산팀</span></div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="hadoop" alt="Apache Hadoop 로고"></span><h4>HDFS</h4><span class="tagk store">저장</span></div><div class="role">파일을 조각내 여러 서버에 복사본과 함께 보관한다</div><div class="an" data-at="1"><svg data-icon="warehouse"></svg><span>여러 창고에 나눠 보관하는 창고 시스템</span></div><div class="df" data-at="2">파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="hive" alt="Apache Hive 로고"></span><h4>Hive Metastore</h4><span class="tagk store">목록</span></div><div class="role">테이블이 어느 파일로 이루어졌는지 목록을 관리한다</div><div class="an" data-at="1"><svg data-icon="library"></svg><span>도서관 목록 카드</span></div><div class="df" data-at="2">목록 카드가 없으면 파일이 있어도 찾지 못한다. 목록은 Oracle DB에 저장된다</div></div>
+        <div class="card"><div class="ch"><span class="logo"><img data-logo="iceberg" alt="Apache Iceberg 로고"></span><h4>Iceberg</h4><span class="tagk store">목록</span></div><div class="role">파일 목록과 적재 이력을 메타데이터 파일로 관리한다</div><div class="an" data-at="1"><svg data-icon="notebook-pen"></svg><span>새 서류만 덧붙이는 장부</span></div><div class="df" data-at="2">장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</div></div>
+        <div class="card legend-card"><b>처리 순서</b><ol class="steps5"><li><b>1 지시</b><span>Airflow</span></li><li><b>2 자원 배정</b><span>YARN</span></li><li><b>3 계산</b><span>Spark · Tez</span></li><li><b>4 저장</b><span>HDFS</span></li><li><b>5 목록</b><span>Hive Metastore · Iceberg</span></li></ol></div>
       </div>
     </div>
     <div class="meta"><span class="id"><b>M1-03</b> · 제목 및 내용</span><span class="dots"></span></div>
@@ -174,6 +176,7 @@
       <li>비유는 늘 "다른 점"과 함께 말한다. 비유만 남으면 실제 동작을 잘못 기억한다.</li>
       <li>Spark의 "팀원 수가 바뀌지 않는다"는 as-is가 dynamic allocation을 쓰지 않기 때문이다.</li>
       <li>Hive Metastore의 Oracle DB는 이름만 말한다. DB 전환은 교육 전에 끝나 있다.</li>
+      <li>로고는 각 프로젝트의 공식 로고다(ASF 상표). YARN · HDFS는 Hadoop의 구성요소라 Hadoop 로고를 쓴다. 출처는 <code>deck/logos/README.md</code>.</li>
       <li><span class="pp">pptx 대응</span> 카드 도형 8개. 비유 줄 묶음 → 다른 점 줄 묶음에 '나타내기' 2개.</li>
     </ul>
   </template>
