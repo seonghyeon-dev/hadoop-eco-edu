@@ -130,6 +130,11 @@ drafted-by: Claude
 - 작업물은 `spark-tuning`처럼 **MkDocs + GitHub Pages**로 게시해 브라우저에서 본다
 - HTML 발표 자료는 **동적·반응형**으로 만든다 — 단계별 펼치기, 움직이는 데이터 흐름, 눌러서 펼치는 설명. 참고: dashmotion(흐름선·이동 점 기법), 사용자 Google Drive 폴더(이 환경에서 접근 불가 — 미확인)
 
+사용자 결정 (2026-10-24):
+
+- HTML 발표 자료는 **`samples/hadoop-eco-ops-sample.html`(9장 샘플) 방식을 기준**으로 만든다
+- motion-template 기반 3쪽 샘플은 **폐기**한다 — 3쪽 고정 형식이라 슬라이드·도식을 늘릴 수 없고, 흐름선·인쇄 대응·pptx 대응 메모를 넣을 수 없다
+
 기술·운영 제약:
 
 - Airflow 2.7.1 기준으로 화면·용어를 쓴다. 3.x 화면·용어는 쓰지 않는다
