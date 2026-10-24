@@ -27,3 +27,5 @@ deck/diagrams/*.browser-check.json
 deck/src/*-local*
 deck/diagrams/*-local*
 deck/captures/*-local*
+deck/icons/*-local*
+deck/logos/*-local*

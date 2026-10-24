@@ -13,6 +13,8 @@ drafted-by: Claude
 
 > **초안 상태 안내.** `intent.md`의 Open questions가 아직 일부 열려 있는 상태에서 커리큘럼 뼈대를 먼저 합의하려고 쓴 초안이다. 미결 사항에 기대는 슬라이드는 `[확인 필요: …]`로, 사용자가 직접 쓰기로 한 DAG 동작 상세는 `[사용자 작성: …]`로 표시했고, 영향 범위는 끝의 "미결 사항 의존표"에 모았다.
 >
+> **2026-10-24 개정 (4).** PARAM 정정 — 날짜 범위가 아니라 날짜 하나를 문자열로 받는다(`"2026-10-24"`). 05장 제목을 "YARN · Spark · Tez"로 바꾸고 장 안에서도 YARN을 먼저 다룬다(사용자 결정).
+>
 > **2026-10-24 개정 (3).** Airflow 다음에 "DAG별 기능" 장(M3)을 새로 두고 뒤 장 번호를 하나씩 밀었다(사용자 결정). 이 장은 외부 접속이 제한된 작업공간에서 내부 LLM으로 따로 만든다 — `deck/DAG-작업안내.md`.
 >
 > **2026-10-24 개정 (2).** 모듈 순서 변경 — HDFS · Hive · Iceberg(M4)를 Spark · Tez · YARN(M5) 앞으로(사용자 결정). 화면에 보이는 장 번호는 `01`~`07`로 쓰고, `M<n>-<nn>`은 제작 · 검토용 ID로만 쓴다.
@@ -45,12 +47,12 @@ drafted-by: Claude
 | 조치 범위 (**확정**) | 할 수 있는 조치(DAG 재실행, Airflow 프로세스 재시작, Airflow log 확인)만 다룬다. 금지 조치 목록 슬라이드는 두지 않는다. 조치의 안전 조건은 그 조치 절차 안에 둔다(예: worker 재시작 전 실행 중인 Spark Task 확인) | 사용자 결정 (2026-10-24) |
 | Flower (**확정**) | Flower 화면은 다루지 않는다. flower는 프로세스 역할(M2-07)과 재시작 대상(M7-15)에만 나온다 | 사용자 결정 (2026-10-24) |
 | as-is Hive 적재 (**정정**) | 6단계로 그린다: `_raw` Insert → `_temp` 비움 → 대상 날짜 select해 `_temp`(ORC) → `_orc` 기존 파일 목록 기록 → `hdfs mv` → 기록한 기존 파일 `hdfs rm`. `_orc`는 비지 않는다. Iceberg와의 차이는 "파일 작업 두 번에 나눠 바뀐다 vs commit 한 번에 바뀐다"로 보여 준다 | 사용자 정정 (2026-10-24) |
-| 모듈 순서 (**확정**) | 구조(M1) → 개념(M2 Airflow, M4 HDFS · Hive · Iceberg, M5 Spark · Tez · YARN) → 모니터링(M6) → 장애 대응(M7) → 요약(M8). 테이블(Hive · Iceberg)을 먼저 알고 나서 적재 엔진(Tez · Spark)을 본다 | 사용자 결정 (2026-10-24) |
+| 모듈 순서 (**확정**) | 구조(M1) → 개념(M2 Airflow, M4 HDFS · Hive · Iceberg, M5 YARN · Spark · Tez) → 모니터링(M6) → 장애 대응(M7) → 요약(M8). 테이블(Hive · Iceberg)을 먼저 알고 나서 적재 엔진(Tez · Spark)을 본다 | 사용자 결정 (2026-10-24) |
 | 개념의 깊이 | 화면에 나오는 용어까지 설명한다. 전환 비교(Hive → Iceberg, Tez → Spark)는 운영에서 달라지는 점 수준으로 다룬다 | 목표는 운영 |
 | 이름이 겹치는 용어 | Airflow의 Task · Executor와 Spark의 task · executor를 구분하는 슬라이드를 둔다 (M5-09) | 가장 헷갈리는 지점 |
-| 날짜 개념 | 처리 범위(PARAM)와 화면의 DAG Run 날짜(logical date)를 별도 슬라이드로 구분한다 (M2-03, M2-05) | 수동 Trigger한 DAG Run의 logical date는 버튼을 누른 시각이라, 화면 날짜로 처리 범위를 판단하면 틀린다 |
+| 날짜 개념 | 처리 날짜(PARAM)와 화면의 DAG Run 날짜(logical date)를 별도 슬라이드로 구분한다 (M2-03, M2-05) | 수동 Trigger한 DAG Run의 logical date는 버튼을 누른 시각이라, 화면 날짜로 처리 날짜를 판단하면 틀린다 |
 | job_history 소개 위치 | M2-04에서 소개하고 M4-15(동시 적재 재실행) · M7-11(재실행)에서 다시 쓴다 | 재실행이 안전한 이유가 job_history에 있다 |
-| Tez | 이름 · 역할과 Spark와의 비교까지 다룬다 (M5-03~05). Tez UI는 다루지 않는다 | Hive 적재는 Hive SQL(Tez)로 한다(사용자 확인) |
+| Tez | 이름 · 역할과 Spark와의 비교까지 다룬다 (M5-05~06). Tez UI는 다루지 않는다 | Hive 적재는 Hive SQL(Tez)로 한다(사용자 확인) |
 | log | Spark UI · YARN UI에서 log를 여는 방법은 다루지 않는다. Airflow log는 "볼 곳"만 표시한다 (M7-04) | 사용자 결정(2026-10-04). "보지 않는다"는 문구는 슬라이드에 쓰지 않는다 |
 | 장애 대응 구성 | 판단 흐름도 1장(M7-03)을 중심에 두고, 증상 분류 → 재실행 → 재시작 → 전달 순으로 펼친다 | 실제 대응 순서와 같게 |
 | 모듈 정리 장 | M2 · M4 · M6 · M7 끝에 정리 1장씩 둔다. 작은 모듈(M1 · M5)은 두지 않는다 | 분량이 큰 모듈만 |
@@ -65,8 +67,8 @@ drafted-by: Claude
 |------|------|------|
 | Airflow | 작업 일정표를 들고 지시하는 작업반장 | 반장은 상황을 보고 순서를 바꾸지만, Airflow는 DAG에 정해진 순서와 조건대로만 움직인다. 데이터는 직접 만지지 않는다 |
 | DAG | 작업 순서도(레시피) | 레시피는 사람이 한 번 따라 하지만, DAG는 정해진 주기마다 반복 실행된다 |
-| DAG Run | 그 순서도대로 한 번 돌린 기록 | 어느 범위의 데이터를 처리했는지는 DAG Run 날짜가 아니라 PARAM으로 정해진다 |
-| PARAM | 작업 지시서의 "처리할 기간" 칸 | — |
+| DAG Run | 그 순서도대로 한 번 돌린 기록 | 어느 날짜의 데이터를 처리했는지는 DAG Run 날짜가 아니라 PARAM으로 정해진다 |
+| PARAM | 작업 지시서의 "처리할 날짜" 칸 | — |
 | job_history | 적재 대장 — 데이터 건마다 처리 상태를 적어 두는 표. 비유: 택배 배송 조회표 | 택배는 사람이 조회만 하지만, job_history는 DAG가 직접 읽고 상태를 고쳐 쓴다. `[사용자 작성: 상태 값과 의미 — 건별 상태 방식이 아니면 표현 수정]` |
 | CeleryExecutor | 반장(scheduler)이 작업 지시서를 꽂이(redis)에 꽂으면, 작업자(worker)가 하나씩 가져가 처리하고 결과를 작업 일지(PostgreSQL)에 적는다 | Spark · Hive SQL 작업이면 worker가 직접 계산하지 않는다. YARN에 맡기고 끝날 때까지 지켜본다 — 그래서 지켜보는 도중에 worker를 끄면 안 된다 |
 | redis-sentinel | 꽂이(redis)를 지켜보는 당번 — 쓰던 꽂이가 망가지면 예비 꽂이로 바꿔 준다 | — |
@@ -91,7 +93,7 @@ drafted-by: Claude
 | M2 | Airflow — 언제, 무엇을, 어떤 순서로 | 11 | 1 |
 | M3 | DAG별 기능 | `[사용자 작성]` | 1 |
 | M4 | HDFS · Hive · Iceberg — 데이터가 쌓이는 곳 | 16 | 1 |
-| M5 | Spark · Tez와 YARN — 실제 계산과 자원 배분 | 9 | 1 |
+| M5 | YARN · Spark · Tez — 자원 배분과 실제 계산 | 9 | 1 |
 | M6 | 모니터링 — 화면에서 정상과 비정상 구분하기 | 14 | 2 |
 | M7 | 장애 대응 — 확인하고, 조치하고, 전달한다 | 21 | 2 |
 | M8 | 마무리 | 3 | 2 |
@@ -124,9 +126,9 @@ drafted-by: Claude
 |----|------|------|------|
 | M2-01 | 구역 머리글 | Airflow | Airflow 2.7.1 |
 | M2-02 | 제목만 | DAG와 Task | 핵심: DAG는 Task를 순서대로 이은 작업 순서도이고, 정해진 주기마다 실행된다. D05. 앞 Task가 성공해야 다음 Task가 시작된다(trigger rule 기본값). as-is는 `catchup=False` — 멈춰 있던 구간을 한꺼번에 실행하지 않는다 |
-| M2-03 | 제목 및 내용 | 처리 범위 — PARAM | 핵심: DAG는 처리할 날짜 범위를 PARAM으로 받는다. D06. `[사용자 작성: 스케줄 실행 때 범위가 정해지는 방식]` |
-| M2-04 | 제목만 | 처리 대상 고르기 — get_jobs와 job_history | 핵심: get_jobs가 그 범위로 job_history를 조회해 처리할 데이터를 고른다. D06. job_history는 Oracle에 있다 — 이름만. `[사용자 작성: 고르는 상태 값]` |
-| M2-05 | 제목만 | DAG Run 날짜와 처리 범위 | 핵심: 화면의 DAG Run 날짜(logical date)와 처리 범위는 다를 수 있다. D07. 수동 Trigger한 DAG Run의 logical date는 버튼을 누른 시각 |
+| M2-03 | 제목 및 내용 | 처리 날짜 — PARAM | 핵심: DAG는 처리할 날짜 하나를 PARAM으로 받는다 — `"2026-10-24"` 같은 문자열(사용자 확인 2026-10-24). D06. `[사용자 작성: 스케줄 실행 때 날짜가 정해지는 방식]` |
+| M2-04 | 제목만 | 처리 대상 고르기 — get_jobs와 job_history | 핵심: get_jobs가 그 날짜로 job_history를 조회해 처리할 데이터를 고른다. D06. job_history는 Oracle에 있다 — 이름만. `[사용자 작성: 고르는 상태 값]` |
+| M2-05 | 제목만 | DAG Run 날짜와 처리 날짜 | 핵심: 화면의 DAG Run 날짜(logical date)와 처리 날짜(PARAM)는 다를 수 있다. D07. 수동 Trigger한 DAG Run의 logical date는 버튼을 누른 시각 |
 | M2-06 | 제목만 | Airflow 프로세스 구성과 서버 배치 | 핵심: Airflow는 서버 3대에 나뉜 여러 프로세스가 함께 움직인다. D08. 서버 배치: worker.1 — webserver · scheduler · worker · flower · postgresql · pgpool · redis · redis-sentinel / worker.2 — webserver · scheduler · worker · postgresql · pgpool · redis · redis-sentinel / worker.3 — worker · postgresql · pgpool · redis · redis-sentinel |
 | M2-07 | 제목 및 내용 | 프로세스별 역할 ① 실행 | 핵심: 실행을 맡는 프로세스 — webserver · scheduler · worker · flower. 프로세스별 역할 한 줄씩. webserver = Airflow UI 화면, scheduler = 언제 무엇을 실행할지 결정, worker = Task 실행(CeleryExecutor), flower = worker 상태 화면. 개수: webserver 2, scheduler 2, worker 3, flower 1 |
 | M2-08 | 제목 및 내용 | 프로세스별 역할 ② 기록 · 대기열 | 핵심: 기록과 전달을 맡는 프로세스 — PostgreSQL · pgpool · redis · redis-sentinel. PostgreSQL = metadata DB(실행 기록), pgpool = PostgreSQL 앞단(HA · 커넥션 풀), redis = 작업 대기열(Celery broker), redis-sentinel = redis 감시와 자동 전환. 각 3개 |
@@ -164,16 +166,16 @@ drafted-by: Claude
 | M4-15 | 제목 및 내용 | 동시 적재 테이블의 재실행 | 핵심: 동시 적재 테이블은 한쪽만 실패해도 Trigger 재실행으로 복구하고, job_history 덕분에 중복 적재되지 않는다. D06 · D21. Hive 변환 배치도 job_history를 쓴다(사용자 확인) |
 | M4-16 | 제목 및 내용 | 정리 |  |
 
-### M5. Spark · Tez와 YARN — 실제 계산과 자원 배분
+### M5. YARN · Spark · Tez — 자원 배분과 실제 계산
 
 | ID | 레이아웃 | 제목 | 핵심 · 비고 |
 |----|------|------|------|
-| M5-01 | 구역 머리글 | Spark · Tez와 YARN | Hadoop 3.2.3(YARN), Spark 3.5.2, Hive 3.1.2, Tez 0.10.1 |
-| M5-02 | 제목만 | Spark 작업 구성 — driver와 executor | 핵심: Spark는 driver 하나가 여러 executor에게 계산을 나눠 맡긴다. D10. 팀장/팀원 비유 + 어긋나는 지점. cluster 모드라 driver도 YARN 위에서 돈다 |
-| M5-03 | 제목만 | Hive 적재 엔진 — Tez | 핵심: Hive 적재는 Hive SQL을 Tez로 실행해서 한다. D11. Tez = Hive SQL을 실제 작업으로 바꿔 돌리는 엔진 |
-| M5-04 | 콘텐츠 2개 | Tez와 Spark 비교 | 핵심: Tez와 Spark는 실행 방식과 쓰임이 다르다. D11. 비교: 무엇을 실행하나(Hive SQL / Spark 작업) · 적재 대상(as-is: Hive 테이블 / Iceberg 테이블) · YARN에서의 모습(TEZ / SPARK application). 일반 개념은 Spark 3.5 · Hive 3.1 문서 기준 |
-| M5-05 | 제목 및 내용 | Tez → Spark 전환으로 얻는 것 | 핵심: Tez에서 Spark로 옮기면 적재 엔진이 하나로 모인다. 전환으로 얻는 것: 엔진 하나로 운영 · Iceberg 적재와 같은 엔진 · 모니터링 화면 통일(Spark UI). 비용도 함께. `[확인 필요: as-is에서 Tez → Spark 전환이 진행 · 계획 중인지 — Hive → Iceberg 전환과 같은 범위인지]` |
-| M5-06 | 제목만 | YARN 자원 배분 | 핵심: YARN은 CPU · 메모리를 container로 나눠 주고, 모자라면 queue에서 기다리게 한다. D12. ResourceManager, NodeManager, container. Spark와 Tez가 같은 자원을 나눠 쓴다. `[확인 필요: queue 구성]` |
+| M5-01 | 구역 머리글 | YARN · Spark · Tez | Hadoop 3.2.3(YARN), Spark 3.5.2, Hive 3.1.2, Tez 0.10.1 |
+| M5-02 | 제목만 | YARN 자원 배분 | 핵심: YARN은 CPU · 메모리를 container로 나눠 주고, 모자라면 queue에서 기다리게 한다. D12. ResourceManager, NodeManager, container. Spark와 Tez가 같은 자원을 나눠 쓴다. `[확인 필요: queue 구성]` |
+| M5-03 | 제목만 | Spark 작업 구성 — driver와 executor | 핵심: Spark는 driver 하나가 여러 executor에게 계산을 나눠 맡긴다. D10. 팀장/팀원 비유 + 어긋나는 지점. cluster 모드라 driver도 YARN 위에서 돈다 |
+| M5-04 | 제목만 | Hive 적재 엔진 — Tez | 핵심: Hive 적재는 Hive SQL을 Tez로 실행해서 한다. D11. Tez = Hive SQL을 실제 작업으로 바꿔 돌리는 엔진 |
+| M5-05 | 콘텐츠 2개 | Tez와 Spark 비교 | 핵심: Tez와 Spark는 실행 방식과 쓰임이 다르다. D11. 비교: 무엇을 실행하나(Hive SQL / Spark 작업) · 적재 대상(as-is: Hive 테이블 / Iceberg 테이블) · YARN에서의 모습(TEZ / SPARK application). 일반 개념은 Spark 3.5 · Hive 3.1 문서 기준 |
+| M5-06 | 제목 및 내용 | Tez → Spark 전환으로 얻는 것 | 핵심: Tez에서 Spark로 옮기면 적재 엔진이 하나로 모인다. 전환으로 얻는 것: 엔진 하나로 운영 · Iceberg 적재와 같은 엔진 · 모니터링 화면 통일(Spark UI). 비용도 함께. `[확인 필요: as-is에서 Tez → Spark 전환이 진행 · 계획 중인지 — Hive → Iceberg 전환과 같은 범위인지]` |
 | M5-07 | 제목만 | Airflow Task와 YARN application | 핵심: Airflow Task 하나가 YARN application 하나를 띄운다. D13. SparkSubmitOperator → SPARK application / Hive SQL Task → TEZ application. worker는 끝날 때까지 지켜본다. `[사용자 작성: Hive SQL Task의 실행 방식(Operator), Task 하나에 application 하나인지]` |
 | M5-08 | 제목만 | YARN application 상태 | 핵심: YARN application은 ACCEPTED → RUNNING → FINISHED 순서로 상태가 바뀐다. D14. State와 FinalStatus(SUCCEEDED / FAILED / KILLED) 구분 |
 | M5-09 | 콘텐츠 2개 | 이름이 같은 다른 개념 — Task · Executor | 핵심: Airflow의 Task · Executor와 Spark의 task · executor는 이름만 같고 다른 것이다. |
@@ -211,15 +213,15 @@ drafted-by: Claude
 | M7-08 | 제목 및 내용 | 분류 4 — 입력 데이터 미도착 | 핵심: 분류 4 — 입력 데이터 미도착: 원천 담당에게 전달한다. `[확인 필요: as-is에 해당 유형이 있는지]` |
 | M7-09 | 제목 및 내용 | 분류 5 — Airflow 자체 문제 | 핵심: 분류 5 — Airflow 자체 문제: Airflow 프로세스면 재시작하고, 그 밖의 프로세스면 전달한다. D08. M2-09 증상과 연결 — scheduler 경고, queued 적체, 화면 접속 불가. "그 밖" = PostgreSQL · pgpool · redis · redis-sentinel |
 | M7-10 | 제목 및 내용 | _orc 교체 도중 실패 | 핵심: `_orc` 교체 도중 배치가 실패했을 때. D17. `[사용자 작성: ⑤ 전 · ⑤와 ⑥ 사이에 실패했을 때의 상태와, 같은 날짜로 Trigger 재실행하면 복구되는지]` |
-| M7-11 | 제목 및 내용 | DAG 재실행 — Trigger DAG | 핵심: 실패한 DAG는 처리 범위를 PARAM에 넣어 Trigger DAG로 다시 실행한다. D06. 성공했던 Task까지 처음부터 다시 돌지만 job_history 덕분에 중복 적재되지 않는다(사용자 확인) |
-| M7-12 | 제목만 | 처리 범위와 실패 내용 찾기 | 핵심: 처리 범위는 get_jobs Task log에서, 실패 내용은 Hive SQL · Spark Task log에서 확인한다. 캡처에 해당 줄 표시. `[사용자 작성: get_jobs log에서 범위가 찍히는 줄]` |
-| M7-13 | 제목만 | Trigger DAG 절차 | 캡처 단계별: Trigger DAG → PARAM 필드에 날짜 범위 입력 → 실행. 여러 날짜가 실패했으면 그 날짜들을 덮는 범위로. `[사용자 작성: PARAM 필드 이름 · 입력 형식, DAG마다 같은지]` |
+| M7-11 | 제목 및 내용 | DAG 재실행 — Trigger DAG | 핵심: 실패한 DAG는 처리 날짜를 PARAM에 넣어 Trigger DAG로 다시 실행한다. D06. 성공했던 Task까지 처음부터 다시 돌지만 job_history 덕분에 중복 적재되지 않는다(사용자 확인) |
+| M7-12 | 제목만 | 처리 날짜와 실패 내용 찾기 | 핵심: 처리 날짜는 get_jobs Task log에서, 실패 내용은 Hive SQL · Spark Task log에서 확인한다. 캡처에 해당 줄 표시. `[사용자 작성: get_jobs log에서 처리 날짜가 찍히는 줄]` |
+| M7-13 | 제목만 | Trigger DAG 절차 | 캡처 단계별: Trigger DAG → PARAM 필드에 처리 날짜(`"YYYY-MM-DD"` 문자열) 입력 → 실행. `[사용자 작성: 여러 날짜가 실패했을 때 — 날짜마다 Trigger하는지]` `[사용자 작성: PARAM 필드 이름 · 입력 형식, DAG마다 같은지]` |
 | M7-14 | 제목 및 내용 | Trigger 대신 전달하는 경우 | 핵심: 이런 경우에는 Trigger하지 않고 전달한다. 같은 DAG가 아직 실행 중일 때, 재실행 후 같은 증상으로 다시 실패했을 때. `[확인 필요: 원인과 무관하게 Trigger해도 되는지, 횟수 제한]` |
 | M7-15 | 제목 및 내용 | Airflow 프로세스 재시작 | 핵심: 재시작하는 프로세스는 worker · scheduler · webserver · flower이고, 하나씩 지정해서 재시작한다. D08 · D23. M2-09 증상 → 재시작할 프로세스. 서버 배치(M2-06)로 어느 서버에서 재시작하는지 안내 |
 | M7-16 | 제목만 | worker 재시작 전 확인 | 핵심: worker는 실행 중인 Spark Task가 없을 때 재시작한다. D23. Browse > Task Instances에서 running인 Spark Task(SparkSubmitOperator)와 Hostname을 본다(M6-07). 있으면 재시작하지 않고 전달. `[확인 필요: 실행 중인 Hive SQL Task도 같은 조건인지]` `[확인 필요: 재시작할 worker의 서버에서 도는 Task만 보면 되는지]` |
 | M7-17 | 제목 및 내용 | 재시작 명령어 | 프로세스별 명령어 — ansible playbook(대상 지정) 또는 systemctl. `[명령어: 사용자 기재]` + 성공 시 화면(기대 출력). `[확인 필요: playbook과 systemctl 중 하나만 다룰지]` |
 | M7-18 | 제목 및 내용 | 재시작 후 확인 | 핵심: 재시작 후에는 세 가지를 확인한다. 경고 배너 사라짐, 새 DAG Run 생성, queued 해소 |
-| M7-19 | 제목 및 내용 | 전달 양식 | 핵심: 전달할 때는 이 항목을 채운다. 전달 양식: DAG 이름, 처리 범위(PARAM), Task, 시도 번호, 시각, 상태, log 에러 부분, YARN application ID · 상태, 이미 한 조치. `[확인 필요: 전달 대상 · 채널]` |
+| M7-19 | 제목 및 내용 | 전달 양식 | 핵심: 전달할 때는 이 항목을 채운다. 전달 양식: DAG 이름, 처리 날짜(PARAM), Task, 시도 번호, 시각, 상태, log 에러 부분, YARN application ID · 상태, 이미 한 조치. `[확인 필요: 전달 대상 · 채널]` |
 | M7-20 | 제목만 | 사례 연습 | `[확인 필요: 과거 장애 사례]` — 사례 수만큼 장 수 늘어남 |
 | M7-21 | 제목 및 내용 | 정리 |  |
 
@@ -245,12 +247,12 @@ drafted-by: Claude
 | D04 | 화면 지도 — Airflow UI → YARN UI → Spark UI | archify architecture | M6-02 | 확정(도구 목록) + 일반 | |
 | D05 | DAG 예시 — Task 순서와 get_jobs · Hive SQL · Spark Task | archify workflow | M2-02 | 사용자 작성(DAG 구성) | |
 | D06 | PARAM → get_jobs → job_history → 처리 대상 → 상태 기록 | archify dataflow | M2-03, M2-04, M4-15, M7-11 | 사용자 작성(PARAM · job_history 상태) | |
-| D07 | DAG Run 날짜(logical date)와 처리 범위(PARAM)의 차이 | archify timeline (예시 시각) | M2-05 | 일반 + 확정(수동 Trigger) | |
+| D07 | DAG Run 날짜(logical date)와 처리 날짜(PARAM)의 차이 | archify timeline (예시 시각) | M2-05 | 일반 + 확정(수동 Trigger) | |
 | D08 | Airflow 프로세스 구성 · 서버 3대 배치 · 재시작 범위 | archify architecture · dashmotion 후보(scheduler → redis → worker) | M2-06 ~ M2-09, M7-09, M7-15 | 확정 | 샘플 `airflow-processes`(서버 배치 · redis-sentinel 추가 필요) |
 | D09 | Task 상태 전이 — queued → running → success / failed / up_for_retry | archify lifecycle | M2-10 | 일반 | |
-| D10 | Spark 작업 구성 — driver 하나와 executor 여럿 | archify architecture | M5-02 | 일반 + 확정(cluster 모드, dynamic allocation 안 씀) | |
-| D11 | Tez와 Spark — Hive SQL → TEZ application / Spark 작업 → SPARK application | archify architecture | M5-03, M5-04 | 일반 + 확정(Hive 적재 = Tez, Iceberg 적재 = Spark) | |
-| D12 | YARN 자원 배분 — ResourceManager · NodeManager · container · queue | archify architecture | M5-06, M6-10 | 일반 · queue 구성은 확인 필요 | |
+| D10 | Spark 작업 구성 — driver 하나와 executor 여럿 | archify architecture | M5-03 | 일반 + 확정(cluster 모드, dynamic allocation 안 씀) | |
+| D11 | Tez와 Spark — Hive SQL → TEZ application / Spark 작업 → SPARK application | archify architecture | M5-04, M5-05 | 일반 + 확정(Hive 적재 = Tez, Iceberg 적재 = Spark) | |
+| D12 | YARN 자원 배분 — ResourceManager · NodeManager · container · queue | archify architecture | M5-02, M6-10 | 일반 · queue 구성은 확인 필요 | |
 | D13 | Airflow Task → YARN application | archify sequence · dashmotion 후보 | M5-07, M6-11 | 확정(SparkSubmitOperator · cluster) · Hive SQL Task 방식은 사용자 작성 | |
 | D14 | YARN application 상태 — ACCEPTED → RUNNING → FINISHED, FinalStatus | archify lifecycle | M5-08, M6-10 | 일반 | |
 | D15 | Hive 테이블 폴더 — 테이블 = 폴더, `dt` 파티션 = 하위 폴더 | archify tree (예시 경로) | M4-03 | 확정(파티션) · 실제 경로는 확인 필요 | |
@@ -272,7 +274,7 @@ drafted-by: Claude
 | 멈춘 프로세스 시연 — 누르면 증상이 바뀐다 | M2-09 | 조작 시연 (D08을 함께 띄운다) |
 | 조회 시각 비교 시연 — 끌어서 Hive · Iceberg 결과를 비교한다 | M4-09 | 조작 시연 (D18을 함께 띄운다) |
 | 장애 판단 따라가기 — 질문에 답하면 분류와 조치(또는 전달 양식)가 나온다 | M7-03 | 조작 시연 (D22를 함께 띄운다) |
-| Tez · Spark 비교, Hive · Iceberg 비교 | M5-04, M4-11 | 도식이 아니라 표 |
+| Tez · Spark 비교, Hive · Iceberg 비교 | M5-05, M4-11 | 도식이 아니라 표 |
 | 장애 대응 요약 · 용어집 — 인쇄 가능한 한 장 + 검색 | M8-01, M8-02 | 교육 후 곁에 두는 자료 |
 | 화면 캡처와 그 위의 표시 | M6 전체, M7-04, M7-12, M7-13 | 캡처는 이미지 |
 
@@ -283,14 +285,15 @@ drafted-by: Claude
 `[확인 필요: 실습 포함 여부]` — 포함한다면 제안은 다음과 같다. 모두 **읽기 전용 조회**이고, 조치 실습은 운영 환경에서 하지 않는다.
 
 - 2회차 M6 끝: 실제 Airflow UI에서 오늘 실패한 Task 찾기 → log 열기 → YARN에서 해당 application 찾기
-- 2회차 M7 끝: 과거 장애 사례 log를 보고 분류하고, get_jobs log에서 처리 범위를 찾아 전달 양식 채우기 (M7-20)
+- 2회차 M7 끝: 과거 장애 사례 log를 보고 분류하고, get_jobs log에서 처리 날짜를 찾아 전달 양식 채우기 (M7-20)
 
 ## 8. 미결 사항 의존표
 
-**해소됨 (2026-10-04 · 10-08)** — 재실행 방식(Trigger + PARAM 날짜 범위), 처리 범위 확인 위치(get_jobs log), SparkSubmitOperator · cluster 모드, Hive 적재 = Hive SQL(Tez), CeleryExecutor와 프로세스 목록 · 개수, job_history로 중복 적재 없음, 재시작 허용 범위, worker 재시작 전 확인, log 경계, 버전, catchup = False, dynamic allocation 안 씀, Spark History Server 운영, Iceberg 구성(HMS · HDFS · Parquet), Hive 테이블 형식 · 파티션. 상세는 `intent.md` Constraints.
+**해소됨 (2026-10-04 · 10-08)** — 재실행 방식(Trigger + PARAM), 처리 날짜 확인 위치(get_jobs log), SparkSubmitOperator · cluster 모드, Hive 적재 = Hive SQL(Tez), CeleryExecutor와 프로세스 목록 · 개수, job_history로 중복 적재 없음, 재시작 허용 범위, worker 재시작 전 확인, log 경계, 버전, catchup = False, dynamic allocation 안 씀, Spark History Server 운영, Iceberg 구성(HMS · HDFS · Parquet), Hive 테이블 형식 · 파티션. 상세는 `intent.md` Constraints.
 
 **해소됨 (2026-10-24)**
 
+- **PARAM = 처리 날짜 하나, `"2026-10-24"` 같은 문자열** (정정 — 이전의 "날짜 범위"는 틀렸다)
 - Hive `_orc` 교체 = 기존 파일 목록 기록 → `hdfs mv` → 기존 파일 `hdfs rm`. 비는 구간 없음(정정)
 - Airflow 서버 배치 = 3대(worker.1 · worker.2 · worker.3), redis-sentinel 추가. redis-sentinel은 재시작하지 않고 전달한다
 - Flower 화면 제외, 할 수 있는 조치만 다룸(장애 대응 경계 표 · 금지 조치 슬라이드 없음), 슬라이드 표현 규칙
@@ -303,8 +306,8 @@ drafted-by: Claude
 | 교육 총 시간 · 회차 · 실습 | 2절 회차, 4절 장 수, 7절 | 모듈 분할, 슬라이드 수 |
 | 데이터 원천의 종류 | M1-02 | 핵심 도식 |
 | Oracle · Trino 도식 표시 여부 | M1-02 | 핵심 도식 |
-| Tez → Spark 전환이 진행 · 계획 중인지 | M5-05 | 전환 이점 서술 |
-| queue 구성 | M5-06 | YARN 도식 |
+| Tez → Spark 전환이 진행 · 계획 중인지 | M5-06 | 전환 이점 서술 |
+| queue 구성 | M5-02 | YARN 도식 |
 | 동시 적재 테이블 · 이유 · 종료 시점 | M4-14 | "과도기" 서술 |
 | 접속 URL · 점검 기준 | M6-03, M6-08, M6-13 | 화면 정보, 체크리스트 |
 | 화면 캡처 가능 여부 · 마스킹 | M6 전체, M7-04, M7-12, M7-13 | 캡처 사용 여부 |
@@ -323,10 +326,10 @@ drafted-by: Claude
 | ⑤와 ⑥ 사이(기존 · 새 파일이 함께 있는 동안)의 조회 결과 | M4-06, M4-09 | Hive 적재 도식, 조회 시각 시연 |
 | `_orc` 교체 도중 실패했을 때의 상태와 재실행 복구 여부 | M7-10 | 장애 분류 |
 | Hive SQL Task의 실행 방식(Operator), log에 application ID가 찍히는지 | M5-07, M6-11 | YARN에서 Tez 작업 찾는 법 |
-| Spark를 Iceberg 적재에만 쓰는지 | M1-02, M5-04 | 핵심 도식, Tez · Spark 비교 |
-| get_jobs log에서 처리 범위가 찍히는 줄 | M7-12 | 캡처 |
+| Spark를 Iceberg 적재에만 쓰는지 | M1-02, M5-05 | 핵심 도식, Tez · Spark 비교 |
+| get_jobs log에서 처리 날짜가 찍히는 줄 | M7-12 | 캡처 |
 | PARAM 필드 이름 · 입력 형식, DAG마다 같은지 | M7-13 | 절차 캡처 |
-| 스케줄 실행 때 범위가 정해지는 방식 | M2-03 | 날짜 개념 설명 |
+| 스케줄 실행 때 날짜가 정해지는 방식 | M2-03 | 날짜 개념 설명 |
 | job_history 상태 값과 의미 | M2-04, 3절 비유 | 적재 대장 설명 문구 |
 | 배치 주기 | M4-06 | Hive 적재 도식 |
 | Iceberg 유지보수 작업 여부 | M4-10 | 운영 대상 DAG 추가 여부 |

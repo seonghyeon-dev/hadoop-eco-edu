@@ -450,7 +450,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
       <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="airflow" alt="Apache Airflow"></span><span class="logo"><img data-logo="hadoop" alt="Apache Hadoop (YARN · HDFS)"></span><span class="logo"><img data-logo="spark" alt="Apache Spark"></span><span class="logo"><img data-logo="tez" alt="Apache Tez"></span><span class="logo"><img data-logo="hive" alt="Apache Hive"></span><span class="logo"><img data-logo="iceberg" alt="Apache Iceberg"></span></div>
       <div class="map" aria-label="과정 지도">
         <div class="round"><span>개념</span>
-          <div class="m cur"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>Spark · Tez · YARN</div>
+          <div class="m cur"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>YARN · Spark · Tez</div>
         </div>
         <div class="round"><span>실무</span>
           <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
@@ -635,7 +635,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
       <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="airflow" alt="Apache Airflow"></span><span class="logo"><img data-logo="postgresql" alt="PostgreSQL"></span><span class="logo"><img data-logo="pgpool" alt="pgpool-II"></span><span class="logo"><img data-logo="redis" alt="Redis"></span></div>
       <div class="map" aria-label="과정 지도">
         <div class="round"><span>개념</span>
-          <div class="m"><b>01</b>전체 구조</div><div class="m cur"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>Spark · Tez · YARN</div>
+          <div class="m"><b>01</b>전체 구조</div><div class="m cur"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>YARN · Spark · Tez</div>
         </div>
         <div class="round"><span>실무</span>
           <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
@@ -647,7 +647,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   <template class="note">
     <ul>
       <li>이 장은 Airflow 2.7.1 기준이다. 화면 이름 · 메뉴는 2.7 화면 그대로 쓴다.</li>
-      <li>순서: DAG와 Task → 처리 범위(PARAM) → get_jobs와 job_history → 화면 날짜와 처리 범위 → 프로세스와 서버 → 멈췄을 때 → Task 상태.</li>
+      <li>순서: DAG와 Task → 처리 날짜(PARAM) → get_jobs와 job_history → 화면 날짜와 처리 날짜 → 프로세스와 서버 → 멈췄을 때 → Task 상태.</li>
     </ul>
   </template>
 </section>
@@ -732,17 +732,17 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   </template>
 </section>
 
-<!-- M2-03 처리 범위 — PARAM -->
-<section class="slide" data-id="M2-03" aria-label="M2-03 처리 범위 — PARAM">
+<!-- M2-03 처리 날짜 — PARAM -->
+<section class="slide" data-id="M2-03" aria-label="M2-03 처리 날짜 — PARAM">
   <div class="in">
     <div class="head">
       <div class="eb">02 Airflow</div>
-      <h2>처리 범위 — PARAM</h2>
+      <h2>처리 날짜 — PARAM</h2>
     </div>
     <div class="content">
       <div class="split">
         <div class="dia">
-          <svg viewBox="0 0 640 360" role="img" aria-label="작업 지시서의 처리할 기간 칸이 PARAM이다. DAG는 PARAM에 적힌 날짜 범위의 데이터만 처리한다">
+          <svg viewBox="0 0 640 360" role="img" aria-label="작업 지시서의 처리할 날짜 칸이 PARAM이다. DAG는 PARAM에 적힌 날짜의 데이터만 처리한다">
             <defs><marker id="m23" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
             <!-- 작업 지시서 -->
             <g data-at="1">
@@ -752,22 +752,19 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
               <text class="t-m" x="30" y="114" font-size="13">DAG</text>
               <rect class="n" x="30" y="122" width="230" height="30" rx="5"/>
               <text class="t-m" x="44" y="142" font-size="13">적재 DAG</text>
-              <text class="t-a" x="30" y="180" font-size="13">처리할 기간 = PARAM</text>
-              <rect class="n" x="30" y="188" width="104" height="32" rx="5" stroke="var(--accent)"/>
-              <text class="t t-mono" x="82" y="209" text-anchor="middle" font-size="13">2026-10-20</text>
-              <text class="t-m" x="145" y="209" text-anchor="middle" font-size="13">~</text>
-              <rect class="n" x="156" y="188" width="104" height="32" rx="5" stroke="var(--accent)"/>
-              <text class="t t-mono" x="208" y="209" text-anchor="middle" font-size="13">2026-10-21</text>
-              <text class="t-m" x="30" y="246" font-size="11">날짜는 예시</text>
+              <text class="t-a" x="30" y="180" font-size="13">처리할 날짜 = PARAM</text>
+              <rect class="n" x="30" y="188" width="230" height="32" rx="5" stroke="var(--accent)"/>
+              <text class="t t-mono" x="145" y="209" text-anchor="middle" font-size="15">"2026-10-24"</text>
+              <text class="t-m" x="30" y="246" font-size="11">날짜 하나를 문자열로 · 날짜는 예시</text>
             </g>
-            <!-- DAG가 범위의 데이터만 처리 -->
+            <!-- DAG가 그 날짜의 데이터만 처리 -->
             <path class="e" d="M280 150 H350"/>
             <g data-at="2">
               <path class="flow c-acc" d="M280 150 H350" marker-end="url(#m23)"/>
               <rect class="n" x="354" y="96" width="276" height="108" rx="10"/>
               <svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x="370" y="112" width="24" height="24"><rect width="8" height="8" x="3" y="3" rx="2" /> <path d="M7 11v4a2 2 0 0 0 2 2h4" /> <rect width="8" height="8" x="13" y="13" rx="2" /></svg>
               <text class="t-b" x="402" y="130" font-size="16">DAG</text>
-              <text class="t-m" x="372" y="160" font-size="13">PARAM의 날짜 범위에 해당하는</text>
+              <text class="t-m" x="372" y="160" font-size="13">PARAM에 적힌 날짜의</text>
               <text class="t-m" x="372" y="180" font-size="13">데이터만 처리한다</text>
               <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M280 150 H352"/></circle></g>
             </g>
@@ -776,22 +773,22 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
               <rect class="grp" x="354" y="222" width="132" height="96" rx="8"/>
               <svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x="368" y="234" width="20" height="20"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg>
               <text class="t-b" x="394" y="249" font-size="13">주기 실행</text>
-              <text class="t-m" x="368" y="274" font-size="12">범위가 정해지는</text>
+              <text class="t-m" x="368" y="274" font-size="12">날짜가 정해지는</text>
               <text class="t-m" x="368" y="292" font-size="12">방식은</text>
               <text class="t-mk" x="368" y="310" font-size="11">[사용자 작성]</text>
               <rect class="grp" x="498" y="222" width="132" height="96" rx="8"/>
               <svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x="512" y="234" width="20" height="20" style="color: var(--accent)"><path d="m17 2 4 4-4 4" /> <path d="M3 11v-1a4 4 0 0 1 4-4h14" /> <path d="m7 22-4-4 4-4" /> <path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
               <text class="t-b" x="538" y="249" font-size="13">다시 실행</text>
               <text class="t-m" x="512" y="274" font-size="12">Trigger DAG에서</text>
-              <text class="t-m" x="512" y="292" font-size="12">범위를 직접</text>
+              <text class="t-m" x="512" y="292" font-size="12">날짜를 직접</text>
               <text class="t-m" x="512" y="310" font-size="12">넣는다</text>
             </g>
           </svg>
         </div>
         <ol class="xl">
-          <li data-at="1"><span class="no">1</span><b><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> PARAM — 처리할 날짜 범위</b><p>DAG가 받는 입력값. 비유: 작업 지시서의 <strong>"처리할 기간" 칸</strong>.</p></li>
-          <li class="acc" data-at="2"><span class="no">2</span><b>범위 안의 데이터만 처리한다</b><p>DAG는 PARAM에 적힌 날짜 범위에 해당하는 데이터만 골라 처리한다(다음 장의 get_jobs).</p></li>
-          <li class="alt" data-at="3"><span class="no">3</span><b>범위가 정해지는 두 가지 경우</b><p>정해진 주기로 돌 때는 <span class="mk">[사용자 작성: 범위가 정해지는 방식]</span>. 다시 돌릴 때는 <strong>Trigger DAG 화면에서 PARAM에 날짜 범위를 직접 넣는다</strong> — 07 장애 대응.</p></li>
+          <li data-at="1"><span class="no">1</span><b><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> PARAM — 처리할 날짜</b><p>DAG가 받는 입력값. <code>"2026-10-24"</code>처럼 <strong>날짜 하나를 문자열로</strong> 넣는다. 비유: 작업 지시서의 "처리할 날짜" 칸.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>그 날짜의 데이터만 처리한다</b><p>DAG는 PARAM에 적힌 날짜에 해당하는 데이터만 골라 처리한다(다음 장의 get_jobs).</p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b>날짜가 정해지는 두 가지 경우</b><p>정해진 주기로 돌 때는 <span class="mk">[사용자 작성: 날짜가 정해지는 방식]</span>. 다시 돌릴 때는 <strong>Trigger DAG 화면에서 PARAM에 날짜를 직접 넣는다</strong> — 07 장애 대응.</p></li>
         </ol>
       </div>
     </div>
@@ -799,8 +796,8 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   </div>
   <template class="note">
     <ul>
-      <li>① 지시서와 PARAM → ② DAG가 범위의 데이터만 처리 → ③ 범위가 정해지는 두 경우. 재실행 절차는 07 장애 대응에서 화면으로 다룬다.</li>
-      <li>그림의 DAG 이름과 날짜는 예시다. <span class="mk">[사용자 작성: PARAM 필드 이름 · 입력 형식, DAG마다 같은지]</span> <span class="mk">[사용자 작성: 스케줄 실행 때 범위가 정해지는 방식]</span></li>
+      <li>① 지시서와 PARAM → ② DAG가 그 날짜의 데이터만 처리 → ③ 날짜가 정해지는 두 경우. 재실행 절차는 07 장애 대응에서 화면으로 다룬다.</li>
+      <li>PARAM은 날짜 하나를 문자열로 받는다(예: <code>"2026-10-24"</code>, 사용자 확인 2026-10-24). 그림의 DAG 이름과 날짜는 예시다. <span class="mk">[사용자 작성: PARAM 필드 이름, DAG마다 같은지]</span> <span class="mk">[사용자 작성: 스케줄 실행 때 날짜가 정해지는 방식]</span></li>
       <li>D 도식(D06: PARAM → get_jobs → job_history)은 DAG 동작 상세가 정해지면 만든다.</li>
       <li><span class="pp">pptx 대응</span> 지시서 · DAG · 두 경우 묶음에 '나타내기' 3개.</li>
     </ul>
@@ -817,7 +814,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
     <div class="content">
       <div class="split">
         <div class="dia">
-          <svg viewBox="0 0 660 360" role="img" aria-label="get_jobs Task가 PARAM의 범위로 job_history를 조회해 처리 대상을 고르고, Hive SQL · Spark Task가 처리한 뒤 결과를 job_history에 남긴다">
+          <svg viewBox="0 0 660 360" role="img" aria-label="get_jobs Task가 PARAM의 날짜로 job_history를 조회해 처리 대상을 고르고, Hive SQL · Spark Task가 처리한 뒤 결과를 job_history에 남긴다">
             <defs><marker id="m24" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
             <path class="e" d="M140 68 H186"/><path class="e" d="M265 96 V146"/><path class="e" d="M340 68 H396"/><path class="e" d="M510 68 H536"/><path class="e" d="M595 106 V230 H344"/>
             <g data-at="1">
@@ -825,7 +822,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
             </g>
             <g data-at="2">
               <path class="flow async c-mut" d="M265 96 V146" marker-end="url(#m24)"/>
-              <text class="t-m" x="275" y="126" font-size="12">범위로 조회</text>
+              <text class="t-m" x="275" y="126" font-size="12">날짜로 조회</text>
             </g>
             <g data-at="3">
               <path class="flow c-acc" d="M340 68 H396" marker-end="url(#m24)"/>
@@ -840,7 +837,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
             <!-- 상자 -->
             <g data-dim="1"><rect class="n-accent" x="10" y="40" width="130" height="56" rx="8"/>
               <svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x="22" y="50" width="20" height="20" style="color: var(--accent)"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg>
-              <text class="t-b" x="48" y="65" font-size="15">PARAM</text><text class="t-m" x="22" y="86" font-size="12">처리할 날짜 범위</text></g>
+              <text class="t-b" x="48" y="65" font-size="15">PARAM</text><text class="t-m" x="22" y="86" font-size="12">처리할 날짜</text></g>
             <g data-dim="1"><rect class="n" x="190" y="40" width="150" height="56" rx="8"/>
               <rect class="logo-bg" x="198" y="48" width="26" height="26" rx="4"/><image data-logo="airflow" x="200" y="50" width="22" height="22"/>
               <text class="t-b t-mono" x="232" y="66" font-size="15">get_jobs</text><text class="t-m" x="200" y="88" font-size="12">처리 대상 고르기</text></g>
@@ -868,10 +865,10 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
           </svg>
         </div>
         <ol class="xl">
-          <li data-at="1"><span class="no">1</span><b>get_jobs가 PARAM의 범위를 받는다</b><p>DAG의 첫 단계에서 처리할 날짜 범위를 넘겨받는다.</p></li>
+          <li data-at="1"><span class="no">1</span><b>get_jobs가 PARAM의 날짜를 받는다</b><p>DAG의 첫 단계에서 처리할 날짜를 넘겨받는다.</p></li>
           <li class="acc" data-at="2"><span class="no">2</span><b><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h4" /> <path d="M2 10h4" /> <path d="M2 14h4" /> <path d="M2 18h4" /> <rect width="16" height="20" x="4" y="2" rx="2" /> <path d="M9.5 8h5" /> <path d="M9.5 12H16" /> <path d="M9.5 16H14" /></svg> job_history에서 처리 대상을 고른다</b><p>job_history는 데이터 건마다 처리 상태를 적어 두는 <strong>적재 대장</strong>. 비유: 택배 배송 조회표 — 단, DAG가 직접 읽고 고쳐 쓴다. <span class="mk">[사용자 작성: 고르는 상태 값]</span></p></li>
           <li class="acc" data-at="3"><span class="no">3</span><b>Hive SQL · Spark Task가 처리한다</b><p>Hive 변환은 처리할 <strong>날짜</strong>를, Iceberg 적재는 처리할 <strong>파일 경로</strong>를 받는다.</p></li>
-          <li class="alt" data-at="4"><span class="no">4</span><b>그래서 다시 실행해도 중복 적재되지 않는다</b><p>처리 결과가 job_history에 남으므로, 같은 범위로 다시 실행해도 이미 적재한 데이터를 또 쌓지 않는다. <span class="mk">[사용자 작성: 상태 값과 기록 시점]</span></p></li>
+          <li class="alt" data-at="4"><span class="no">4</span><b>그래서 다시 실행해도 중복 적재되지 않는다</b><p>처리 결과가 job_history에 남으므로, 같은 날짜로 다시 실행해도 이미 적재한 데이터를 또 쌓지 않는다. <span class="mk">[사용자 작성: 상태 값과 기록 시점]</span></p></li>
         </ol>
       </div>
     </div>
@@ -888,17 +885,17 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   </template>
 </section>
 
-<!-- M2-05 DAG Run 날짜와 처리 범위 -->
-<section class="slide" data-id="M2-05" aria-label="M2-05 DAG Run 날짜와 처리 범위">
+<!-- M2-05 DAG Run 날짜와 처리 날짜 -->
+<section class="slide" data-id="M2-05" aria-label="M2-05 DAG Run 날짜와 처리 날짜">
   <div class="in">
     <div class="head">
       <div class="eb">02 Airflow</div>
-      <h2>DAG Run 날짜와 처리 범위</h2>
+      <h2>DAG Run 날짜와 처리 날짜</h2>
     </div>
     <div class="content">
       <div class="split">
         <div class="dia">
-          <svg viewBox="0 0 640 340" role="img" aria-label="10월 24일 오전 9시 30분에 수동 Trigger한 DAG Run은 화면에 그 시각이 찍히지만, 실제로 처리한 범위는 PARAM에 넣은 10월 20일부터 21일까지다">
+          <svg viewBox="0 0 640 340" role="img" aria-label="10월 24일 오전 9시 30분에 수동 Trigger한 DAG Run은 화면에 그 시각이 찍히지만, 실제로 처리한 날짜는 PARAM에 넣은 10월 21일이다">
             <defs><marker id="m25" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
             <rect class="n-mk" x="548" y="8" width="84" height="22" rx="4"/><text class="t-mk" x="590" y="24" text-anchor="middle" font-size="12">날짜는 예시</text>
             <!-- 날짜 축 -->
@@ -922,24 +919,27 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
               <text class="t t-mono" x="442" y="86" font-size="13">2026-10-24 09:30</text>
               <text class="t-m" x="590" y="304" text-anchor="middle" font-size="12">Trigger 누른 시각</text>
             </g>
-            <!-- 2. 처리 범위 -->
+            <!-- 2. 처리 날짜 -->
             <g data-at="2">
-              <rect x="150" y="196" width="140" height="40" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.5"/>
-              <text class="t-a" x="220" y="221" text-anchor="middle" font-size="14">처리 범위 (PARAM)</text>
-              <text class="t-m" x="220" y="304" text-anchor="middle" font-size="12">실제로 처리한 데이터의 날짜</text>
+              <line x1="270" y1="238" x2="270" y2="244" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="270" cy="250" r="6" fill="var(--accent)"/>
+              <rect x="190" y="196" width="160" height="40" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.5"/>
+              <text class="t-a" x="270" y="215" text-anchor="middle" font-size="14">처리 날짜 (PARAM)</text>
+              <text class="t t-mono" x="270" y="231" text-anchor="middle" font-size="12">"2026-10-21"</text>
+              <text class="t-m" x="270" y="304" text-anchor="middle" font-size="12">실제로 처리한 데이터의 날짜</text>
             </g>
             <!-- 3. 연결 -->
             <g data-at="3">
-              <path class="flow c-acc" d="M577 150 H230 V192" marker-end="url(#m25)"/>
+              <path class="flow c-acc" d="M577 150 H270 V192" marker-end="url(#m25)"/>
               <text class="t-a" x="400" y="140" text-anchor="middle" font-size="13">이 DAG Run이 처리한 것</text>
-              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.2s" repeatCount="indefinite" path="M577 150 H230 V192"/></circle></g>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.2s" repeatCount="indefinite" path="M577 150 H270 V192"/></circle></g>
             </g>
           </svg>
         </div>
         <ol class="xl">
           <li class="alt" data-at="1"><span class="no">1</span><b><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /> <path d="M8 13h.01" /> <path d="M12 13h.01" /> <path d="M16 13h.01" /> <path d="M8 17h.01" /> <path d="M12 17h.01" /> <path d="M16 17h.01" /></svg> 화면의 날짜 = logical date</b><p>수동으로 Trigger한 DAG Run에는 <strong>버튼을 누른 시각</strong>이 찍힌다.</p></li>
-          <li class="acc" data-at="2"><span class="no">2</span><b>처리 범위 = PARAM</b><p>실제로 처리한 데이터의 날짜는 PARAM에 넣은 범위다.</p></li>
-          <li class="mark" data-at="3"><span class="no">3</span><b>둘은 다를 수 있다</b><p>화면 날짜만 보고 어느 날짜를 처리했는지 판단하지 않는다. 처리 범위는 <strong>get_jobs Task log</strong>에서 확인한다 — 07 장애 대응.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b>처리 날짜 = PARAM</b><p>실제로 처리한 데이터의 날짜는 PARAM에 넣은 날짜다.</p></li>
+          <li class="mark" data-at="3"><span class="no">3</span><b>둘은 다를 수 있다</b><p>화면 날짜만 보고 어느 날짜를 처리했는지 판단하지 않는다. 처리 날짜는 <strong>get_jobs Task log</strong>에서 확인한다 — 07 장애 대응.</p></li>
         </ol>
       </div>
     </div>
@@ -947,10 +947,10 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   </div>
   <template class="note">
     <ul>
-      <li>① 화면 날짜 → ② 처리 범위 → ③ 둘의 관계. 재실행한 DAG Run을 찾을 때 화면 날짜로 처리 범위를 오해하기 쉽다는 점을 짚는다.</li>
+      <li>① 화면 날짜 → ② 처리 날짜 → ③ 둘의 관계. 재실행한 DAG Run을 찾을 때 화면 날짜를 처리 날짜로 오해하기 쉽다는 점을 짚는다.</li>
       <li>날짜는 예시다. logical date의 일반 동작은 Airflow 2.7 문서 기준이다.</li>
-      <li><span class="mk">[사용자 작성: get_jobs log에서 범위가 찍히는 줄]</span> — 07 장애 대응에서 캡처로 보여 준다.</li>
-      <li><span class="pp">pptx 대응</span> 화면 날짜 · 처리 범위 · 연결선에 '나타내기' 3개.</li>
+      <li><span class="mk">[사용자 작성: get_jobs log에서 처리 날짜가 찍히는 줄]</span> — 07 장애 대응에서 캡처로 보여 준다.</li>
+      <li><span class="pp">pptx 대응</span> 화면 날짜 · 처리 날짜 · 연결선에 '나타내기' 3개.</li>
     </ul>
   </template>
 </section>
@@ -1270,7 +1270,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
     <div class="content">
       <div class="cards c2">
         <div class="card"><div class="ch"><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="8" x="3" y="3" rx="2" /> <path d="M7 11v4a2 2 0 0 0 2 2h4" /> <rect width="8" height="8" x="13" y="13" rx="2" /></svg><h4>DAG · Task · DAG Run</h4></div><div class="role">DAG는 Task의 순서도, DAG Run은 한 번 실행한 기록</div><div class="sum">앞 Task가 성공해야 다음 Task가 시작된다</div></div>
-        <div class="card"><div class="ch"><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg><h4>PARAM · job_history</h4></div><div class="role">PARAM의 날짜 범위로 get_jobs가 job_history에서 처리 대상을 고른다</div><div class="sum">그래서 다시 실행해도 중복 적재되지 않는다. 처리 범위는 화면 날짜가 아니라 get_jobs log로 본다</div></div>
+        <div class="card"><div class="ch"><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg><h4>PARAM · job_history</h4></div><div class="role">PARAM의 날짜(<code>"2026-10-24"</code>)로 get_jobs가 job_history에서 처리 대상을 고른다</div><div class="sum">그래서 다시 실행해도 중복 적재되지 않는다. 처리 날짜는 화면 날짜가 아니라 get_jobs log로 본다</div></div>
         <div class="card"><div class="ch"><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg><h4>프로세스 · 서버 3대</h4></div><div class="role">실행: webserver · scheduler · worker · flower</div><div class="role">기록 · 대기열: PostgreSQL · pgpool · redis · redis-sentinel</div><div class="sum">실행 쪽은 재시작으로 복구, 기록 · 대기열 쪽은 담당자에게 전달</div></div>
         <div class="card"><div class="ch"><svg class="ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg><h4>Task 상태</h4></div><div class="role"><span class="st queued">queued</span> → <span class="st running">running</span> → <span class="st success">success</span></div><div class="sum"><span class="st retry">up_for_retry</span>는 기다리고, <span class="st failed">failed</span>는 07 장애 대응으로</div></div>
       </div>
@@ -1297,7 +1297,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
       <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="airflow" alt="Apache Airflow"></span></div>
       <div class="map" aria-label="과정 지도">
         <div class="round"><span>개념</span>
-          <div class="m"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m cur"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>Spark · Tez · YARN</div>
+          <div class="m"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m cur"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m"><b>05</b>YARN · Spark · Tez</div>
         </div>
         <div class="round"><span>실무</span>
           <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
