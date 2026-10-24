@@ -19,8 +19,11 @@
 | 자료 | 내용 |
 |------|------|
 | [HTML 발표 샘플](samples/hadoop-eco-ops-sample.html) | spec 102장 중 일부를 동적 발표 형태로 만든 샘플. 완성본이 아니며 계속 수정한다 |
+| [archify 도식 샘플](samples/hadoop-eco-ops-archify.html) | [archify](https://github.com/tt-a1i/archify)로 만든 Airflow 프로세스 구성과 재시작 범위 도식. 입력 JSON은 `samples/archify/airflow-processes.json` |
 
-샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
+HTML 발표 샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
+
+archify 도식 샘플에는 archify 렌더러 코드가 들어 있다 — MIT License, Copyright (c) 2026 tt-a1i (Archify), Copyright (c) 2025 Cocoon AI.
 
 ## 설계 문서
 

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Airflow 프로세스 구성과 재시작 범위",
+    "locale": "ko",
+    "output": "samples/hadoop-eco-ops-archify.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": { "label": "Airflow 프로세스 — 재시작 허용" },
+        "frontend": { "label": "Airflow 화면 프로세스 — 재시작 허용" },
+        "messagebus": { "label": "Celery broker — 재시작 금지" },
+        "database": { "label": "metadata DB · pgpool — 재시작 금지" },
+        "external": { "label": "사람 · Airflow 밖의 시스템" }
+      }
+    }
+  },
+  "components": [
+    { "id": "ops", "type": "external", "icon": "person", "label": "운영 담당자", "sublabel": "브라우저", "pos": [40, 200], "size": [160, 60] },
+    { "id": "flower", "type": "frontend", "label": "flower ×1", "sublabel": "airflow-flower.service", "pos": [560, 40], "size": [160, 60] },
+    { "id": "scheduler", "type": "backend", "label": "scheduler ×2", "sublabel": "airflow-scheduler.service", "pos": [300, 200], "size": [160, 60] },
+    { "id": "redis", "type": "messagebus", "label": "redis", "sublabel": "Celery broker", "pos": [560, 200], "size": [160, 60] },
+    { "id": "worker", "type": "backend", "label": "worker ×3", "sublabel": "airflow-worker.service", "tag": "Spark 실행 중 재시작 금지", "pos": [820, 200], "size": [160, 64] },
+    { "id": "yarn", "type": "external", "label": "YARN", "sublabel": "Spark · Hive SQL(Tez)", "pos": [1080, 200], "size": [160, 60] },
+    { "id": "pgpool", "type": "database", "label": "pgpool", "sublabel": "HA · 커넥션 풀", "pos": [820, 360], "size": [160, 60] },
+    { "id": "postgres", "type": "database", "label": "PostgreSQL", "sublabel": "metadata DB", "pos": [1080, 360], "size": [160, 60] },
+    { "id": "webserver", "type": "frontend", "label": "webserver ×2", "sublabel": "airflow-webserver.service", "pos": [820, 520], "size": [160, 60] }
+  ],
+  "connections": [
+    { "id": "sched-enqueue", "from": "scheduler", "to": "redis", "label": "Task 넣기", "variant": "emphasis" },
+    { "id": "worker-dequeue", "from": "redis", "to": "worker", "label": "Task 꺼내기", "variant": "emphasis" },
+    { "id": "worker-submit", "from": "worker", "to": "yarn", "label": "작업 제출", "variant": "emphasis" },
+    { "id": "sched-state", "from": "scheduler", "to": "pgpool", "label": "실행 계획 기록", "fromSide": "bottom", "toSide": "left" },
+    { "id": "worker-state", "from": "worker", "to": "pgpool", "label": "Task 상태 기록" },
+    { "id": "web-read", "from": "webserver", "to": "pgpool", "label": "화면용 조회" },
+    { "id": "pool-db", "from": "pgpool", "to": "postgres", "label": "연결 중계" },
+    { "id": "flower-watch", "from": "flower", "to": "redis", "label": "Celery 상태" },
+    { "id": "ops-flower", "from": "ops", "to": "flower", "label": "Flower UI", "fromSide": "top", "toSide": "left" },
+    { "id": "ops-web", "from": "ops", "to": "webserver", "label": "Airflow UI", "fromSide": "bottom", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "재시작 허용 — 운영 담당자가 직접", "items": [
+      "scheduler · worker · webserver · flower",
+      "systemctl로 하나씩, 또는 ansible playbook에서 대상을 지정해 재시작",
+      "worker는 실행 중인 Spark Task가 없을 때만 재시작한다"
+    ] },
+    { "dot": "rose", "title": "재시작 금지 — 담당자에게 전달", "items": [
+      "PostgreSQL · pgpool · redis — 위험도가 높다",
+      "Spark 작업이 실행 중일 때의 worker 재시작"
+    ] },
+    { "dot": "cyan", "title": "용어", "items": [
+      "scheduler — DAG 일정을 보고 지금 실행할 Task를 정한다",
+      "redis(Celery broker) — 실행할 Task가 줄 서는 대기열",
+      "worker — 대기열에서 Task를 꺼내 실제로 실행한다. Spark 작업은 YARN에 제출한다",
+      "metadata DB — DAG Run · Task 상태를 적어 두는 DB. Airflow UI가 보여 주는 내용이 여기서 온다",
+      "pgpool — PostgreSQL 연결을 모아 관리하고(커넥션 풀) 이중화(HA)를 맡는다"
+    ] }
+  ]
+}

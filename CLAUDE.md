@@ -98,7 +98,10 @@
 │           ├── intent.md             # 교육 과정 전체의 intent
 │           └── spec.md               # 커리큘럼 spec 초안
 └── samples/
-    └── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장(동적) — HTML 발표 자료의 기준, 완성본 아님·계속 수정
+    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장(동적) — HTML 발표 자료의 기준, 완성본 아님·계속 수정
+    ├── hadoop-eco-ops-archify.html   # archify로 만든 도식 샘플 (Airflow 프로세스 구성과 재시작 범위)
+    └── archify/
+        └── airflow-processes.json    # 위 도식의 archify 입력 — 고칠 때는 이 파일을 수정해 다시 렌더링
 ```
 
 산출물 폴더(원고·pptx·HTML·이미지)는 `plan.md`에서 정한다.
