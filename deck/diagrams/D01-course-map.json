@@ -1,0 +1,192 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "과정 지도",
+    "locale": "ko",
+    "output": "deck/diagrams/D01-course-map.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "장"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "part1",
+      "label": "개념편 — 구조와 개념"
+    },
+    {
+      "id": "part2",
+      "label": "실무편 — 모니터링과 장애 대응"
+    }
+  ],
+  "mainPath": [
+    "c01",
+    "c02",
+    "c03",
+    "c04",
+    "c05"
+  ],
+  "nodes": [
+    {
+      "id": "c01",
+      "lane": "part1",
+      "col": 0,
+      "type": "backend",
+      "icon": "start",
+      "label": "01 전체 구조",
+      "sublabel": "데이터가 흐르는 길",
+      "width": 190
+    },
+    {
+      "id": "c02",
+      "lane": "part1",
+      "col": 1,
+      "type": "backend",
+      "label": "02 Airflow",
+      "sublabel": "언제 · 무엇을 · 어떤 순서로",
+      "brand": "apache-airflow",
+      "width": 190
+    },
+    {
+      "id": "c03",
+      "lane": "part1",
+      "col": 2,
+      "type": "backend",
+      "icon": "briefcase",
+      "label": "03 DAG별 기능",
+      "sublabel": "DAG마다 하는 일",
+      "width": 190
+    },
+    {
+      "id": "c04",
+      "lane": "part1",
+      "col": 3,
+      "type": "backend",
+      "label": "04 HDFS · Hive · Iceberg",
+      "sublabel": "데이터가 쌓이는 곳",
+      "brand": {
+        "url": "https://iceberg.apache.org/",
+        "sha256": "cf6e43054e67cfb6f73ead1ca4f98439a451cfd9c719f7ea46889a6cfff5b2d3"
+      },
+      "width": 190
+    },
+    {
+      "id": "c05",
+      "lane": "part1",
+      "col": 4,
+      "type": "backend",
+      "label": "05 YARN · Spark · Tez",
+      "sublabel": "자원 배분과 실제 계산",
+      "brand": {
+        "url": "https://spark.apache.org/",
+        "sha256": "ec9b652fe51ef1e34f13f805505e54aace3287ebc839cdb0439bc7f4e88b1155"
+      },
+      "width": 190
+    },
+    {
+      "id": "c06",
+      "lane": "part2",
+      "col": 0,
+      "type": "backend",
+      "icon": "active",
+      "label": "06 모니터링",
+      "sublabel": "화면에서 정상과 비정상 구분",
+      "width": 190
+    },
+    {
+      "id": "c07",
+      "lane": "part2",
+      "col": 1,
+      "type": "backend",
+      "icon": "decision",
+      "label": "07 장애 대응",
+      "sublabel": "확인 · 조치 · 전달",
+      "width": 190
+    },
+    {
+      "id": "c08",
+      "lane": "part2",
+      "col": 2,
+      "type": "backend",
+      "icon": "flag",
+      "label": "08 마무리",
+      "sublabel": "요약 · 용어 · 질의응답",
+      "width": 190
+    }
+  ],
+  "edges": [
+    {
+      "id": "e12",
+      "from": "c01",
+      "to": "c02",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e23",
+      "from": "c02",
+      "to": "c03",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e34",
+      "from": "c03",
+      "to": "c04",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e45",
+      "from": "c04",
+      "to": "c05",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e56",
+      "from": "c05",
+      "to": "c06",
+      "label": "개념을 화면에서",
+      "variant": "dashed"
+    },
+    {
+      "id": "e67",
+      "from": "c06",
+      "to": "c07",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e78",
+      "from": "c07",
+      "to": "c08",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "개념편 — 01~05",
+      "items": [
+        "구조를 먼저 보고, 구성요소를 하나씩 본다",
+        "Airflow → DAG별 기능 → 데이터가 쌓이는 곳 → 계산하는 곳"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "실무편 — 06~08",
+      "items": [
+        "화면에서 상태를 읽고(06), 확인 · 조치 · 전달한다(07)",
+        "할 수 있는 조치: DAG 재실행, Airflow 프로세스 재시작, Airflow log 확인"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "아직 정하지 않은 것",
+      "items": [
+        "[확인 필요: 교육 총 시간 · 회차]"
+      ]
+    }
+  ]
+}
