@@ -1,0 +1,124 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "YARN application 상태",
+    "locale": "ko",
+    "output": "deck/diagrams/D14-yarn-app-states.html",
+    "quality_profile": "showcase"
+  },
+  "mainPath": [
+    "accepted",
+    "running",
+    "finished",
+    "succeeded"
+  ],
+  "states": [
+    {
+      "id": "accepted",
+      "type": "start",
+      "label": "ACCEPTED",
+      "sublabel": "자원을 기다린다"
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "RUNNING",
+      "sublabel": "container에서 실행 중"
+    },
+    {
+      "id": "finished",
+      "type": "neutral",
+      "label": "FINISHED",
+      "sublabel": "끝남 — FinalStatus를 본다"
+    },
+    {
+      "id": "succeeded",
+      "type": "success",
+      "label": "FinalStatus SUCCEEDED",
+      "sublabel": "성공"
+    },
+    {
+      "id": "ffailed",
+      "type": "failure",
+      "label": "FinalStatus FAILED",
+      "sublabel": "작업 안에서 실패"
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "FAILED",
+      "sublabel": "실행 중 실패"
+    },
+    {
+      "id": "killed",
+      "type": "neutral",
+      "label": "KILLED",
+      "sublabel": "중지됨"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "from": "accepted",
+      "to": "running",
+      "label": "container 받음"
+    },
+    {
+      "id": "t2",
+      "from": "running",
+      "to": "finished",
+      "label": "끝남"
+    },
+    {
+      "id": "t3",
+      "from": "finished",
+      "to": "succeeded",
+      "label": "성공",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t4",
+      "from": "finished",
+      "to": "ffailed",
+      "label": "실패로 끝남",
+      "variant": "security"
+    },
+    {
+      "id": "t5",
+      "from": "running",
+      "to": "failed",
+      "label": "실패",
+      "variant": "security"
+    },
+    {
+      "id": "t6",
+      "from": "running",
+      "to": "killed",
+      "label": "중지"
+    },
+    {
+      "id": "t7",
+      "from": "accepted",
+      "to": "killed",
+      "label": "중지"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "State와 FinalStatus",
+      "items": [
+        "State는 지금 어디쯤인지, FinalStatus는 끝난 결과다",
+        "State가 FINISHED여도 FinalStatus가 FAILED일 수 있다 — 성공 여부는 FinalStatus로 본다"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "오래 머무는 상태",
+      "items": [
+        "ACCEPTED에 오래 있으면 자원을 기다리는 중이다 — 06 모니터링"
+      ]
+    }
+  ]
+}

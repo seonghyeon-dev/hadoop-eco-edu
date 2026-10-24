@@ -1,0 +1,534 @@
+<!-- ===================================================== M5. YARN · Spark · Tez -->
+<style data-module>
+.cards.c4 { grid-template-columns: repeat(4, 1fr); }
+.mini { flex: none; }
+.mini svg { display: block; width: 100%; height: auto; max-height: 11em; }
+.col.fmt { display: flex; flex-direction: column; gap: .5em; }
+.col.fmt li b { display: inline; }
+.col.fmt .dia svg { max-height: 9em; }
+.col.fmt ul { gap: .35em; font-size: .92em; }
+.col.fmt h3 .logo { margin-right: .2em; }
+.kv { display: grid; grid-template-columns: 7.5em 1fr; gap: .45em .8em; font-size: 1em; margin: 0; }
+.col.fmt .flowmini { margin-top: auto; }
+.col.fmt .flowmini svg { display: block; width: 100%; height: auto; }
+.flowmini .logo-bg { fill: #fff; stroke: var(--line); }
+.kv dt { color: var(--muted); font-weight: 700; }
+.kv dd { margin: 0; }
+@media (max-width: 760px) { .cards.c4 { grid-template-columns: 1fr; } .kv { grid-template-columns: 1fr; } }
+</style>
+
+<!-- M5-01 구역 머리글 -->
+<section class="slide" data-id="M5-01" aria-label="M5-01 YARN · Spark · Tez">
+  <div class="in section">
+    <div class="content">
+      <div class="num">05</div>
+      <h2>YARN · Spark · Tez</h2>
+      <p class="sub">자원을 나눠 주는 곳과 실제로 계산하는 엔진</p>
+      <div class="logos" aria-label="이 장에서 다루는 구성요소"><span class="logo"><img data-logo="hadoop" alt="Apache Hadoop (YARN)"></span><span class="logo"><img data-logo="spark" alt="Apache Spark"></span><span class="logo"><img data-logo="tez" alt="Apache Tez"></span></div>
+      <div class="map" aria-label="과정 지도">
+        <div class="round"><span>개념</span>
+          <div class="m"><b>01</b>전체 구조</div><div class="m"><b>02</b>Airflow</div><div class="m"><b>03</b>DAG별 기능</div><div class="m"><b>04</b>HDFS · Hive · Iceberg</div><div class="m cur"><b>05</b>YARN · Spark · Tez</div>
+        </div>
+        <div class="round"><span>실무</span>
+          <div class="m"><b>06</b>모니터링</div><div class="m"><b>07</b>장애 대응</div><div class="m"><b>08</b>마무리</div>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-01</b> · 구역 머리글</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>Hadoop 3.2.3(YARN), Spark 3.5.2, Hive 3.1.2, Tez 0.10.1.</li>
+      <li>순서: YARN 자원 배분 → Spark → Tez → 비교 · 전환 → Airflow Task와 YARN application → application 상태 → 이름이 같은 개념.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-02 YARN 자원 배분 — D12 -->
+<section class="slide" data-id="M5-02" data-arch="D12" aria-label="M5-02 YARN 자원 배분">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>YARN 자원 배분</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 372" role="img" aria-label="ResourceManager가 서버마다 있는 NodeManager에 container를 나눠 주고, Spark와 Tez 작업이 container 안에서 돈다. 자원이 모자라면 작업은 queue에서 기다린다">
+            <defs><marker id="m52" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- 1. ResourceManager -->
+            <g data-at="1">
+              <rect class="n-accent" x="190" y="10" width="260" height="62" rx="10"/>
+              <rect class="logo-bg" x="202" y="22" width="36" height="36" rx="6"/><image data-logo="hadoop" x="205" y="25" width="30" height="30"/>
+              <text class="t-b" x="248" y="38" font-size="16">ResourceManager</text>
+              <text class="t-m" x="248" y="58" font-size="12">클러스터 전체의 자원을 나눠 준다</text>
+            </g>
+            <!-- 2. NodeManager × 3 + container -->
+            <g data-at="2">
+              <path class="flow c-acc" d="M320 72 V96 H110 V120" marker-end="url(#m52)"/><path class="flow c-acc" d="M320 72 V120" marker-end="url(#m52)"/><path class="flow c-acc" d="M320 72 V96 H530 V120" marker-end="url(#m52)"/>
+              <text class="t-a" x="420" y="90" font-size="12">container 배정</text>
+              <g font-size="12">
+                <rect class="grp" x="20" y="124" width="180" height="174" rx="10"/><svg data-icon="server" x="32" y="134" width="20" height="20"></svg><text class="t-b" x="58" y="149">서버 1 · NodeManager</text>
+                <rect class="grp" x="230" y="124" width="180" height="174" rx="10"/><svg data-icon="server" x="242" y="134" width="20" height="20"></svg><text class="t-b" x="268" y="149">서버 2 · NodeManager</text>
+                <rect class="grp" x="440" y="124" width="180" height="174" rx="10"/><svg data-icon="server" x="452" y="134" width="20" height="20"></svg><text class="t-b" x="478" y="149">서버 3 · NodeManager</text>
+              </g>
+              <!-- 빈 칸 = 남은 자원 -->
+              <g stroke="var(--line)" fill="none" stroke-dasharray="3 3">
+                <rect x="36" y="166" width="70" height="56" rx="5"/><rect x="114" y="166" width="70" height="56" rx="5"/><rect x="36" y="232" width="70" height="56" rx="5"/><rect x="114" y="232" width="70" height="56" rx="5"/>
+                <rect x="246" y="166" width="70" height="56" rx="5"/><rect x="324" y="166" width="70" height="56" rx="5"/><rect x="246" y="232" width="70" height="56" rx="5"/><rect x="324" y="232" width="70" height="56" rx="5"/>
+                <rect x="456" y="166" width="70" height="56" rx="5"/><rect x="534" y="166" width="70" height="56" rx="5"/><rect x="456" y="232" width="70" height="56" rx="5"/><rect x="534" y="232" width="70" height="56" rx="5"/>
+              </g>
+              <text class="t-m" x="320" y="316" text-anchor="middle" font-size="11">칸 하나 = container (CPU · 메모리 묶음)</text>
+            </g>
+            <!-- 3. Spark · Tez가 container를 나눠 쓴다 -->
+            <g data-at="3" font-size="11">
+              <rect class="n-accent" x="36" y="166" width="70" height="56" rx="5"/><text class="t-a" x="71" y="198" text-anchor="middle">Spark</text>
+              <rect class="n-accent" x="114" y="166" width="70" height="56" rx="5"/><text class="t-a" x="149" y="198" text-anchor="middle">Spark</text>
+              <rect class="n-accent" x="246" y="166" width="70" height="56" rx="5"/><text class="t-a" x="281" y="198" text-anchor="middle">Spark</text>
+              <rect class="n-alt" x="324" y="166" width="70" height="56" rx="5"/><text class="t-alt" x="359" y="198" text-anchor="middle">Tez</text>
+              <rect class="n-alt" x="246" y="232" width="70" height="56" rx="5"/><text class="t-alt" x="281" y="264" text-anchor="middle">Tez</text>
+              <rect class="n-accent" x="456" y="166" width="70" height="56" rx="5"/><text class="t-a" x="491" y="198" text-anchor="middle">Spark</text>
+              <rect class="n-alt" x="534" y="166" width="70" height="56" rx="5"/><text class="t-alt" x="569" y="198" text-anchor="middle">Tez</text>
+              <rect class="n-alt" x="456" y="232" width="70" height="56" rx="5"/><text class="t-alt" x="491" y="264" text-anchor="middle">Tez</text>
+            </g>
+            <!-- 4. 다 차면 queue에서 기다린다 -->
+            <g data-at="4">
+              <g font-size="11"><rect class="n-accent" x="36" y="232" width="70" height="56" rx="5"/><text class="t-a" x="71" y="264" text-anchor="middle">Spark</text>
+                <rect class="n-alt" x="114" y="232" width="70" height="56" rx="5"/><text class="t-alt" x="149" y="264" text-anchor="middle">Tez</text>
+                <rect class="n-accent" x="324" y="232" width="70" height="56" rx="5"/><text class="t-a" x="359" y="264" text-anchor="middle">Spark</text>
+                <rect class="n-accent" x="534" y="232" width="70" height="56" rx="5"/><text class="t-a" x="569" y="264" text-anchor="middle">Spark</text></g>
+              <rect class="n-mk" x="20" y="328" width="600" height="38" rx="8"/>
+              <svg data-icon="clock" x="32" y="335" width="22" height="22" style="color: var(--mark)"></svg>
+              <text class="t-mk" x="62" y="351" font-size="13">queue — 칸이 다 차면 새 작업은 ACCEPTED 상태로 기다린다</text>
+              <g fill="var(--mark)"><rect x="520" y="336" width="20" height="20" rx="3"/><rect x="546" y="336" width="20" height="20" rx="3"/><rect x="572" y="336" width="20" height="20" rx="3"/></g>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><span class="logo sm"><img data-logo="hadoop" alt=""></span>ResourceManager — 자원 배정 담당</b><p>클러스터 전체의 CPU · 메모리를 보고 작업에 나눠 준다. 비유: 공용 작업장의 자리 배정 담당.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b><svg data-icon="server"></svg> NodeManager · container</b><p>서버마다 NodeManager가 있고, 받은 자원으로 <strong>container</strong>를 띄운다. 단, 나눠 주는 것은 자리가 아니라 <strong>CPU · 메모리 묶음</strong>이다.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>Spark와 Tez가 같은 자원을 나눠 쓴다</b><p>Spark 작업도 Tez 작업도 container 안에서 돈다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b><svg data-icon="clock"></svg> 다 차면 queue에서 기다린다</b><p>남은 자원이 없으면 새 작업은 <strong>ACCEPTED</strong> 상태로 기다린다 — 06 모니터링에서 화면으로 본다.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">서버 수 · 칸 수는 설명용</span>
+        <button class="more" type="button" data-arch="D12">자세히 — YARN 자원 배분 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-02</b> · 콘텐츠 2개(도식 + 설명) · 도식 D12</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① ResourceManager → ② NodeManager와 container(빈 칸) → ③ Spark · Tez가 칸을 채운다 → ④ 다 차면 queue에서 기다림.</li>
+      <li>일반 동작은 Hadoop 3.2 YARN 문서 기준이다. 그림의 서버 3대 · 칸 4개는 설명용이다.</li>
+      <li><span class="mk">[확인 필요: as-is YARN queue 구성 — 하나인지, 작업별로 나뉘는지]</span></li>
+      <li><span class="pp">pptx 대응</span> RM → 서버 3대 → 칸 채우기 → queue 띠 '나타내기' 4개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-03 Spark 작업 구성 — driver와 executor -->
+<section class="slide" data-id="M5-03" aria-label="M5-03 Spark 작업 구성 — driver와 executor">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>Spark 작업 구성 — driver와 executor</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 360" role="img" aria-label="큰 데이터를 작은 task로 쪼개고, driver가 여러 executor에게 task를 나눠 맡긴다. executor들이 동시에 계산하고 결과를 driver에 돌려준다. driver와 executor 모두 YARN container 안에서 돈다">
+            <defs><marker id="m53" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <rect class="grp" x="6" y="6" width="628" height="348" rx="12"/>
+            <rect class="logo-bg" x="18" y="16" width="28" height="28" rx="5"/><image data-logo="hadoop" x="20" y="18" width="24" height="24"/>
+            <text x="54" y="35" font-size="14"><tspan class="t-b">YARN</tspan><tspan class="t-m"> — driver도 executor도 container 안에서 돈다 (cluster 모드)</tspan></text>
+            <!-- 1. 큰 계산 → task로 쪼갬 -->
+            <g data-at="1">
+              <rect class="n" x="24" y="64" width="150" height="120" rx="8"/>
+              <text class="t-b" x="99" y="88" text-anchor="middle" font-size="14">큰 계산</text>
+              <g fill="var(--accent-bg)" stroke="var(--accent)"><rect x="40" y="102" width="26" height="26" rx="3"/><rect x="72" y="102" width="26" height="26" rx="3"/><rect x="104" y="102" width="26" height="26" rx="3"/><rect x="136" y="102" width="26" height="26" rx="3"/><rect x="40" y="136" width="26" height="26" rx="3"/><rect x="72" y="136" width="26" height="26" rx="3"/><rect x="104" y="136" width="26" height="26" rx="3"/><rect x="136" y="136" width="26" height="26" rx="3"/></g>
+              <text class="t-a" x="99" y="178" text-anchor="middle" font-size="11">작은 조각 = task</text>
+            </g>
+            <!-- 2. driver -->
+            <g data-at="2">
+              <path class="flow c-acc" d="M174 124 H226" marker-end="url(#m53)"/>
+              <rect class="n-accent" x="230" y="84" width="170" height="80" rx="10"/>
+              <rect class="logo-bg" x="242" y="96" width="44" height="32" rx="5"/><image data-logo="spark" x="245" y="99" width="38" height="26"/>
+              <text class="t-b" x="296" y="116" font-size="16">driver</text>
+              <text class="t-m" x="242" y="150" font-size="12">일을 나눠 맡기고 결과를 모은다</text>
+            </g>
+            <!-- 3. executor 여럿이 동시에 -->
+            <g data-at="3">
+              <path class="flow c-acc" d="M400 104 H440 V82 H462" marker-end="url(#m53)"/>
+              <path class="flow c-acc" d="M400 124 H462" marker-end="url(#m53)"/>
+              <path class="flow c-acc" d="M400 144 H440 V166 H462" marker-end="url(#m53)"/>
+              <g class="dot-acc"><circle r="4.5" class="dot"><animateMotion dur="1.8s" repeatCount="indefinite" path="M400 104 H440 V82 H462"/></circle><circle r="4.5" class="dot"><animateMotion dur="1.8s" begin="-.6s" repeatCount="indefinite" path="M400 124 H462"/></circle><circle r="4.5" class="dot"><animateMotion dur="1.8s" begin="-1.2s" repeatCount="indefinite" path="M400 144 H440 V166 H462"/></circle></g>
+              <g font-size="12">
+                <rect class="n" x="466" y="60" width="150" height="44" rx="8"/><text class="t-b" x="478" y="87">executor 1</text><g fill="var(--accent)"><rect x="572" y="72" width="14" height="14" rx="2"/><rect x="590" y="72" width="14" height="14" rx="2"/></g>
+                <rect class="n" x="466" y="114" width="150" height="44" rx="8"/><text class="t-b" x="478" y="141">executor 2</text><g fill="var(--accent)"><rect x="572" y="126" width="14" height="14" rx="2"/><rect x="590" y="126" width="14" height="14" rx="2"/></g>
+                <rect class="n" x="466" y="168" width="150" height="44" rx="8"/><text class="t-b" x="478" y="195">executor 3</text><g fill="var(--accent)"><rect x="572" y="180" width="14" height="14" rx="2"/><rect x="590" y="180" width="14" height="14" rx="2"/></g>
+              </g>
+              <path class="flow async c-mut" d="M466 230 H316 V168" marker-end="url(#m53)"/>
+              <text class="t-m" x="400" y="246" text-anchor="middle" font-size="12">결과</text>
+            </g>
+            <!-- 4. executor 수는 미리 정해진다 -->
+            <g data-at="4">
+              <rect class="n-mk" x="24" y="272" width="592" height="66" rx="8"/>
+              <svg data-icon="users" x="38" y="290" width="28" height="28" style="color: var(--mark)"></svg>
+              <text class="t-mk" x="78" y="300" font-size="14">executor 수와 크기는 실행 전에 정해진다</text>
+              <text class="t-m" x="78" y="322" font-size="12">작업 도중에 늘거나 줄지 않는다 — 자원이 모자라면 시작 전에 기다린다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b>큰 계산을 작은 task로 쪼갠다</b><p>데이터를 조각으로 나눠 여러 서버에서 동시에 계산한다.</p></li>
+          <li class="acc" data-at="2"><span class="no">2</span><b><span class="logo sm"><img data-logo="spark" alt=""></span>driver — 팀장</b><p>task를 나눠 맡기고 결과를 모은다. cluster 모드라 driver도 YARN container 안에서 돈다.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b><svg data-icon="users"></svg> executor — 팀원</b><p>각자 맡은 task를 동시에 계산한다. 비유: 계산팀(driver = 팀장, executor = 팀원).</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>팀원 수는 미리 정해진다</b><p>단, 실제 팀과 달리 <strong>실행 중에 팀원이 늘거나 줄지 않는다</strong>.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-03</b> · 콘텐츠 2개(도식 + 설명) · 도식 D10 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① task로 쪼갬 → ② driver → ③ executor가 동시에 → ④ 팀원 수 고정.</li>
+      <li>"팀원 수가 바뀌지 않는다"는 as-is가 dynamic allocation을 쓰지 않기 때문이다(발표자 참고).</li>
+      <li>Spark UI에서 보는 진행률 · 실패 개수는 이 task 단위로 센다 — 06 모니터링.</li>
+      <li><span class="pp">pptx 대응</span> 4묶음 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-04 Hive 적재 엔진 — Tez -->
+<section class="slide" data-id="M5-04" aria-label="M5-04 Hive 적재 엔진 — Tez">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>Hive 적재 엔진 — Tez</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 340" role="img" aria-label="Hive SQL을 Hive가 Tez 작업으로 바꾸고, Tez가 YARN container에서 단계별로 실행해 Hive 테이블에 적재한다. YARN 화면에는 TEZ application으로 보인다">
+            <defs><marker id="m54" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <g data-at="1"><rect class="n" x="10" y="40" width="170" height="120" rx="10"/>
+              <svg data-icon="file-text" x="24" y="54" width="26" height="26"></svg><text class="t-b" x="58" y="73" font-size="15">Hive SQL</text>
+              <g fill="var(--faint)"><rect x="24" y="94" width="140" height="9" rx="2"/><rect x="24" y="112" width="110" height="9" rx="2"/><rect x="24" y="130" width="126" height="9" rx="2"/></g>
+              <text class="t-m" x="95" y="186" text-anchor="middle" font-size="12">적재 내용을 적은 주문서</text></g>
+            <g data-at="2">
+              <path class="flow c-alt" d="M180 100 H206" marker-end="url(#m54)"/>
+              <rect class="n-alt" x="210" y="54" width="200" height="92" rx="10"/>
+              <rect class="logo-bg" x="222" y="66" width="34" height="34" rx="5"/><image data-logo="hive" x="224" y="68" width="30" height="30"/>
+              <rect class="logo-bg" x="262" y="66" width="34" height="34" rx="5"/><image data-logo="tez" x="264" y="68" width="30" height="30"/>
+              <text class="t-b" x="306" y="88" font-size="14">Hive → Tez</text>
+              <text class="t-m" x="222" y="126" font-size="12">SQL을 실행 단계로 바꾼다</text>
+            </g>
+            <g data-at="3">
+              <path class="flow c-alt" d="M410 100 H446" marker-end="url(#m54)"/>
+              <rect class="grp" x="450" y="20" width="180" height="200" rx="10"/>
+              <text class="t-m" x="464" y="42" font-size="12">YARN container에서</text>
+              <rect class="n" x="470" y="56" width="66" height="40" rx="6"/><text class="t" x="503" y="81" text-anchor="middle" font-size="12">단계 1</text>
+              <rect class="n" x="544" y="56" width="66" height="40" rx="6"/><text class="t" x="577" y="81" text-anchor="middle" font-size="12">단계 1</text>
+              <rect class="n" x="506" y="120" width="70" height="40" rx="6"/><text class="t" x="541" y="145" text-anchor="middle" font-size="12">단계 2</text>
+              <path class="e" d="M503 96 L530 118"/><path class="e" d="M577 96 L552 118"/>
+              <rect class="n-alt" x="486" y="176" width="110" height="34" rx="6"/><text class="t-alt" x="541" y="198" text-anchor="middle" font-size="12">Hive 테이블에 적재</text>
+              <path class="e" d="M541 160 V174"/>
+              <g class="dot-alt"><circle r="4.5" class="dot"><animateMotion dur="2.4s" repeatCount="indefinite" path="M180 100 H503 V96 L541 140 V176"/></circle></g>
+            </g>
+            <g data-at="4">
+              <rect class="n-mk" x="10" y="250" width="620" height="76" rx="10"/>
+              <rect class="logo-bg" x="24" y="268" width="40" height="40" rx="6"/><image data-logo="hadoop" x="28" y="272" width="32" height="32"/>
+              <text class="t-mk" x="76" y="284" font-size="14">YARN 화면에는 종류가 TEZ인 application으로 보인다</text>
+              <text class="t-m" x="76" y="306" font-size="12">Spark 작업은 SPARK — 종류(Application Type)로 둘을 구분한다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><svg data-icon="file-text"></svg> Hive 적재는 Hive SQL로 한다</b><p>무엇을 어디에 쌓을지 적은 SQL 주문서.</p></li>
+          <li class="alt" data-at="2"><span class="no">2</span><b><span class="logo sm"><img data-logo="tez" alt=""></span>Tez가 SQL을 실행 단계로 바꾼다</b><p>비유: Hive SQL 주문서를 받는 계산팀 — 단, 따로 있는 팀이 아니라 <strong>Hive 안에서 쓰는 실행 엔진</strong>이다.</p></li>
+          <li class="alt" data-at="3"><span class="no">3</span><b>YARN container에서 단계별로 실행한다</b><p>앞 단계가 끝나면 다음 단계가 이어서 돌고, 결과를 Hive 테이블에 쌓는다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>YARN에서는 TEZ application</b><p>Spark 작업(SPARK)과 종류로 구분한다.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-04</b> · 콘텐츠 2개(도식 + 설명) · 도식 D11 예정</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Hive SQL → ② Tez가 실행 단계로 → ③ container에서 단계별 실행 → ④ YARN 화면의 TEZ.</li>
+      <li>Tez의 단계 구조(Tez도 내부에서 DAG라는 말을 쓴다)는 Airflow DAG와 다른 것이다 — 헷갈리지 않게 슬라이드에서는 "단계"라고 부른다(발표자 참고).</li>
+      <li>Tez UI와 Tez 로그는 다루지 않는다. YARN 화면에서 상태까지만 본다.</li>
+      <li><span class="pp">pptx 대응</span> 4묶음 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-05 Tez와 Spark 비교 -->
+<section class="slide" data-id="M5-05" aria-label="M5-05 Tez와 Spark 비교">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>Tez와 Spark 비교</h2>
+    </div>
+    <div class="content">
+      <div class="two">
+        <div class="col fmt" data-at="1" style="border: 1.5px solid var(--alt)">
+          <h3><span class="logo sm"><img data-logo="tez" alt=""></span>Tez</h3>
+          <dl class="kv">
+            <dt>실행하는 것</dt><dd>Hive SQL</dd>
+            <dt>적재 대상</dt><dd><span class="logo sm"><img data-logo="hive" alt=""></span>Hive 테이블 (<code>_raw</code> → <code>_orc</code>)</dd>
+            <dt>YARN 종류</dt><dd><code>TEZ</code></dd>
+            <dt>진행 상황</dt><dd>YARN 화면의 상태로 본다</dd>
+            <dt>쓰임</dt><dd>Hive 안에서 쓰는 실행 엔진 — SQL 전용</dd>
+          </dl>
+          <div class="flowmini"><svg viewBox="0 0 520 80" role="img" aria-label="Hive SQL을 Tez가 실행해 Hive 테이블에 쌓는다">
+            <defs><marker id="m55a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <rect class="n" x="4" y="16" width="140" height="48" rx="8"/><svg data-icon="file-text" x="16" y="28" width="24" height="24"></svg><text class="t-b" x="48" y="46" font-size="14">Hive SQL</text>
+            <path class="flow c-alt" d="M144 40 H182" marker-end="url(#m55a)"/>
+            <rect class="n-alt" x="186" y="16" width="140" height="48" rx="8"/><rect class="logo-bg" x="196" y="24" width="32" height="32" rx="5"/><image data-logo="tez" x="198" y="26" width="28" height="28"/><text class="t-b" x="238" y="46" font-size="14">Tez</text>
+            <path class="flow c-alt" d="M326 40 H364" marker-end="url(#m55a)"/>
+            <rect class="n" x="368" y="16" width="148" height="48" rx="8"/><rect class="logo-bg" x="378" y="24" width="32" height="32" rx="5"/><image data-logo="hive" x="380" y="26" width="28" height="28"/><text class="t-b" x="420" y="46" font-size="14">Hive 테이블</text>
+            <g class="dot-alt"><circle r="4.5" class="dot"><animateMotion dur="2s" repeatCount="indefinite" path="M144 40 H364"/></circle></g>
+          </svg></div>
+        </div>
+        <div class="col fmt" data-at="2" style="border: 1.5px solid var(--accent)">
+          <h3><span class="logo sm"><img data-logo="spark" alt=""></span>Spark</h3>
+          <dl class="kv">
+            <dt>실행하는 것</dt><dd>Spark 작업 (SparkSubmitOperator로 제출)</dd>
+            <dt>적재 대상</dt><dd><span class="logo sm"><img data-logo="iceberg" alt=""></span>Iceberg 테이블 (append)</dd>
+            <dt>YARN 종류</dt><dd><code>SPARK</code></dd>
+            <dt>진행 상황</dt><dd>Spark UI에서 진행률 · 실패 개수까지 본다</dd>
+            <dt>쓰임</dt><dd>그 자체로 독립된 계산 엔진 — SQL · 프로그램 모두</dd>
+          </dl>
+          <div class="flowmini"><svg viewBox="0 0 520 80" role="img" aria-label="Spark 작업을 Spark가 실행해 Iceberg 테이블에 쌓는다">
+            <defs><marker id="m55b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <rect class="n" x="4" y="16" width="140" height="48" rx="8"/><rect class="logo-bg" x="14" y="24" width="32" height="32" rx="5"/><image data-logo="airflow" x="16" y="26" width="28" height="28"/><text class="t-b" x="54" y="46" font-size="14">Spark Task</text>
+            <path class="flow c-acc" d="M144 40 H182" marker-end="url(#m55b)"/>
+            <rect class="n-accent" x="186" y="16" width="140" height="48" rx="8"/><rect class="logo-bg" x="196" y="24" width="40" height="32" rx="5"/><image data-logo="spark" x="198" y="27" width="36" height="26"/><text class="t-b" x="246" y="46" font-size="14">Spark</text>
+            <path class="flow c-acc" d="M326 40 H364" marker-end="url(#m55b)"/>
+            <rect class="n" x="368" y="16" width="148" height="48" rx="8"/><rect class="logo-bg" x="378" y="24" width="32" height="32" rx="5"/><image data-logo="iceberg" x="380" y="26" width="28" height="28"/><text class="t-b" x="420" y="46" font-size="14">Iceberg 테이블</text>
+            <g class="dot-acc"><circle r="4.5" class="dot"><animateMotion dur="2s" repeatCount="indefinite" path="M144 40 H364"/></circle></g>
+          </svg></div>
+        </div>
+      </div>
+      <p class="foot" data-at="3"><svg data-icon="cpu"></svg> 둘 다 YARN에서 자원을 받아 container 안에서 돌고, 같은 자원을 나눠 쓴다.</p>
+    </div>
+    <div class="meta"><span class="id"><b>M5-05</b> · 콘텐츠 2개</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Tez → ② Spark → ③ 공통점(YARN 자원). 운영에서 차이가 드러나는 곳은 "YARN 종류"와 "진행 상황을 어디서 보는가"다.</li>
+      <li>일반 동작은 Spark 3.5 · Hive 3.1 문서 기준. <span class="mk">[사용자 작성: Spark를 Iceberg 적재에만 쓰는지]</span></li>
+      <li><span class="pp">pptx 대응</span> 왼쪽 단 → 오른쪽 단 → 아래 줄 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-06 Tez → Spark 전환으로 얻는 것 -->
+<section class="slide" data-id="M5-06" aria-label="M5-06 Tez → Spark 전환으로 얻는 것">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>Tez → Spark 전환으로 얻는 것</h2>
+    </div>
+    <div class="content">
+      <div class="mini dia" data-at="1">
+        <svg viewBox="0 0 960 150" role="img" aria-label="지금은 Hive 적재에 Tez, Iceberg 적재에 Spark로 엔진이 둘이다. Spark로 옮기면 적재 엔진이 하나로 모인다">
+          <defs><marker id="m56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <rect class="grp" x="10" y="10" width="520" height="130" rx="10"/>
+          <text class="t-b" x="26" y="36" font-size="14">지금 — 적재 엔진 둘</text>
+          <rect class="n" x="30" y="52" width="230" height="36" rx="6"/><rect class="logo-bg" x="36" y="56" width="28" height="28" rx="4"/><image data-logo="tez" x="38" y="58" width="24" height="24"/><text class="t" x="72" y="75" font-size="13">Tez → Hive 테이블</text>
+          <rect class="n" x="30" y="96" width="230" height="36" rx="6"/><rect class="logo-bg" x="36" y="100" width="34" height="28" rx="4"/><image data-logo="spark" x="38" y="102" width="30" height="24"/><text class="t" x="76" y="119" font-size="13">Spark → Iceberg 테이블</text>
+          <text class="t-m" x="390" y="80" text-anchor="middle" font-size="12">화면 · 설정 · 장애 유형이</text>
+          <text class="t-m" x="390" y="98" text-anchor="middle" font-size="12">엔진마다 따로</text>
+          <path class="flow c-acc" d="M540 75 H600" marker-end="url(#m56)"/>
+          <rect class="n-accent" x="610" y="10" width="340" height="130" rx="10"/>
+          <text class="t-b" x="626" y="36" font-size="14">옮기면 — 적재 엔진 하나</text>
+          <rect class="n" x="630" y="60" width="300" height="50" rx="6"/><rect class="logo-bg" x="638" y="68" width="40" height="34" rx="4"/><image data-logo="spark" x="640" y="71" width="36" height="28"/><text class="t" x="688" y="90" font-size="13">Spark → Iceberg (· Hive) 테이블</text>
+          <rect class="n-mk" x="820" y="116" width="122" height="20" rx="4"/><text class="t-mk" x="881" y="130" text-anchor="middle" font-size="10">확인 필요: 전환 계획</text>
+        </svg>
+      </div>
+      <div class="cards c4" style="font-size: 1.15em; flex: 1; align-content: center">
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="combine"></svg><h4>엔진 하나로 운영</h4></div><div class="role">살펴볼 엔진 · 설정 · 장애 유형이 하나로 줄어든다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="layers"></svg><h4>Iceberg 적재와 같은 엔진</h4></div><div class="role">Hive → Iceberg 전환과 함께 적재 방식이 한 가지로 모인다</div></div>
+        <div class="card" data-at="2"><div class="ch"><svg data-icon="monitor"></svg><h4>진행 상황을 Spark UI로</h4></div><div class="role">YARN 상태뿐 아니라 진행률 · 실패 개수까지 같은 화면으로 본다</div></div>
+        <div class="card" data-at="3"><div class="ch"><svg data-icon="scale"></svg><h4>대신</h4></div><div class="role">Hive SQL 적재를 Spark 작업으로 다시 만들어야 하고, 옮기는 동안은 두 엔진을 함께 운영한다</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-06</b> · 제목 및 내용(전후 비교 + 카드)</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 지금과 옮긴 뒤 → ② 얻는 것 3가지 → ③ 대신 생기는 일. 04장의 Hive → Iceberg 전환과 짝을 이루는 내용이다.</li>
+      <li><span class="mk">[확인 필요: as-is에서 Tez → Spark 전환이 진행 · 계획 중인지 — Hive → Iceberg 전환과 같은 범위인지]</span> 계획이 없다면 이 장은 "비교"로만 두고 "얻는 것"은 일반론으로 줄인다.</li>
+      <li><span class="pp">pptx 대응</span> 전후 도형 → 카드 3개 → 마지막 카드 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-07 Airflow Task와 YARN application — D13 -->
+<section class="slide" data-id="M5-07" data-arch="D13" aria-label="M5-07 Airflow Task와 YARN application">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>Airflow Task와 YARN application</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 360" role="img" aria-label="Airflow worker가 spark-submit으로 YARN에 작업을 제출하면 application ID가 생기고 ACCEPTED가 된다. container를 받으면 driver가 시작되어 RUNNING이 되고, worker는 끝날 때까지 상태를 확인한다. 끝나면 FinalStatus에 따라 Airflow Task가 성공 또는 실패가 된다">
+            <defs><marker id="m57" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <!-- 참여자 -->
+            <rect class="n-ok" x="20" y="10" width="170" height="54" rx="8"/><rect class="logo-bg" x="30" y="20" width="34" height="34" rx="5"/><image data-logo="airflow" x="33" y="23" width="28" height="28"/><text class="t-b" x="72" y="36" font-size="14">Airflow worker</text><text class="t-m" x="72" y="54" font-size="11">Spark Task 실행</text>
+            <rect class="n" x="236" y="10" width="170" height="54" rx="8"/><rect class="logo-bg" x="246" y="20" width="34" height="34" rx="5"/><image data-logo="hadoop" x="249" y="23" width="28" height="28"/><text class="t-b" x="288" y="36" font-size="14">YARN</text><text class="t-m" x="288" y="54" font-size="11">ResourceManager</text>
+            <rect class="n-accent" x="452" y="10" width="170" height="54" rx="8"/><rect class="logo-bg" x="462" y="20" width="40" height="34" rx="5"/><image data-logo="spark" x="465" y="23" width="34" height="28"/><text class="t-b" x="510" y="36" font-size="14">Spark 작업</text><text class="t-m" x="510" y="54" font-size="11">driver · executor</text>
+            <g stroke="var(--line)" stroke-dasharray="3 4"><line x1="105" y1="64" x2="105" y2="350"/><line x1="321" y1="64" x2="321" y2="350"/><line x1="537" y1="64" x2="537" y2="350"/></g>
+            <!-- 1 제출 -->
+            <g data-at="1"><path class="flow c-acc" d="M105 96 H317" marker-end="url(#m57)"/><text class="t-a" x="211" y="88" text-anchor="middle" font-size="12">spark-submit (cluster 모드)</text></g>
+            <!-- 2 ID · ACCEPTED -->
+            <g data-at="2"><path class="flow c-mut" d="M321 136 H109" marker-end="url(#m57)"/><text class="t-m" x="215" y="128" text-anchor="middle" font-size="12">application_… · ACCEPTED</text></g>
+            <!-- 3 RUNNING -->
+            <g data-at="3"><path class="flow c-acc" d="M321 176 H533" marker-end="url(#m57)"/><text class="t-a" x="427" y="168" text-anchor="middle" font-size="12">container 배정 → RUNNING</text>
+              <rect class="n-accent" x="487" y="186" width="100" height="70" rx="6"/><text class="t-a" x="537" y="214" text-anchor="middle" font-size="12">계산 중</text>
+              <g class="dot-acc"><circle r="4" class="dot"><animateMotion dur="1.4s" repeatCount="indefinite" path="M507 238 H567"/></circle></g></g>
+            <!-- 4 지켜본다 -->
+            <g data-at="4">
+              <path class="flow async c-mut" d="M105 216 H317" marker-end="url(#m57)"/><text class="t-m" x="211" y="208" text-anchor="middle" font-size="12">상태 확인 — 끝날 때까지</text>
+              <path class="flow c-mut" d="M533 286 H325" marker-end="url(#m57)"/><text class="t-m" x="429" y="278" text-anchor="middle" font-size="12">끝 — FinalStatus</text>
+              <path class="flow c-mut" d="M321 326 H109" marker-end="url(#m57)"/><text class="t-m" x="215" y="318" text-anchor="middle" font-size="12">FINISHED · FinalStatus</text>
+              <rect class="n-ok" x="10" y="232" width="190" height="44" rx="6"/><text class="t" x="105" y="252" text-anchor="middle" font-size="12">worker는 끝날 때까지</text><text class="t" x="105" y="268" text-anchor="middle" font-size="12">지켜본다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li data-at="1"><span class="no">1</span><b><span class="logo sm"><img data-logo="airflow" alt=""></span>Spark Task가 작업을 제출한다</b><p>SparkSubmitOperator가 YARN에 Spark 작업을 제출한다(cluster 모드).</p></li>
+          <li data-at="2"><span class="no">2</span><b>application ID가 생긴다</b><p><code>application_…</code> 번호가 붙고 ACCEPTED가 된다. Airflow log에도 이 번호가 찍힌다 — 06 모니터링.</p></li>
+          <li class="acc" data-at="3"><span class="no">3</span><b>container를 받으면 RUNNING</b><p>driver와 executor가 YARN container에서 계산한다.</p></li>
+          <li class="mark" data-at="4"><span class="no">4</span><b>worker는 끝날 때까지 지켜본다</b><p>끝나면 FinalStatus에 따라 Airflow Task가 성공 · 실패가 된다. 그래서 <strong>실행 중인 Spark Task가 있을 때 worker를 재시작하지 않는다</strong> — 07 장애 대응.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">Airflow Task 하나 = YARN application 하나</span>
+        <button class="more" type="button" data-arch="D13">자세히 — 실행 순서 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-07</b> · 콘텐츠 2개(도식 + 설명) · 도식 D13</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① 제출 → ② application ID · ACCEPTED → ③ RUNNING → ④ worker가 지켜본다. 02장 "worker — 단, YARN에 맡긴 뒤 끝날 때까지 지켜본다"를 여기서 순서로 보여 준다.</li>
+      <li>Hive SQL Task도 YARN에 TEZ application을 띄운다. <span class="mk">[사용자 작성: Hive SQL Task의 실행 방식(Operator), Task 하나에 application 하나인지]</span></li>
+      <li><span class="pp">pptx 대응</span> 화살표 묶음 4개 '나타내기'.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-08 YARN application 상태 — D14 -->
+<section class="slide" data-id="M5-08" data-arch="D14" aria-label="M5-08 YARN application 상태">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>YARN application 상태</h2>
+    </div>
+    <div class="content">
+      <div class="split">
+        <div class="dia">
+          <svg viewBox="0 0 640 340" role="img" aria-label="YARN application은 ACCEPTED에서 RUNNING을 거쳐 FINISHED가 된다. 끝난 결과는 FinalStatus로 SUCCEEDED, FAILED, KILLED 중 하나다. State가 FINISHED여도 FinalStatus가 FAILED일 수 있다">
+            <defs><marker id="m58" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+            <text class="t-m" x="20" y="28" font-size="13">State — 지금 어디쯤인가</text>
+            <path class="e" d="M180 72 H226"/><path class="e" d="M386 72 H432"/>
+            <g data-at="1">
+              <rect class="n-mk" x="20" y="44" width="160" height="56" rx="8"/><svg data-icon="clock" x="32" y="60" width="24" height="24" style="color: var(--mark)"></svg><text class="t-b t-mono" x="64" y="70" font-size="15">ACCEPTED</text><text class="t-m" x="64" y="88" font-size="11">자원을 기다린다</text>
+              <path class="flow c-acc" d="M180 72 H226" marker-end="url(#m58)"/>
+              <rect class="n-accent" x="230" y="44" width="156" height="56" rx="8"/><text class="t-b t-mono" x="246" y="70" font-size="15">RUNNING</text><text class="t-m" x="246" y="88" font-size="11">container에서 실행 중</text>
+              <path class="flow c-acc" d="M386 72 H432" marker-end="url(#m58)"/>
+              <rect class="n" x="436" y="44" width="184" height="56" rx="8"/><text class="t-b t-mono" x="452" y="70" font-size="15">FINISHED</text><text class="t-m" x="452" y="88" font-size="11">끝남</text>
+              <g class="dot-acc"><circle r="5" class="dot"><animateMotion dur="2.6s" repeatCount="indefinite" path="M100 72 H530"/></circle></g>
+            </g>
+            <g data-at="2">
+              <text class="t-m" x="20" y="156" font-size="13">FinalStatus — 끝난 결과</text>
+              <path class="flow c-mut" d="M528 100 V166 H120 V176" marker-end="url(#m58)" stroke-dasharray="3 4"/>
+              <path class="flow c-mut" d="M528 100 V176" marker-end="url(#m58)" stroke-dasharray="3 4"/>
+              <path class="flow c-mut" d="M528 166 H324 V176" stroke-dasharray="3 4" marker-end="url(#m58)"/>
+              <rect class="n-ok" x="20" y="180" width="200" height="54" rx="8"/><svg data-icon="circle-check" x="32" y="195" width="24" height="24" style="color: var(--ok)"></svg><text class="t-b t-mono" x="64" y="213" font-size="14">SUCCEEDED</text>
+              <rect class="n" x="230" y="180" width="190" height="54" rx="8" stroke="var(--stop)"/><svg data-icon="circle-x" x="242" y="195" width="24" height="24" style="color: var(--stop)"></svg><text class="t-b t-mono" x="274" y="213" font-size="14">FAILED</text>
+              <rect class="n" x="430" y="180" width="190" height="54" rx="8"/><text class="t-b t-mono" x="446" y="213" font-size="14">KILLED</text><text class="t-m" x="532" y="213" font-size="11">중지됨</text>
+            </g>
+            <g data-at="3">
+              <rect class="n-mk" x="20" y="254" width="600" height="72" rx="10"/>
+              <text class="t-mk" x="36" y="282" font-size="14">State가 FINISHED여도 FinalStatus가 FAILED일 수 있다</text>
+              <text class="t-m" x="36" y="306" font-size="12">작업이 "끝난 것"과 "성공한 것"은 다르다 — 성공 여부는 FinalStatus로 본다</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="xl">
+          <li class="acc" data-at="1"><span class="no">1</span><b>State — 지금 어디쯤인가</b><p>ACCEPTED(자원 대기) → RUNNING(실행 중) → FINISHED(끝남). 실행 중 실패하거나 중지되면 FAILED · KILLED가 되기도 한다.</p></li>
+          <li data-at="2"><span class="no">2</span><b>FinalStatus — 끝난 결과</b><p>SUCCEEDED · FAILED · KILLED. 실행 중에는 아직 정해지지 않았다(UNDEFINED).</p></li>
+          <li class="mark" data-at="3"><span class="no">3</span><b>성공 여부는 FinalStatus로 본다</b><p>"끝남"과 "성공"은 다르다. ACCEPTED에 오래 머물면 자원을 기다리는 중이다 — 06 모니터링.</p></li>
+        </ol>
+      </div>
+      <div class="morebar">
+        <span class="hint">YARN 화면의 State · FinalStatus 열</span>
+        <button class="more" type="button" data-arch="D14">자세히 — 상태 변화 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-08</b> · 콘텐츠 2개(도식 + 설명) · 도식 D14</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① State → ② FinalStatus → ③ "끝남 ≠ 성공". 06 모니터링에서 YARN 화면의 두 열을 실제로 읽는다.</li>
+      <li>일반 동작은 Hadoop 3.2 YARN 문서 기준이다.</li>
+      <li><span class="pp">pptx 대응</span> State 줄 → FinalStatus 줄 → 강조 띠 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M5-09 이름이 같은 다른 개념 — Task · Executor -->
+<section class="slide" data-id="M5-09" aria-label="M5-09 이름이 같은 다른 개념 — Task · Executor">
+  <div class="in">
+    <div class="head">
+      <div class="eb">05 YARN · Spark · Tez</div>
+      <h2>이름이 같은 다른 개념 — Task · Executor</h2>
+    </div>
+    <div class="content">
+      <div class="two">
+        <div class="col fmt" data-at="1" style="border: 1.5px solid var(--ok)">
+          <h3><span class="logo sm"><img data-logo="airflow" alt=""></span>Airflow</h3>
+          <dl class="kv">
+            <dt>Task</dt><dd>DAG 순서도의 <b>한 칸</b>. Grid 화면의 칸 하나. 예: Spark Task 하나</dd>
+            <dt data-at="2">Executor</dt><dd data-at="2">Task를 어떻게 실행할지 정하는 <b>방식</b>. as-is는 CeleryExecutor(worker가 대기열에서 꺼내 실행)</dd>
+          </dl>
+        </div>
+        <div class="col fmt" data-at="1" style="border: 1.5px solid var(--accent)">
+          <h3><span class="logo sm"><img data-logo="spark" alt=""></span>Spark</h3>
+          <dl class="kv">
+            <dt>task</dt><dd>Spark 작업을 쪼갠 <b>작은 계산 조각</b>. 작업 하나에 수백 개가 넘을 수 있다</dd>
+            <dt data-at="2">executor</dt><dd data-at="2">task를 실제로 계산하는 <b>프로세스</b>(팀원). YARN container 안에서 돈다</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="mini dia" data-at="3">
+        <svg viewBox="0 0 960 120" role="img" aria-label="Airflow Task 하나가 YARN application 하나가 되고, 그 안에서 Spark task 여러 개가 executor들에서 계산된다">
+          <defs><marker id="m59" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M2 1L8 5L2 9"/></marker></defs>
+          <rect class="n-ok" x="20" y="34" width="200" height="54" rx="8"/><text class="t-b" x="120" y="58" text-anchor="middle" font-size="14">Airflow Task 1개</text><text class="t-m" x="120" y="77" text-anchor="middle" font-size="11">Grid의 칸 하나</text>
+          <path class="flow c-acc" d="M220 61 H286" marker-end="url(#m59)"/>
+          <rect class="n" x="290" y="34" width="220" height="54" rx="8"/><text class="t-b" x="400" y="58" text-anchor="middle" font-size="14">YARN application 1개</text><text class="t-m" x="400" y="77" text-anchor="middle" font-size="11">application_…</text>
+          <path class="flow c-acc" d="M510 61 H576" marker-end="url(#m59)"/>
+          <rect class="n-accent" x="580" y="14" width="360" height="94" rx="8"/><text class="t-b" x="596" y="36" font-size="14">Spark task 여러 개</text>
+          <g fill="var(--accent)"><rect x="596" y="50" width="16" height="16" rx="2"/><rect x="616" y="50" width="16" height="16" rx="2"/><rect x="636" y="50" width="16" height="16" rx="2"/><rect x="656" y="50" width="16" height="16" rx="2"/><rect x="676" y="50" width="16" height="16" rx="2"/><rect x="696" y="50" width="16" height="16" rx="2"/><rect x="716" y="50" width="16" height="16" rx="2"/><rect x="736" y="50" width="16" height="16" rx="2"/><rect x="756" y="50" width="16" height="16" rx="2"/><rect x="776" y="50" width="16" height="16" rx="2"/><rect x="596" y="70" width="16" height="16" rx="2"/><rect x="616" y="70" width="16" height="16" rx="2"/><rect x="636" y="70" width="16" height="16" rx="2"/><rect x="656" y="70" width="16" height="16" rx="2"/><rect x="676" y="70" width="16" height="16" rx="2"/><rect x="696" y="70" width="16" height="16" rx="2"/></g>
+          <text class="t-m" x="806" y="72" font-size="11">executor들이 나눠 계산</text>
+        </svg>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M5-09</b> · 콘텐츠 2개 + 연결 그림</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>① Task와 task → ② Executor와 executor → ③ 셋의 관계. 화면에서 "task 실패 3개"(Spark UI)와 "Task 실패"(Airflow)를 헷갈리지 않게 하는 것이 목적이다.</li>
+      <li>Spark UI의 실패 task 개수는 다시 시도해서 성공할 수도 있다 — Airflow Task가 실패해야 장애다(06 · 07장에서 다시 본다).</li>
+      <li><span class="pp">pptx 대응</span> 두 단의 위 줄 → 아래 줄 → 연결 그림 '나타내기' 3개.</li>
+    </ul>
+  </template>
+</section>

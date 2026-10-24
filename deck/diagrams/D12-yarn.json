@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "YARN 자원 배분",
+    "locale": "ko",
+    "output": "deck/diagrams/D12-yarn.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "YARN과 그 위에서 도는 작업"
+        },
+        "messagebus": {
+          "label": "기다리는 곳"
+        },
+        "external": {
+          "label": "작업을 맡기는 쪽"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "worker",
+      "type": "external",
+      "label": "Airflow worker",
+      "sublabel": "작업 제출",
+      "brand": "apache-airflow",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        170,
+        60
+      ]
+    },
+    {
+      "id": "rm",
+      "type": "backend",
+      "label": "ResourceManager",
+      "sublabel": "자원 배정 · 작업 접수",
+      "brand": {
+        "url": "https://hadoop.apache.org/",
+        "sha256": "934be7f703ddc4b429a276dfd4387986c25f8cc5f99ac75d7a36af2785ed7ae8"
+      },
+      "pos": [
+        300,
+        200
+      ],
+      "size": [
+        200,
+        60
+      ]
+    },
+    {
+      "id": "queue",
+      "type": "messagebus",
+      "label": "queue",
+      "sublabel": "자원이 모자라면 대기",
+      "pos": [
+        300,
+        40
+      ],
+      "size": [
+        200,
+        60
+      ]
+    },
+    {
+      "id": "nm",
+      "type": "backend",
+      "label": "NodeManager",
+      "sublabel": "서버마다 하나",
+      "brand": {
+        "url": "https://hadoop.apache.org/",
+        "sha256": "934be7f703ddc4b429a276dfd4387986c25f8cc5f99ac75d7a36af2785ed7ae8"
+      },
+      "pos": [
+        590,
+        200
+      ],
+      "size": [
+        190,
+        60
+      ]
+    },
+    {
+      "id": "cs",
+      "type": "backend",
+      "label": "container · Spark",
+      "sublabel": "driver · executor",
+      "brand": {
+        "url": "https://spark.apache.org/",
+        "sha256": "ec9b652fe51ef1e34f13f805505e54aace3287ebc839cdb0439bc7f4e88b1155"
+      },
+      "pos": [
+        880,
+        120
+      ],
+      "size": [
+        210,
+        60
+      ]
+    },
+    {
+      "id": "ct",
+      "type": "backend",
+      "label": "container · Tez",
+      "sublabel": "Hive SQL 작업",
+      "brand": {
+        "url": "https://tez.apache.org/images/ApacheTezIcon.png",
+        "sha256": "2a2adc2b5811b29a278540cc82b817e808682b40053e788bf92931f25f5a0895"
+      },
+      "pos": [
+        880,
+        280
+      ],
+      "size": [
+        210,
+        60
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "worker",
+      "to": "rm",
+      "label": "작업 제출",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c2",
+      "from": "rm",
+      "to": "queue",
+      "label": "자원 부족 시",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "variant": "dashed"
+    },
+    {
+      "id": "c3",
+      "from": "rm",
+      "to": "nm",
+      "label": "container 배정",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c4",
+      "from": "nm",
+      "to": "cs",
+      "label": "실행"
+    },
+    {
+      "id": "c5",
+      "from": "nm",
+      "to": "ct",
+      "label": "실행"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "용어",
+      "items": [
+        "ResourceManager — 클러스터 전체의 CPU · 메모리를 보고 작업에 나눠 준다",
+        "NodeManager — 서버마다 하나, 받은 자원으로 container를 띄운다",
+        "container — CPU · 메모리 묶음. Spark · Tez 작업은 이 안에서 돈다"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "기다림",
+      "items": [
+        "자원이 모자라면 작업은 queue에서 ACCEPTED 상태로 기다린다",
+        "Spark와 Tez가 같은 자원을 나눠 쓴다",
+        "[확인 필요: as-is queue 구성]"
+      ]
+    }
+  ]
+}

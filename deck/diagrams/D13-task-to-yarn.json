@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Airflow Task가 Spark 작업을 실행하는 순서",
+    "locale": "ko",
+    "output": "deck/diagrams/D13-task-to-yarn.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "worker",
+      "type": "external",
+      "label": "Airflow worker",
+      "sublabel": "SparkSubmitOperator",
+      "brand": "apache-airflow"
+    },
+    {
+      "id": "rm",
+      "type": "backend",
+      "label": "YARN",
+      "sublabel": "ResourceManager",
+      "brand": {
+        "url": "https://hadoop.apache.org/",
+        "sha256": "934be7f703ddc4b429a276dfd4387986c25f8cc5f99ac75d7a36af2785ed7ae8"
+      }
+    },
+    {
+      "id": "driver",
+      "type": "backend",
+      "label": "Spark driver",
+      "sublabel": "YARN container 안",
+      "brand": {
+        "url": "https://spark.apache.org/",
+        "sha256": "ec9b652fe51ef1e34f13f805505e54aace3287ebc839cdb0439bc7f4e88b1155"
+      }
+    },
+    {
+      "id": "exec",
+      "type": "backend",
+      "label": "executor ×N",
+      "sublabel": "YARN container 안",
+      "brand": {
+        "url": "https://spark.apache.org/",
+        "sha256": "ec9b652fe51ef1e34f13f805505e54aace3287ebc839cdb0439bc7f4e88b1155"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "worker",
+      "to": "rm",
+      "y": 170,
+      "label": "spark-submit (cluster 모드)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m2",
+      "from": "rm",
+      "to": "worker",
+      "y": 214,
+      "label": "application ID · ACCEPTED",
+      "variant": "return"
+    },
+    {
+      "id": "m3",
+      "from": "rm",
+      "to": "driver",
+      "y": 258,
+      "label": "container 배정 · RUNNING",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "driver",
+      "to": "exec",
+      "y": 302,
+      "label": "task를 나눠 맡김",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m5",
+      "from": "exec",
+      "to": "driver",
+      "y": 346,
+      "label": "결과",
+      "variant": "return"
+    },
+    {
+      "id": "m6",
+      "from": "worker",
+      "to": "rm",
+      "y": 390,
+      "label": "상태 확인 — 끝날 때까지",
+      "variant": "dashed",
+      "note": "이 동안 worker를 재시작하면 지켜보던 작업이 끊긴다"
+    },
+    {
+      "id": "m7",
+      "from": "driver",
+      "to": "rm",
+      "y": 456,
+      "label": "끝 — FinalStatus",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "rm",
+      "to": "worker",
+      "y": 500,
+      "label": "FINISHED · FinalStatus → Task 성공 / 실패",
+      "variant": "return"
+    }
+  ]
+}
