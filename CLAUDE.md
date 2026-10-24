@@ -11,7 +11,7 @@
 | **대상 시스템** | as-is Hadoop eco: Airflow 2.7.1, Spark 3.5.2 on **YARN**, Hive 3.1.2 SQL on **Tez** 0.10.1(Hive 적재 엔진), Hadoop 3.2.3(HDFS·YARN), Iceberg 1.6.1, Hive 테이블(대부분) + Iceberg 테이블(일부, 일부는 Hive와 동시 적재) |
 | **메인 기술** | Airflow, Spark, Iceberg. **Hive도 다룬다** — Hive·Iceberg 개념 비교, Hive → Iceberg 전환의 장단점 |
 | **교육 내용** | ① 기술·시스템 개념과 구조 ② 모니터링 방법 ③ 장애 대응 |
-| **모니터링 도구** | Airflow UI, YARN UI, Spark UI, Flower(잠정 — 제거 가능) |
+| **모니터링 도구** | Airflow UI, YARN UI, Spark UI. Flower 화면은 다루지 않는다(사용자 2026-10-24) — flower는 재시작 대상 프로세스로만 남는다 |
 | **제외** | to-be(Kubernetes) 시스템 전부 — Spark on K8s, SparkKubernetesOperator, MinIO/S3, S3FileIO 등. **Oracle, Trino** — 운영에서 쓰지만 교육 대상이 아니다. Oracle DB 전환(job_history·HMS 스키마)은 개발자가 교육 전에 수행하며, 교육에서는 배경 설명만 한다 |
 
 - **to-be 혼입 금지.** 형제 저장소 `../spark-tuning`은 to-be(k8s) 기준 설계·튜닝 문서다. Iceberg snapshot, 파티션, Compaction 같은 **엔진 공통 개념**을 설명할 때만 참고하고, 그쪽의 설정값·수치·버전·인프라 구성(k8s, MinIO, Airflow 3.x)은 인용하지 않는다. 참조만 하고 수정하지 않는다
@@ -21,9 +21,9 @@
 
 - **독자는 운영 담당자다.** 코드를 읽거나 고치지 않는다. 목표는 장애 대응 같은 단순 운영 작업을 스스로 하는 것이다
 - **Linux는 초보 수준이고, Linux 사용법은 가르치지 않는다** (SSH 권한은 있다). 터미널 작업은 **복사해 붙여 넣을 명령어 + 성공 시 화면(기대 출력)**으로만 제시한다. 명령어를 조합하거나 고치게 하지 않는다
-- **수강자가 하는 조치는 다음뿐이다**: Airflow 프로세스(worker · scheduler · webserver · flower) 재시작(systemctl 또는 ansible playbook), Airflow DAG 재실행(UI에서 Trigger DAG + PARAM에 처리 날짜 입력), Airflow log 확인. PostgreSQL · pgpool · redis 재시작과 Spark 작업 실행 중 worker 재시작은 금지
+- **수강자가 하는 조치는 다음뿐이다**: Airflow 프로세스(worker · scheduler · webserver · flower) 재시작(systemctl 또는 ansible playbook), Airflow DAG 재실행(UI에서 Trigger DAG + PARAM에 처리 날짜 입력), Airflow log 확인. PostgreSQL · pgpool · redis · redis-sentinel 재시작과 Spark 작업 실행 중 worker 재시작은 금지
 - **Spark 로그 분석은 범위 밖이다.** Spark/YARN/Spark UI는 "상태를 보고 판단·전달하는" 수준까지만 가르치고, 원인 분석은 Airflow log 수준에서 멈춘다. Spark UI·YARN UI에서 로그를 여는 방법, Airflow log에 섞여 나오는 Spark driver log를 읽는 방법은 가르치지 않는다. Tez도 같다 — 이름·역할과 YARN UI 상태까지만 다루고 Tez UI·로그는 다루지 않는다
-- **난이도가 높거나 위험한 조치는 수강자에게 맡기지 않는다.** 이런 조치는 "하지 말 것 + 누구에게 무엇을 전달할 것"으로 가르친다. 허용·금지 경계의 상세는 intent의 Open questions에서 확정한다
+- **수강자가 할 수 있는 조치만 가르친다** (사용자 2026-10-24). 금지 조치 목록은 슬라이드에 넣지 않는다. 맡지 않는 상황은 "누구에게 무엇을 전달할지"로 안내하고, 조치에 붙는 안전 조건(예: 실행 중인 Spark Task가 있으면 worker를 재시작하지 않는다)은 그 조치의 절차 안에 둔다
 
 ## 작성 규칙
 
@@ -32,7 +32,9 @@
 - **화면 기준으로 설명한다.** "어느 화면의 어디를 보면 무엇이 보이고, 그것이 무슨 뜻인지" 순서로 쓴다
 - 슬라이드 1장에는 메시지 1개만 담는다
 - 커밋 메시지는 한글로 쓴다
-- **'비개발자'라는 표현을 쓰지 않는다** (사용자 2026-10-22). 독자는 '수강자' 또는 '운영 담당자'로 부른다
+- **'비개발자'라는 표현을 쓰지 않는다** (사용자 2026-10-22). 문서에서 독자는 '수강자' 또는 '운영 담당자'로 부른다
+- **슬라이드에는 듣는 사람에게 필요한 내용만 둔다** (사용자 2026-10-24). '교육생 · 수강자 · 비개발자' 같은 대상 지칭, 교육 범위 설명("우리는 ~를 보지 않는다"), 교육자용 판단 근거는 슬라이드에 쓰지 않고 발표 메모에만 둔다. 필요 없는 내용은 설명하지 않으면 될 뿐, "이건 몰라도 된다"고 적지 않는다
+- **발표 슬라이드에 맞는 표현을 쓴다** (사용자 2026-10-24). "장애가 나면 이 한 장만 보면 된다" 같은 구어 · 광고 문구 대신 "장애 대응 요약"처럼 제목다운 표현을 쓴다
 
 ## 사실 출처 규칙
 
@@ -48,7 +50,7 @@
 - pptx 생성은 `anthropic-skills:pptx` 스킬을 쓴다. 스킬의 시각 QA(슬라이드 → 이미지 렌더링 → 확인)에 필요한 로컬 도구는 아래 "도구" 절을 따른다
 - **HTML은 단일 파일, 외부 의존성 없이 만든다.** CDN·웹폰트를 쓰지 않는다. 파일 하나만 전달받아 Windows 브라우저에서 오프라인으로 열려야 한다
 - **HTML 발표 자료는 동적·반응형으로 만든다** (사용자 2026-10-22). 슬라이드 안의 내용은 → 키로 한 단계씩 펼치고, 질문이 나올 만한 곳은 눌러서 펼치게 한다. 단 **움직임 없이도 내용이 다 전달돼야 한다** — 좁은 화면·인쇄·움직임 줄이기 설정에서는 모든 단계를 펼친 정지 화면으로 보인다
-- **도식은 모두 archify로 만든다** (사용자 2026-10-24). 슬라이드에는 요점을 HTML로 두고, 자세한 설명은 `D`(또는 '자세히' 버튼)로 archify 도식을 전체 화면으로 열어 한다. archify 도식은 `samples/archify/`의 JSON을 고쳐 다시 렌더링한 뒤 `embed.py`로 발표 HTML 안에 넣는다 — 발표 파일은 여전히 하나다. 누르거나 끌어서 조작하는 시연은 HTML로 둔다
+- **도식은 시각화 도구로 만든다** (사용자 2026-10-24). archify를 기본으로 하고, 흐름을 움직임으로 보여 줘야 이해가 쉬운 곳은 dashmotion 등 상황에 맞는 도구를 적극 쓴다. 슬라이드에는 요점을 HTML로 두고, 자세한 설명은 `D`(또는 '자세히' 버튼)로 archify 도식을 전체 화면으로 열어 한다. archify 도식은 `samples/archify/`의 JSON을 고쳐 다시 렌더링한 뒤 `embed.py`로 발표 HTML 안에 넣는다 — 발표 파일은 여전히 하나다. 누르거나 끌어서 조작하는 시연은 HTML로 둔다
 - HTML의 동적 표현마다 발표 메모에 **pptx 대응**(PowerPoint 애니메이션 '나타내기' 순서, 슬라이드 분할 + '모핑' 전환 등)을 적는다. pptx로 전환할 때 HTML에서만 되는 표현을 무엇으로 바꿀지 정해 두려는 것이다
 
 ### 회사 템플릿 호환
@@ -73,6 +75,7 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 | `markitdown[pptx]`, `pillow`, `defusedxml`, `lxml` (pip) | 내용 추출·검증 | 미설치 |
 | `mkdocs-material`, `mkdocs-same-dir` (pip, `requirements-docs.txt`) | 문서 사이트 빌드 | GitHub Actions에서 설치 |
 | [archify](https://github.com/tt-a1i/archify) 3.2.0 | 도식 렌더링 (`node bin/archify.mjs finalize <type> <json> <html> --quality showcase`). Node 18 이상, 자동 검사에 Chrome 필요. 결과 HTML에 렌더러 코드가 들어간다(MIT) | 저장소 밖에 clone해서 쓴다 |
+| [dashmotion](https://github.com/csthink/dashmotion) | 흐름 애니메이션 도식 (Claude skill, 단일 HTML/SVG). 결과물에 코드가 들어가면 MIT 고지 | 미설치 — 처음 쓸 때 설치 여부 확인 |
 
 - LibreOffice는 없는 폰트를 대체해 그린다. QA 미리보기를 믿으려면 pptx에 지정한 폰트를 Mac에도 설치해야 한다
 
@@ -104,7 +107,7 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
     └── archify/                      # archify 도식 — <이름>.json(입력)을 고쳐 <이름>.html로 렌더링
         ├── airflow-processes.*       # Airflow 프로세스 구성과 재시작 범위 (architecture)
         ├── data-flow.*               # 데이터가 테이블에 쌓이는 길 (dataflow)
-        ├── hive-batch.*              # Hive 적재 5단계 (workflow)
+        ├── hive-batch.*              # Hive 적재 6단계 (workflow)
         ├── hive-iceberg-timeline.*   # 적재 중 조회 — Hive와 Iceberg (timeline, 예시 시각)
         └── embed.py                  # 렌더링한 도식을 발표 HTML 안에 넣는다
 ```

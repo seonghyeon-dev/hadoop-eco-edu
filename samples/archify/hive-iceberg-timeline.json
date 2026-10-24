@@ -9,15 +9,59 @@
     "timezone": "Asia/Seoul",
     "quality_profile": "showcase"
   },
-  "layout": { "breaks": "none" },
+  "layout": {
+    "breaks": "none"
+  },
   "lanes": [
-    { "id": "hive", "label": "Hive _orc" },
-    { "id": "iceberg", "label": "Iceberg 테이블" }
+    {
+      "id": "hive",
+      "label": "Hive _orc"
+    },
+    {
+      "id": "iceberg",
+      "label": "Iceberg 테이블"
+    }
   ],
   "events": [
-    { "id": "hive-clear", "at": "2026-10-24T02:10:00+09:00", "title": "4 _orc 비움", "detail": "이때부터 _orc를 조회하면 결과가 비거나 모자란다.", "lane": "hive", "kind": "alert" },
-    { "id": "hive-moved", "at": "2026-10-24T02:16:00+09:00", "title": "5 hdfs mv 끝", "detail": "_orc 조회가 다시 정상이 된다.", "lane": "hive", "kind": "recovery" },
-    { "id": "ice-write", "at": "2026-10-24T02:08:00+09:00", "title": "새 파일 쓰기 시작", "detail": "쓰는 동안 조회는 snapshot 1을 읽는다. 새 파일은 아직 보이지 않는다.", "lane": "iceberg", "kind": "default" },
-    { "id": "ice-commit", "at": "2026-10-24T02:14:00+09:00", "title": "commit — snapshot 2", "detail": "commit 한 번에 snapshot 2로 바뀐다. 비는 순간이 없다.", "lane": "iceberg", "kind": "change" }
+    {
+      "id": "hive-list",
+      "at": "2026-10-24T02:09:00+09:00",
+      "title": "4 기존 파일 목록 기록",
+      "detail": "지금 _orc에 있는 파일을 적어 둔다. 조회는 기존 데이터를 읽는다.",
+      "lane": "hive",
+      "kind": "default"
+    },
+    {
+      "id": "hive-moved",
+      "at": "2026-10-24T02:10:00+09:00",
+      "title": "5 hdfs mv — 새 파일 들어감",
+      "detail": "6까지 기존 파일과 새 파일이 함께 있다. [사용자 작성: 이때의 조회 결과]",
+      "lane": "hive",
+      "kind": "change"
+    },
+    {
+      "id": "hive-removed",
+      "at": "2026-10-24T02:16:00+09:00",
+      "title": "6 기존 파일 hdfs rm",
+      "detail": "4에서 적어 둔 기존 파일을 지운다. 이제 새 데이터만 읽는다.",
+      "lane": "hive",
+      "kind": "action"
+    },
+    {
+      "id": "ice-write",
+      "at": "2026-10-24T02:08:00+09:00",
+      "title": "새 파일 쓰기 시작",
+      "detail": "쓰는 동안 조회는 snapshot 1을 읽는다. 새 파일은 아직 보이지 않는다.",
+      "lane": "iceberg",
+      "kind": "default"
+    },
+    {
+      "id": "ice-commit",
+      "at": "2026-10-24T02:14:00+09:00",
+      "title": "commit — snapshot 2",
+      "detail": "commit 한 번으로 새 데이터가 한꺼번에 보인다.",
+      "lane": "iceberg",
+      "kind": "change"
+    }
   ]
 }

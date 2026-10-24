@@ -44,6 +44,7 @@ drafted-by: Claude
 | 발표자 | 사용자 (Windows PC에서 발표·공유) |
 | Airflow | 2.7.1, CeleryExecutor. 프로세스: airflow worker · scheduler · webserver · flower, PostgreSQL(metadata DB), pgpool, redis(Celery broker). DAG의 Spark 실행은 SparkSubmitOperator |
 | Airflow 프로세스 수 | systemd service 기준 `airflow-worker.service` 3개, `airflow-scheduler.service` 2개, `airflow-webserver.service` 2개, `airflow-flower.service` 1개. Celery 설정(`[celery]`)은 기본값 |
+| Airflow 서버 배치 | 서버 3대 (2026-10-24). **worker.1**: webserver1, scheduler1, worker1, flower1, postgresql1, pgpool1, redis1, redis-sentinel1 / **worker.2**: webserver2, scheduler2, worker2, postgresql2, pgpool2, redis2, redis-sentinel2 / **worker.3**: worker3, postgresql3, pgpool3, redis3, redis-sentinel3 |
 | pgpool | PostgreSQL HA와 커넥션 풀 |
 | Hadoop | 3.2.3 (HDFS, YARN) |
 | Spark | 3.5.2, 클러스터 매니저 YARN. dynamic allocation 사용 안 함 |
@@ -101,7 +102,7 @@ drafted-by: Claude
 - **PARAM**: 날짜 범위를 받고, 그 범위로 job_history를 조회한다 (사용자 설명: `spark-tuning`의 Iceberg 방식과 유사. 단 그쪽은 to-be 설계이므로 as-is 필드 이름·형식은 별도 확인)
 - **worker 재시작 전 확인**: 실행 중인 Spark Task로 판단한다
 - **재시작 방법**: ansible playbook에서 재시작할 프로세스를 지정하거나, systemctl로 개별 처리한다
-- **Hive 적재 상세**: `_raw`에는 새 데이터가 계속 추가된다. 배치 주기가 되면 ORC로 변환해 `_temp` 테이블로 옮기고, `_orc`를 완전히 비운 뒤 `_temp`의 데이터 파일을 `hdfs mv`로 `_orc`에 옮긴다. 사용자는 예전 데이터는 `_orc`, 최근 데이터는 `_raw`에서 조회한다
+- **Hive 적재 상세**: `_raw`에는 새 데이터가 계속 추가된다. 배치 주기가 되면 ORC로 변환해 `_temp` 테이블로 옮기고, ~~`_orc`를 완전히 비운 뒤~~ `_temp`의 데이터 파일을 `hdfs mv`로 `_orc`에 옮긴다(**2026-10-24 정정** — 아래 참조). 사용자는 예전 데이터는 `_orc`, 최근 데이터는 `_raw`에서 조회한다
 - **job_history 설명 문구**: "어디까지 적재했는지 적어 두는 장부"가 대체로 맞지만 더 적절한 표현 검토 요청 → spec 3절에 "적재 대장" 안 제시
 
 사용자 답변 (2026-10-04, 4차):
@@ -139,6 +140,21 @@ drafted-by: Claude
 - 누르거나 끌어서 조작하는 시연(M2-09 멈춘 프로세스, M4-12 조회 시각 비교)은 HTML로 두고 archify 도식을 연결한다
 - 지금의 9장 샘플은 **형식 검토용 샘플일 뿐이고 내용은 다시 고친다**
 
+사용자 결정 · 정정 (2026-10-24, 발표 개요 검토):
+
+- **Hive `_orc` 교체 정정 — 비는 구간이 없다.** DAG는 `hdfs mv` 전에 `_orc`에 있던 기존 파일 목록을 기록해 두고, `_temp`의 ORC 파일을 `hdfs mv`로 `_orc`에 옮긴 뒤, 기록해 둔 기존 파일을 `hdfs rm`으로 지운다. 이전 문서의 "`_orc`를 비운 뒤 옮긴다", "`_orc`가 비는 순간" 서술은 틀렸다
+- **Airflow 서버 배치**: 서버 3대(worker.1 · worker.2 · worker.3)에 프로세스가 나뉘어 있다(Affected users and systems 표). redis-sentinel이 프로세스 목록에 추가됐다
+- **Flower 화면은 모니터링 교육에서 뺀다** — 볼 필요가 없다
+- **수강자가 할 수 있는 조치만 가르친다.** 허용 · 금지 표(M6-03), 금지 조치 슬라이드는 두지 않는다
+- **M0 오리엔테이션은 필요 없을 수 있다** — Claude 의견 요청
+- **M3-10(Spark · Tez 로그를 보지 않는다)은 수강자가 알 필요 없는 내용이다**
+- **슬라이드 표현**: "장애가 나면 이 한 장만 보면 된다" 같은 구어 표현을 쓰지 않는다. 교육생 · 비개발자 같은 대상 지칭과 교육자만 알면 되는 내용은 슬라이드에 두지 않는다
+- **redis-sentinel도 재시작하지 않고 전달한다** (redis와 같다)
+- **발표 개요 79장 확정** — spec 5절 (102장에서 정리)
+- **추가할 내용**: 프로세스별 역할 설명 / Hive vs Iceberg 비교와 Hive → Iceberg 전환 이점 / Tez vs Spark 비교와 Tez → Spark 전환 이점
+- **시각화 도구**: archify, dashmotion 등 상황에 맞는 도구를 적극 쓴다
+- **전체 리팩토링**: 불필요하거나 겹치는 슬라이드를 정리한다
+
 기술·운영 제약:
 
 - Airflow 2.7.1 기준으로 화면·용어를 쓴다. 3.x 화면·용어는 쓰지 않는다
@@ -166,16 +182,18 @@ drafted-by: Claude
 
 **장애 대응 경계 — Claude 초안, 승인 필요**
 
-사용자 기준("난이도가 높거나 위험도가 높으면 맡기지 않는다")을 적용한 초안이다. 운영 관행이 공유되면 갱신한다.
+> **2026-10-24: 교육에서는 할 수 있는 조치만 다룬다(사용자 결정).** 아래 표는 교육 자료에 넣지 않고, Claude가 슬라이드 범위를 판단할 때 참고로만 쓴다. "금지 후보"는 따로 확정하지 않는다.
+
+사용자 기준("난이도가 높거나 위험도가 높으면 맡기지 않는다")을 적용한 초안이다.
 
 | 구분 | 조치 | 비고 |
 |------|------|------|
-| 허용 | Airflow UI · Flower · YARN UI · Spark UI 조회 | 읽기만. 로그 링크는 열지 않는다. Flower는 잠정 |
+| 허용 | Airflow UI · YARN UI · Spark UI 조회 | 읽기만. 로그 링크는 열지 않는다. Flower 화면은 다루지 않는다(2026-10-24) |
 | 허용 | DAG 재실행 — Airflow UI Trigger DAG + PARAM에 처리 날짜 입력 | 확정(2026-10-04). job_history로 중복 적재 없음. [확인 필요: 실패 원인과 무관하게 해도 되는지, 횟수 제한] |
 | 금지 후보 | 실패한 Task의 Clear | 재실행 방식이 Trigger로 확정되어 교육에서 쓰지 않는 기능. [확인 필요: 금지로 둘지] |
 | 허용 | Airflow 프로세스 재시작 — worker · scheduler · webserver · flower | 확정(2026-10-04). [명령어: 사용자 기재]. [확인 필요: 어떤 증상일 때] |
 | 금지 | Spark 작업 실행 중 worker 재시작 | 확정(2026-10-04) |
-| 금지 | PostgreSQL · pgpool · redis 재시작 | 확정(2026-10-04) — 위험도 높음 |
+| 금지 | PostgreSQL · pgpool · redis · redis-sentinel 재시작 | 확정(2026-10-04, redis-sentinel은 2026-10-24) — 위험도 높음 |
 | 허용 | Airflow log 확인과 증상 분류 | |
 | 금지 | DAG 파일·코드 수정 | 확정 (코드 관여 금지) |
 | 금지 후보 | Mark Success / Mark Failed | 실제로 처리되지 않은 데이터가 처리된 것으로 기록될 위험 |
@@ -221,8 +239,9 @@ drafted-by: Claude
 
 **DAG 동작 상세 (사용자 작성 — Claude가 묻지 않는다)**
 
-- `_orc`를 비우는 범위 — 대상 날짜(`dt` 파티션)만인지 `_orc` 전체인지
-- `_orc`를 비운 뒤 `hdfs mv`로 옮겨 넣기 전에 배치가 실패했을 때 같은 날짜로 Trigger 재실행하면 복구되는지
+- ~~`_orc`를 비우는 범위~~ → 비우지 않는다(2026-10-24 정정). 기록해 두는 기존 파일 목록의 범위 — 대상 날짜(`dt` 파티션)만인지 `_orc` 전체인지
+- `hdfs mv` 뒤 `hdfs rm` 전(기존 파일과 새 파일이 함께 있는 동안)의 조회 결과
+- `_orc` 교체 도중(mv 전 · mv 후 rm 전) 배치가 실패했을 때 같은 날짜로 Trigger 재실행하면 복구되는지
 - 배치 주기
 - Hive SQL Task의 실행 방식(Operator), log에 YARN application ID가 찍히는지
 - Spark를 Iceberg 적재에만 쓰는지

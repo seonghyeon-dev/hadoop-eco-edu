@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 3.2.0">
   <meta name="archify-reader-contract" content="declared-wide-v1">
-  <title>Hive 적재 5단계 다이어그램</title>
+  <title>Hive 적재 6단계 다이어그램</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -5193,7 +5193,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="블루프린트 / 개정 01"
            data-preset-badge-editorial="에디토리얼 / 현장 노트">
         <div class="pulse-dot"></div>
-        <h1>Hive 적재 5단계</h1>
+        <h1>Hive 적재 6단계</h1>
       </div>
     </div>
 
@@ -5202,8 +5202,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / 도판 04">
-      <svg viewBox="0 0 858 534" data-layout-contract="readable-v2" role="img" lang="ko" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="">
-        <title id="archify-diagram-title">Hive 적재 5단계</title>
+      <svg viewBox="0 0 938 534" data-layout-contract="readable-v2" role="img" lang="ko" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="">
+        <title id="archify-diagram-title">Hive 적재 6단계</title>
         <desc id="archify-diagram-description">Archify로 생성한 워크플로우 다이어그램입니다.</desc>
         <!-- Definitions -->
         <defs>
@@ -5249,22 +5249,22 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Swimlanes -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="802" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="882" height="106" rx="10" class="c-lane" stroke-width="1"/>
         <text x="54" y="74" class="t-muted" font-size="10" font-weight="600">01 / {테이블}_raw · TEXTFILE</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="178" width="802" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="178" width="882" height="106" rx="10" class="c-lane" stroke-width="1"/>
         <text x="54" y="200" class="t-muted" font-size="10" font-weight="600">02 / {테이블}_temp · ORC</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="304" width="802" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="304" width="882" height="106" rx="10" class="c-lane" stroke-width="1"/>
         <text x="54" y="326" class="t-muted" font-size="10" font-weight="600">03 / {테이블}_orc · ORC</text>
 
         <!-- Phase headers -->
         <path d="M 70 35 H 146" class="a-default phase-rule" stroke-width="1" stroke-linecap="round" fill="none"/>
         <rect x="88" y="27" width="40" height="16" rx="8" class="c-mask phase-chip"/>
         <text x="108" y="38.5" class="t-muted" font-size="8" font-weight="600" text-anchor="middle" letter-spacing=".04em">항상</text>
-        <path d="M 190 35 H 701.2" class="a-emphasis phase-rule" stroke-width="1" stroke-linecap="round" fill="none"/>
-        <rect x="404.40000000000003" y="27" width="82.4" height="16" rx="8" class="c-mask phase-chip"/>
-        <text x="445.6" y="38.5" class="t-backend" font-size="8" font-weight="600" text-anchor="middle" letter-spacing=".04em">배치 주기마다</text>
+        <path d="M 190 35 H 889.2" class="a-emphasis phase-rule" stroke-width="1" stroke-linecap="round" fill="none"/>
+        <rect x="498.40000000000003" y="27" width="82.4" height="16" rx="8" class="c-mask phase-chip"/>
+        <text x="539.6" y="38.5" class="t-backend" font-size="8" font-weight="600" text-anchor="middle" letter-spacing=".04em">배치 주기마다</text>
 
         <!-- Workflow groups -->
 
@@ -5272,8 +5272,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <!-- Edge paths -->
         <path data-edge-from="insert" data-edge-to="clear-temp" data-edge-label="배치 주기" data-edge-key="0" data-edge-id="e-batch-start" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="168,120;228,120;228,220" d="M 168 120 L 220 120 Q 228 120 228 128 L 228 220" class="a-dashed" data-animate="edge" style="--step:0" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
         <path data-edge-from="clear-temp" data-edge-to="select" data-edge-key="1" data-edge-id="e-fill-temp" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="274,246;306,246" d="M 274 246 L 306 246" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="clear-orc" data-edge-to="move" data-edge-label="비어 있는 구간" data-edge-key="2" data-edge-id="e-gap" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="532,372;617.2,372" d="M 532 372 L 617.2 372" class="a-security" data-animate="edge" style="--step:3" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
-        <path data-edge-from="select" data-edge-to="clear-orc" data-edge-key="3" data-edge-id="e-temp-ready" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="426,246;486,246;486,338" d="M 426 246 L 478 246 Q 486 246 486 254 L 486 338" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="list-old" data-edge-to="move" data-edge-key="2" data-edge-id="e-move" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="556,372;588,372" d="M 556 372 L 588 372" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="move" data-edge-to="remove-old" data-edge-label="새 파일이 들어간 뒤" data-edge-key="3" data-edge-id="e-remove" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="680,372;789.2,372" d="M 680 372 L 789.2 372" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="select" data-edge-to="list-old" data-edge-key="4" data-edge-id="e-temp-ready" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="366,272;366,372;416,372" d="M 366 272 L 366 364 Q 366 372 374 372 L 416 372" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
 
         <!-- Nodes -->
         <g id="node-insert" data-node-id="insert" data-node-label="1 새 데이터 Insert" tabindex="0" role="button" aria-label="1 새 데이터 Insert 포커스, 계속 쌓는다, {테이블}_raw · TEXTFILE › 항상" aria-pressed="false" data-node-kind="backend" data-node-sublabel="계속 쌓는다" data-node-tag="최근 데이터 조회" data-node-context="{테이블}_raw · TEXTFILE › 항상">
@@ -5310,29 +5311,38 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text data-detail="context" x="366" y="266.1" class="t-muted" font-size="8" text-anchor="middle">_raw → ORC로 쌓기</text>
         </g>
 
-        <g id="node-clear-orc" data-node-id="clear-orc" data-node-label="4 _orc 비우기" tabindex="0" role="button" aria-label="4 _orc 비우기 포커스, [사용자 작성: 범위], {테이블}_orc · ORC › 배치 주기마다" aria-pressed="false" data-node-kind="security" data-node-sublabel="[사용자 작성: 범위]" data-node-tag="조회가 비는 구간 시작" data-node-context="{테이블}_orc · ORC › 배치 주기마다">
-          <title>4 _orc 비우기 · [사용자 작성: 범위] · {테이블}_orc · ORC › 배치 주기마다 · 조회가 비는 구간 시작</title>
-          <rect x="440" y="338" width="92" height="68" rx="8" class="c-mask"/>
-          <rect x="440" y="338" width="92" height="68" rx="8" class="c-security" data-animate="node" style="--step:3" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(446 344) scale(0.6875)">
-            <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
-            <path d="m5.8 8 1.5 1.5 3-3"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="486" y="369.9" class="t-primary" font-size="10.7" font-weight="600" text-anchor="middle">4 _orc 비우기</text>
-          <text data-detail="context" x="486" y="383.9" class="t-muted" font-size="7.3" text-anchor="middle">[사용자 작성: 범위]</text>
-        <text data-detail="fine" x="486" y="396.1" class="t-security" font-size="6.6" text-anchor="middle">조회가 비는 구간 시작</text>
-        </g>
-
-        <g id="node-move" data-node-id="move" data-node-label="5 hdfs mv" tabindex="0" role="button" aria-label="5 hdfs mv 포커스, _temp 파일을 _orc로, {테이블}_orc · ORC › 배치 주기마다" aria-pressed="false" data-node-kind="backend" data-node-sublabel="_temp 파일을 _orc로" data-node-tag="예전 데이터 조회" data-node-context="{테이블}_orc · ORC › 배치 주기마다">
-          <title>5 hdfs mv · _temp 파일을 _orc로 · {테이블}_orc · ORC › 배치 주기마다 · 예전 데이터 조회</title>
-          <rect x="617.2" y="338" width="92" height="68" rx="8" class="c-mask"/>
-          <rect x="617.2" y="338" width="92" height="68" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(623.2 344) scale(0.6875)">
+        <g id="node-list-old" data-node-id="list-old" data-node-label="4 기존 파일 목록 기록" tabindex="0" role="button" aria-label="4 기존 파일 목록 기록 포커스, [사용자 작성: 범위], {테이블}_orc · ORC › 배치 주기마다" aria-pressed="false" data-node-kind="backend" data-node-sublabel="[사용자 작성: 범위]" data-node-context="{테이블}_orc · ORC › 배치 주기마다">
+          <title>4 기존 파일 목록 기록 · [사용자 작성: 범위] · {테이블}_orc · ORC › 배치 주기마다</title>
+          <rect x="416" y="346" width="140" height="52" rx="8" class="c-mask"/>
+          <rect x="416" y="346" width="140" height="52" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(422 352) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="665.9000000000001" y="359" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">5 hdfs mv</text>
-          <text data-detail="context" x="663.2" y="376" class="t-muted" font-size="7.3" text-anchor="middle">_temp 파일을 _orc로</text>
-        <text data-detail="fine" x="663.2" y="394" class="t-backend" font-size="7" text-anchor="middle">예전 데이터 조회</text>
+          <text data-node-label="" data-detail-anchor="" x="486" y="377.5" class="t-primary" font-size="10.4" font-weight="600" text-anchor="middle">4 기존 파일 목록 기록</text>
+          <text data-detail="context" x="486" y="392.3" class="t-muted" font-size="8" text-anchor="middle">[사용자 작성: 범위]</text>
+        </g>
+
+        <g id="node-move" data-node-id="move" data-node-label="5 hdfs mv" tabindex="0" role="button" aria-label="5 hdfs mv 포커스, _temp 파일을 _orc로, {테이블}_orc · ORC › 배치 주기마다" aria-pressed="false" data-node-kind="backend" data-node-sublabel="_temp 파일을 _orc로" data-node-context="{테이블}_orc · ORC › 배치 주기마다">
+          <title>5 hdfs mv · _temp 파일을 _orc로 · {테이블}_orc · ORC › 배치 주기마다</title>
+          <rect x="588" y="346" width="92" height="52" rx="8" class="c-mask"/>
+          <rect x="588" y="346" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(594 352) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="636.7" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">5 hdfs mv</text>
+          <text data-detail="context" x="634" y="384" class="t-muted" font-size="7.3" text-anchor="middle">_temp 파일을 _orc로</text>
+        </g>
+
+        <g id="node-remove-old" data-node-id="remove-old" data-node-label="6 기존 파일 hdfs rm" tabindex="0" role="button" aria-label="6 기존 파일 hdfs rm 포커스, 4에서 기록한 파일만, {테이블}_orc · ORC › 배치 주기마다" aria-pressed="false" data-node-kind="backend" data-node-sublabel="4에서 기록한 파일만" data-node-tag="예전 데이터 조회" data-node-context="{테이블}_orc · ORC › 배치 주기마다">
+          <title>6 기존 파일 hdfs rm · 4에서 기록한 파일만 · {테이블}_orc · ORC › 배치 주기마다 · 예전 데이터 조회</title>
+          <rect x="789.2" y="338" width="124" height="68" rx="8" class="c-mask"/>
+          <rect x="789.2" y="338" width="124" height="68" rx="8" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(795.2 344) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="851.2" y="369.2" class="t-primary" font-size="10.1" font-weight="600" text-anchor="middle">6 기존 파일 hdfs rm</text>
+          <text data-detail="context" x="851.2" y="383.9" class="t-muted" font-size="8" text-anchor="middle">4에서 기록한 파일만</text>
+        <text data-detail="fine" x="851.2" y="396.7" class="t-backend" font-size="7" text-anchor="middle">예전 데이터 조회</text>
         </g>
 
         <!-- Edge labels -->
@@ -5341,9 +5351,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text x="198" y="110" class="t-edge-dashed" font-size="8" text-anchor="middle">배치 주기</text>
         </g>
 
-        <g data-detail="context" data-edge-from="clear-orc" data-edge-to="move" data-edge-label="비어 있는 구간" data-edge-key="2" data-edge-id="e-gap">
-          <rect x="536" y="352" width="77.2" height="14" rx="3" class="c-mask"/>
-          <text x="574.6" y="362" class="t-edge-security" font-size="8" text-anchor="middle">비어 있는 구간</text>
+
+        <g data-detail="context" data-edge-from="move" data-edge-to="remove-old" data-edge-label="새 파일이 들어간 뒤" data-edge-key="3" data-edge-id="e-remove">
+          <rect x="684" y="352" width="101.2" height="14" rx="3" class="c-mask"/>
+          <text x="734.6" y="362" class="t-edge-emphasis" font-size="8" text-anchor="middle">새 파일이 들어간 뒤</text>
         </g>
 
 
@@ -5353,10 +5364,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="적재 단계" data-legend-x="20" data-legend-baseline="454" data-legend-width="85">
             <rect x="20" y="446" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
             <text x="42" y="454" class="t-muted" font-size="7.5" font-weight="500">적재 단계</text>
-          </g>
-          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="_orc 조회가 비는 단계" data-legend-x="112" data-legend-baseline="454" data-legend-width="141">
-            <rect x="112" y="446" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
-            <text x="134" y="454" class="t-muted" font-size="7.5" font-weight="500">_orc 조회가 비는 단계</text>
           </g>
         </g>
       </svg>
@@ -5549,11 +5556,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot rose"></div>
-          <h3>4 → 5 사이</h3>
+          <div class="card-dot cyan"></div>
+          <h3>_orc는 비지 않는다</h3>
         </div>
         <ul>
-          <li>_orc를 비운 뒤 hdfs mv가 끝날 때까지 _orc를 조회하면 결과가 비거나 모자란다</li>
+          <li>새 파일을 먼저 hdfs mv로 넣고, 그 뒤에 기존 파일을 hdfs rm으로 지운다</li>
           <li>hdfs mv는 복사가 아니라 이동이다 — 파일 이름표만 바꿔 달아 빠르다</li>
         </ul>
       </div>
@@ -5564,7 +5571,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <h3>아직 채우지 않은 것</h3>
         </div>
         <ul>
-          <li>[사용자 작성: 4에서 _orc를 비우는 범위 — dt 파티션만인지 _orc 전체인지]</li>
+          <li>[사용자 작성: 4에서 기록하는 기존 파일의 범위 — dt 파티션만인지 _orc 전체인지]</li>
+          <li>[사용자 작성: 5와 6 사이, 기존 파일과 새 파일이 함께 있는 동안의 조회 결과]</li>
           <li>[사용자 작성: 배치 주기]</li>
         </ul>
       </div>
