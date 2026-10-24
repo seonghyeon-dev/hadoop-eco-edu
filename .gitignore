@@ -17,3 +17,8 @@ site/
 samples/archify/*.delivery.json
 samples/archify/*.finalize*.json
 samples/archify/*.browser-check.json
+
+# 도식 렌더링 검사 기록
+deck/diagrams/*.delivery.json
+deck/diagrams/*.finalize*.json
+deck/diagrams/*.browser-check.json

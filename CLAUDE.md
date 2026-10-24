@@ -103,6 +103,13 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 │           ├── intent.md             # 교육 과정 전체의 intent
 │           ├── spec.md               # 커리큘럼 spec (79장, 2026-10-24 승인)
 │           └── plan.md               # 제작 계획 — 산출물 위치, 제작 순서, 검수
+├── deck/                             # 발표 자료 본편 (plan.md 1절)
+│   ├── hadoop-eco-ops-1.html         # 개념편 M0–M4 — build.py가 만든 결과, 직접 고치지 않는다
+│   ├── hadoop-eco-ops-2.html         # 실무편 M5–M7 — 〃
+│   ├── build.py                      # 모듈 원본을 이어 붙이고 도식 · 캡처를 넣는다. 파일 분할은 PARTS에서
+│   ├── src/                          # base.css · deck.js · shell.html(공통 틀), M<n>.html(모듈 원본)
+│   ├── diagrams/                     # D<번호>-<이름>.json(도식 입력) · .html(렌더링 결과)
+│   └── captures/                     # 화면 캡처 (마스킹한 것만)
 └── samples/
     ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 8장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다
     └── archify/                      # archify 도식 — <이름>.json(입력)을 고쳐 <이름>.html로 렌더링

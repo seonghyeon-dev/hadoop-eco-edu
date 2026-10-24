@@ -1,0 +1,109 @@
+<!-- ===================================================== M1. 전체 구조 — 데이터가 흐르는 길 -->
+
+<!-- M1-01 구역 머리글 -->
+<section class="slide" data-id="M1-01" aria-label="M1-01 전체 구조">
+  <div class="in section">
+    <div class="content">
+      <div class="num">M1</div>
+      <h2>전체 구조</h2>
+      <p class="sub">데이터가 흐르는 길</p>
+      <div class="map" aria-label="과정 지도">
+        <div class="round"><span>개념</span>
+          <div class="m cur"><b>M1</b>전체 구조</div><div class="m"><b>M2</b>Airflow</div><div class="m"><b>M3</b>Spark · Tez · YARN</div><div class="m"><b>M4</b>HDFS · Hive · Iceberg</div>
+        </div>
+        <div class="round"><span>실무</span>
+          <div class="m"><b>M5</b>모니터링</div><div class="m"><b>M6</b>장애 대응</div><div class="m"><b>M7</b>마무리</div>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M1-01</b> · 구역 머리글</span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>구역 머리글마다 과정 지도를 두고 지금 위치를 칠한다.</li>
+      <li>"개념 · 실무"는 발표 파일 구분(개념편 · 실무편)이다. 교육 진행 횟수가 정해지면 바꾼다. <span class="mk">[확인 필요: 교육 총 시간 · 회차]</span></li>
+      <li><span class="pp">pptx 대응</span> 과정 지도는 도형 묶음으로 만들어 구역 머리글마다 복사하고 칠하는 칸만 바꾼다.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M1-02 핵심 도식 — D02 -->
+<section class="slide" data-id="M1-02" data-arch="D02" aria-label="M1-02 데이터 흐름">
+  <div class="in">
+    <div class="head">
+      <div class="eb">M1 전체 구조</div>
+      <h2>데이터는 Airflow의 지시로 Spark · Tez가 처리해 HDFS 위 테이블에 쌓인다</h2>
+    </div>
+    <div class="content">
+      <div class="ovw">
+        <div class="ovr" data-at="1">
+          <span class="k">지시</span>
+          <div class="chain"><span class="chip hot" data-info="airflow" tabindex="0" role="button" aria-label="Airflow 설명 열기"><b>Airflow</b><small>언제, 무엇을 할지 지시한다</small></span><span class="arw" aria-hidden="true">⇢</span><span class="chip"><b>Spark · Tez</b></span></div>
+          <span class="say">작업 지시만 한다 — 데이터는 Airflow를 지나가지 않는다</span>
+        </div>
+        <div class="ovr acc" data-at="2">
+          <span class="k">Iceberg 갈래</span>
+          <div class="chain"><span class="chip hot" data-info="source" tabindex="0" role="button" aria-label="데이터 원천 설명 열기"><b>데이터 원천</b><small><span class="mk">[확인 필요: 종류]</span></small></span><span class="arw" aria-hidden="true">→</span><span class="chip hot" data-info="spark" tabindex="0" role="button" aria-label="Spark 설명 열기"><b>Spark</b><small>새 데이터 append</small></span><span class="arw" aria-hidden="true">→</span><span class="chip hot" data-info="iceberg" tabindex="0" role="button" aria-label="Iceberg 테이블 설명 열기"><b>Iceberg 테이블</b><small>Parquet</small></span></div>
+        </div>
+        <div class="ovr alt" data-at="3">
+          <span class="k">Hive 갈래</span>
+          <div class="chain"><span class="chip hot" data-info="source" tabindex="0" role="button" aria-label="데이터 원천 설명 열기"><b>데이터 원천</b><small><span class="mk">[확인 필요: 종류]</span></small></span><span class="arw" aria-hidden="true">→</span><span class="chip hot" data-info="tez" tabindex="0" role="button" aria-label="Tez 설명 열기"><b>Tez</b><small>Hive SQL 실행</small></span><span class="arw" aria-hidden="true">→</span><span class="chip hot" data-info="hive" tabindex="0" role="button" aria-label="Hive 테이블 설명 열기"><b>Hive 테이블</b><small>_raw · _temp · _orc</small></span></div>
+        </div>
+        <p class="foot" data-at="3">Spark · Tez는 <b class="chip hot" data-info="yarn" tabindex="0" role="button" aria-label="YARN 설명 열기">YARN</b>이 나눠 준 CPU · 메모리로 돌고, 테이블은 모두 <b class="chip hot" data-info="hdfs" tabindex="0" role="button" aria-label="HDFS 설명 열기">HDFS</b>에 있다</p>
+      </div>
+      <div class="morebar">
+        <span class="hint">이름을 누르면 역할 · 비유 · 보는 화면이 열린다</span>
+        <button class="more" type="button" data-arch="D02">자세히 — 데이터 흐름 도식 <kbd>D</kbd></button>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M1-02</b> · 제목만 + 도식 D02</span><span class="dots"></span></div>
+  </div>
+  <template data-info="airflow" data-title="Airflow"><dl><dt>역할</dt><dd>언제, 무엇을, 어떤 순서로 할지 지시한다</dd><dt>비유</dt><dd>작업 일정표를 든 작업반장</dd><dt>다른 점</dt><dd>정해진 순서와 조건대로만 움직이고, 데이터는 직접 만지지 않는다</dd><dt>보는 화면</dt><dd>Airflow UI (M5)</dd></dl></template>
+  <template data-info="source" data-title="데이터 원천"><dl><dt>역할</dt><dd>적재할 데이터가 들어오는 곳</dd><dt>종류</dt><dd><span class="mk">[확인 필요: 데이터 원천의 종류 · 위치]</span></dd></dl></template>
+  <template data-info="spark" data-title="Spark"><dl><dt>역할</dt><dd>큰 계산을 쪼개 여러 서버에서 동시에 처리한다. Iceberg 테이블에 새 데이터를 덧붙인다</dd><dt>비유</dt><dd>계산팀 (driver = 팀장, executor = 팀원)</dd><dt>다른 점</dt><dd>팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</dd><dt>보는 화면</dt><dd>YARN UI, Spark UI (M5)</dd></dl></template>
+  <template data-info="tez" data-title="Tez"><dl><dt>역할</dt><dd>Hive SQL을 실제 작업으로 바꿔 실행한다</dd><dt>비유</dt><dd>Hive SQL 주문서를 받는 또 다른 계산팀</dd><dt>보는 화면</dt><dd>YARN UI (M5)</dd></dl></template>
+  <template data-info="iceberg" data-title="Iceberg 테이블"><dl><dt>역할</dt><dd>파일 목록과 적재 이력을 메타데이터 파일로 관리한다. 새 데이터만 덧붙인다(append)</dd><dt>비유</dt><dd>새 서류만 덧붙이는 장부</dd><dt>다른 점</dt><dd>장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</dd></dl></template>
+  <template data-info="hive" data-title="Hive 테이블"><dl><dt>역할</dt><dd>새 데이터는 _raw(TEXTFILE)에 쌓고, 배치 주기마다 _temp(ORC)를 거쳐 _orc(ORC)의 파일과 교체한다</dd><dt>조회</dt><dd>최근 데이터는 _raw, 예전 데이터는 _orc</dd></dl></template>
+  <template data-info="yarn" data-title="YARN"><dl><dt>역할</dt><dd>클러스터의 CPU · 메모리를 나눠 준다</dd><dt>비유</dt><dd>공용 작업장의 자리 배정 담당</dd><dt>다른 점</dt><dd>나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</dd><dt>보는 화면</dt><dd>YARN UI (M5)</dd></dl></template>
+  <template data-info="hdfs" data-title="HDFS"><dl><dt>역할</dt><dd>파일을 조각내 여러 서버에 복사본과 함께 보관한다</dd><dt>비유</dt><dd>여러 창고에 나눠 보관하는 창고 시스템</dd><dt>다른 점</dt><dd>파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</dd></dl></template>
+  <template class="note">
+    <ul>
+      <li>① 지시 → ② Iceberg 갈래 → ③ Hive 갈래 순서로 켠다. Airflow 줄의 점선 화살표(⇢)는 지시이고, 데이터는 Airflow를 지나가지 않는다는 것을 짚는다.</li>
+      <li>이름을 누르면 역할 · 비유가 열린다. 질문이 나올 때 그 자리에서 보여 준다. 자세한 정리는 다음 장(M1-03).</li>
+      <li><b>D</b>로 데이터 흐름 도식(D02)을 연다 — 원천 → 실행 → 1차 적재 → ORC 변환 → 조회 대상. 오른쪽 위 '정적'을 누르면 흐름 애니메이션이 켜지고, 아래 '경로'로 두 상자 사이 길만 강조할 수 있다. <b>Esc</b>로 돌아온다.</li>
+      <li><span class="mk">[확인 필요: 데이터 원천의 종류]</span> <span class="mk">[사용자 작성: Spark는 Iceberg 적재에만 쓰는지]</span> <span class="mk">[확인 필요: Oracle · Trino를 도식에 표시할지]</span></li>
+      <li><span class="pp">pptx 대응</span> 개요 줄 3개에 '나타내기' 3개. 도식은 pptx로 전환할 때 내보내기(PNG · SVG)를 쓸지 도형으로 다시 그릴지 정한다.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- M1-03 구성요소의 역할 -->
+<section class="slide" data-id="M1-03" aria-label="M1-03 구성요소의 역할">
+  <div class="in">
+    <div class="head">
+      <div class="eb">M1 전체 구조</div>
+      <h2>구성요소는 각각 한 가지 역할을 맡는다</h2>
+    </div>
+    <div class="content">
+      <div class="cards">
+        <div class="card"><h4>Airflow</h4><div class="role">언제, 무엇을, 어떤 순서로 할지 지시한다</div><div class="an" data-at="1">작업 일정표를 든 작업반장</div><div class="df" data-at="2">정해진 순서와 조건대로만 움직이고, 데이터는 직접 만지지 않는다</div></div>
+        <div class="card"><h4>YARN</h4><div class="role">클러스터의 CPU · 메모리를 나눠 준다</div><div class="an" data-at="1">공용 작업장의 자리 배정 담당</div><div class="df" data-at="2">나눠 주는 것은 자리가 아니라 CPU · 메모리 묶음(container)이다</div></div>
+        <div class="card"><h4>Spark</h4><div class="role">큰 계산을 쪼개 여러 서버에서 동시에 처리한다</div><div class="an" data-at="1">계산팀 (driver = 팀장, executor = 팀원)</div><div class="df" data-at="2">팀원 수는 실행 전에 정해지고, 실행 중에 바뀌지 않는다</div></div>
+        <div class="card"><h4>Tez</h4><div class="role">Hive SQL을 실제 작업으로 바꿔 실행한다</div><div class="an" data-at="1">Hive SQL 주문서를 받는 또 다른 계산팀</div></div>
+        <div class="card"><h4>HDFS</h4><div class="role">파일을 조각내 여러 서버에 복사본과 함께 보관한다</div><div class="an" data-at="1">여러 창고에 나눠 보관하는 창고 시스템</div><div class="df" data-at="2">파일 하나도 조각(block) 단위로 여러 창고에 흩어진다</div></div>
+        <div class="card"><h4>Hive Metastore</h4><div class="role">테이블이 어느 파일인지 목록을 관리한다</div><div class="an" data-at="1">도서관 목록 카드</div><div class="df" data-at="2">목록 카드가 없으면 파일이 있어도 찾지 못한다. 목록은 Oracle DB에 저장된다</div></div>
+        <div class="card"><h4>Iceberg</h4><div class="role">파일 목록과 적재 이력을 메타데이터 파일로 관리한다</div><div class="an" data-at="1">새 서류만 덧붙이는 장부</div><div class="df" data-at="2">장부도 파일로 저장되고, 쌓이면 정리(유지보수)가 필요하다</div></div>
+      </div>
+    </div>
+    <div class="meta"><span class="id"><b>M1-03</b> · 제목 및 내용</span><span class="dots"></span></div>
+  </div>
+  <template class="note">
+    <ul>
+      <li>처음에는 역할만 보인다 → ① 비유 → ② 비유와 다른 점. 표 한 장을 한꺼번에 보여 주면 읽느라 설명을 듣지 않는다.</li>
+      <li>비유는 늘 "다른 점"과 함께 말한다. 비유만 남으면 실제 동작을 잘못 기억한다.</li>
+      <li>Spark의 "팀원 수가 바뀌지 않는다"는 as-is가 dynamic allocation을 쓰지 않기 때문이다.</li>
+      <li>Hive Metastore의 Oracle DB는 이름만 말한다. DB 전환은 교육 전에 끝나 있다.</li>
+      <li><span class="pp">pptx 대응</span> 카드 도형 7개. 비유 줄 묶음 → 다른 점 줄 묶음에 '나타내기' 2개.</li>
+    </ul>
+  </template>
+</section>

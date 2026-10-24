@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- deck/build.py가 만든 파일이다. 고칠 때는 deck/src/의 원본을 고치고 다시 빌드한다. 외부 파일 · CDN 없이 이 파일 하나로 오프라인에서 열린다. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+{{BASE_CSS}}
+</style>
+{{MODULE_STYLES}}
+</head>
+<body>
+
+<header class="bar">
+  <div class="name">Hadoop eco 운영 교육 <span>· {{PART}}</span></div>
+  <div class="ctrl">
+    <button id="prev" type="button" aria-label="이전">이전</button>
+    <span id="count" aria-live="polite"></span>
+    <button id="next" type="button" aria-label="다음">다음</button>
+    <button id="ovBtn" type="button" aria-pressed="false">전체 보기<kbd>O</kbd></button>
+    <button id="noteBtn" type="button" aria-pressed="false">메모<kbd>N</kbd></button>
+    <button id="pauseBtn" type="button" aria-pressed="false">움직임 멈춤<kbd>P</kbd></button>
+    <button id="themeBtn" type="button">화면 색<kbd>T</kbd></button>
+    <button id="fsBtn" type="button">전체 화면<kbd>F</kbd></button>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+</header>
+
+<main class="stage" id="stage">
+{{SLIDES}}
+<aside class="notes" id="notes" hidden aria-live="polite">
+  <h4>발표 메모</h4>
+  <div id="notesBody"></div>
+</aside>
+</main>
+
+<div class="arch-ov" id="archOv" hidden role="dialog" aria-modal="true" aria-labelledby="archTitle">
+  <div class="arch-bar"><b id="archTitle"></b><span class="hint">도식 · <kbd>Esc</kbd> 슬라이드로 돌아가기</span><button type="button" id="archClose">닫기 ✕</button></div>
+  <iframe id="archFrame" title="도식"></iframe>
+</div>
+
+<!-- 도식 — deck/diagrams/의 HTML을 gzip + base64로 넣었다 -->
+{{DIAGRAMS}}
+
+<script>
+{{DECK_JS}}
+</script>
+{{MODULE_SCRIPTS}}
+</body>
+</html>
