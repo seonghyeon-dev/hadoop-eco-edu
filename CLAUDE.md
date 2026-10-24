@@ -31,6 +31,8 @@
 - **처음 쓰는 용어는 그 자리에서 쉬운 말로 설명한다.** 비유를 쓰되, 비유가 실제 동작과 어긋나는 지점이 있으면 함께 적는다
 - **화면 기준으로 설명한다.** "어느 화면의 어디를 보면 무엇이 보이고, 그것이 무슨 뜻인지" 순서로 쓴다
 - 슬라이드 1장에는 메시지 1개만 담는다
+- **슬라이드 제목은 짧은 제목형으로 쓴다** (사용자 2026-10-24). "데이터 적재 흐름", "구성요소별 역할"처럼 쓰고, "구성요소는 각각 한 가지 역할을 맡는다" 같은 설명 문장을 제목으로 쓰지 않는다. 설명은 본문과 시각 자료가 맡는다
+- **내용 슬라이드에는 이해를 돕는 시각 자료를 화면 안에 둔다** (사용자 2026-10-24). dashmotion 애니메이션 도식, archify 도식, 아이콘 등 상황에 맞는 것을 쓴다. `D`로 여는 도식은 추가 설명용이고 화면 안 시각 자료를 대신하지 않는다
 - 커밋 메시지는 한글로 쓴다
 - **'비개발자'라는 표현을 쓰지 않는다** (사용자 2026-10-22). 문서에서 독자는 '수강자' 또는 '운영 담당자'로 부른다
 - **슬라이드에는 듣는 사람에게 필요한 내용만 둔다** (사용자 2026-10-24). '교육생 · 수강자 · 비개발자' 같은 대상 지칭, 교육 범위 설명("우리는 ~를 보지 않는다"), 교육자용 판단 근거는 슬라이드에 쓰지 않고 발표 메모에만 둔다. 필요 없는 내용은 설명하지 않으면 될 뿐, "이건 몰라도 된다"고 적지 않는다
@@ -75,6 +77,7 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 | `markitdown[pptx]`, `pillow`, `defusedxml`, `lxml` (pip) | 내용 추출·검증 | 미설치 |
 | `mkdocs-material`, `mkdocs-same-dir` (pip, `requirements-docs.txt`) | 문서 사이트 빌드 | GitHub Actions에서 설치 |
 | [archify](https://github.com/tt-a1i/archify) 3.2.0 | 도식 렌더링 (`node bin/archify.mjs finalize <type> <json> <html> --quality showcase`). Node 18 이상, 자동 검사에 Chrome 필요. 결과 HTML에 렌더러 코드가 들어간다(MIT) | 저장소 밖에 clone해서 쓴다 |
+| [Lucide](https://lucide.dev) (`lucide-static`) | 슬라이드 아이콘. 쓰는 SVG만 `deck/icons/`에 복사 | 필요할 때 npm 패키지에서 복사 |
 | [dashmotion](https://github.com/csthink/dashmotion) | 흐름 애니메이션 도식 (Claude skill, 단일 HTML/SVG). 결과물에 코드가 들어가면 MIT 고지 | 미설치 — 처음 쓸 때 설치 여부 확인 |
 
 - LibreOffice는 없는 폰트를 대체해 그린다. QA 미리보기를 믿으려면 pptx에 지정한 폰트를 Mac에도 설치해야 한다
@@ -109,6 +112,7 @@ pptx로 전환할 때 적용한다. 회사 pptx 템플릿은 공유받을 수 �
 │   ├── build.py                      # 모듈 원본을 이어 붙이고 도식 · 캡처를 넣는다. 파일 분할은 PARTS에서
 │   ├── src/                          # base.css · deck.js · shell.html(공통 틀), M<n>.html(모듈 원본)
 │   ├── diagrams/                     # D<번호>-<이름>.json(도식 입력) · .html(렌더링 결과)
+│   ├── icons/                        # 슬라이드 아이콘 (Lucide, ISC — LICENSE 포함). 쓰는 것만 복사해 둔다
 │   └── captures/                     # 화면 캡처 (마스킹한 것만)
 └── samples/
     ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 8장 — 개요는 HTML, 도식은 archify(D 키). 샘플일 뿐, 내용은 다시 고친다

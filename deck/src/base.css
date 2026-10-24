@@ -260,6 +260,32 @@ body.notes-on .meta .id { visibility: visible; }
 /* 누르면 설명이 열리는 이름 — 설명은 슬라이드 안의 <template data-info="키">에 둔다 */
 .chip.hot:focus { outline: none; }
 
+/* ---------- 그림 + 설명 — 왼쪽에 시각 자료, 오른쪽에 단계별 설명 ---------- */
+.split { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.6em; flex: 1; min-height: 0; align-items: center; }
+.split > .dia svg { max-height: 100%; }
+.xl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .75em; }
+.xl li { display: grid; grid-template-columns: 2em 1fr; gap: .1em .7em; align-items: start; }
+.xl .no { grid-row: span 2; width: 1.7em; height: 1.7em; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .9em; background: var(--grp); color: var(--muted); border: 1.5px solid var(--line); }
+.xl li.acc .no { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
+.xl li.alt .no { background: var(--alt-bg); color: var(--alt); border-color: var(--alt); }
+.xl li.mark .no { background: var(--mark-bg); color: var(--mark); border-color: var(--mark); }
+.xl b { font-size: 1.02em; }
+.xl p { margin: 0; color: var(--muted); font-size: .88em; line-height: 1.5; }
+.xl p strong { color: var(--ink); }
+
+/* 아이콘 (Lucide, ISC) — deck/build.py가 <svg data-icon>을 채운다 */
+.ico-svg { width: 1.2em; height: 1.2em; vertical-align: -.22em; flex: none; }
+
+/* 카드 머리 — 아이콘 + 이름 + 분류 꼬리표 */
+.card .ch { display: flex; align-items: center; gap: .45em; }
+.card .ch .ico-svg { width: 1.5em; height: 1.5em; color: var(--accent); }
+.card .ch h4 { flex: 1; }
+.tagk { font-size: .78em; font-weight: 700; border-radius: 999px; padding: .05em .6em; border: 1px solid currentColor; white-space: nowrap; }
+.tagk.cmd { color: var(--accent); } .tagk.res { color: var(--mark); } .tagk.calc { color: var(--ok); } .tagk.store { color: var(--alt); }
+.card .an { display: flex; gap: .45em; align-items: flex-start; }
+.card .an .ico-svg { color: var(--muted); margin-top: .1em; }
+.card .an::before { flex: none; white-space: nowrap; }
+
 /* ---------- 발표 메모 ---------- */
 .notes { width: min(100%, calc((100vh - var(--chrome)) * 16 / 9)); width: min(100%, calc((100dvh - var(--chrome)) * 16 / 9)); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; font-size: 14px; }
 .notes h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .04em; color: var(--muted); }
@@ -290,7 +316,7 @@ body.ov .slide [data-at], body.ov .slide [data-only] { opacity: 1; visibility: v
   .cover h1 { font-size: 1.8em; }
   .section h2 { font-size: 2.1em; }
   .slide h2 { font-size: 1.35em; }
-  .two { grid-template-columns: 1fr; }
+  .two, .split { grid-template-columns: 1fr; }
   .ovr { grid-template-columns: 1fr; }
   .ovr .say { grid-column: 1; }
   .cards { grid-template-columns: 1fr 1fr; }

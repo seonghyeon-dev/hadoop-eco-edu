@@ -39,6 +39,8 @@
 
 HTML 발표 샘플 조작법: `→` / `Space` 다음 단계, `←` 이전 단계, `D` 자세히(archify 도식) · `Esc` 돌아오기, `O` 전체 슬라이드 보기, `N` 발표 메모, `F` 전체 화면. 휴대폰에서는 좌우로 밀어 넘긴다.
 
+발표 자료의 아이콘은 [Lucide](https://lucide.dev)(ISC License, Copyright (c) 2026 Lucide Icons and Contributors)다 — `deck/icons/LICENSE`.
+
 archify 도식(과 그것을 넣은 발표 샘플)에는 archify 렌더러 코드가 들어 있다 — MIT License, Copyright (c) 2026 tt-a1i (Archify), Copyright (c) 2025 Cocoon AI.
 
 ## 설계 문서

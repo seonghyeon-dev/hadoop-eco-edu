@@ -1,8 +1,9 @@
 """발표 HTML을 만든다.
 
 deck/src/의 모듈 원본(M1.html …)을 PARTS 순서대로 이어 붙이고, 그 파일에서 쓰는
-도식(data-arch="D02" → deck/diagrams/D02-*.html)과 화면 캡처(data-capture="파일" →
-deck/captures/파일)만 골라 파일 안에 넣는다. 결과는 오프라인에서 열리는 파일 하나다.
+도식(data-arch="D02" → deck/diagrams/D02-*.html), 화면 캡처(data-capture="파일" →
+deck/captures/파일), 아이콘(<svg data-icon="이름" …></svg> → deck/icons/이름.svg, Lucide · ISC)만
+골라 파일 안에 넣는다. 결과는 오프라인에서 열리는 파일 하나다.
 
     python3 deck/build.py
 
@@ -32,6 +33,8 @@ MOD_STYLE = re.compile(r'<style data-module>.*?</style>\n?', re.S)
 MOD_SCRIPT = re.compile(r'<script data-module>.*?</script>\n?', re.S)
 ARCH = re.compile(r'data-arch="(D\d+)"')
 CAPTURE = re.compile(r'<img([^>]*?)\bdata-capture="([^"]+)"')
+ICON = re.compile(r'<svg data-icon="([a-z0-9-]+)"([^>]*)></svg>')
+ICON_BODY = re.compile(r'<svg[^>]*>(.*?)</svg>', re.S)
 
 
 def diagram(key):
@@ -54,6 +57,16 @@ def capture(m):
     return f'<img{m.group(1)}src="data:{mime};base64,{data}" data-capture="{m.group(2)}"'
 
 
+def icon(m):
+    path = DECK / 'icons' / f'{m.group(1)}.svg'
+    if not path.exists():
+        sys.exit(f'아이콘이 없다: deck/icons/{m.group(1)}.svg — Lucide(lucide-static)에서 복사해 둔다')
+    body = re.sub(r'\s+', ' ', ICON_BODY.search(path.read_text(encoding='utf-8')).group(1)).strip()
+    cls = 'ico-in' if ' x=' in m.group(2) else 'ico-svg'  # SVG 도식 안의 아이콘은 x · y · width · height 속성으로 크기를 정한다
+    return (f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+            f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"{m.group(2)}>{body}</svg>')
+
+
 def build(name, part, modules):
     shell = (SRC / 'shell.html').read_text(encoding='utf-8')
     slides, styles, scripts, missing = [], [], [], []
@@ -70,6 +83,7 @@ def build(name, part, modules):
         return print(f'{name}: 만든 모듈이 없어 건너뛴다')
     body = '\n\n'.join(slides)
     body = CAPTURE.sub(capture, body)
+    body = ICON.sub(icon, body)
     keys = sorted(set(ARCH.findall(body)))
     blocks, size = [], 0
     for key in keys:
