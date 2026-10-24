@@ -98,7 +98,8 @@
 │           ├── intent.md             # 교육 과정 전체의 intent
 │           └── spec.md               # 커리큘럼 spec 초안
 └── samples/
-    └── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장(동적) — 완성본 아님, 계속 수정
+    ├── hadoop-eco-ops-sample.html    # HTML 발표 샘플 9장(동적) — 완성본 아님, 계속 수정
+    └── hadoop-eco-ops-motion.html    # motion-template 기반 3쪽 샘플 — presentation-data JSON만 수정, 나머지 바이트는 템플릿 원본 유지
 ```
 
 산출물 폴더(원고·pptx·HTML·이미지)는 `plan.md`에서 정한다.
